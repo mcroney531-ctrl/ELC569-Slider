@@ -7,14 +7,16 @@
 <style>
   :root {
     --navy: #1b2a4a;
-    --navy-2: #24407a;
+    --navy-2: #2c4a85;
     --ink: #1f2933;
     --muted: #52606d;
-    --line: #cbd2d9;
+    --line: #d5dbe3;
     --line-strong: #7b8794;
-    --soft: #f3f6fa;
+    --stage: #f3f5f9;
+    --soft: #eaeff6;
     --focus: #1a56db;
     --thumb: 44px;
+    --radius: 14px;
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
@@ -24,76 +26,92 @@
     color: var(--ink);
     font: 16px/1.5 "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
   }
-  main { max-width: 1040px; margin: 0 auto; padding: 16px; }
-  h1 { color: var(--navy); font-size: 1.5rem; line-height: 1.2; margin: 0 0 4px; }
-  h2 { color: var(--navy); font-size: 1.125rem; margin: 0 0 8px; }
-  h3 { font-size: 1rem; margin: 0; }
-  p { margin: 0; }
-  .scenario { color: var(--muted); margin-bottom: 16px; }
+  main { max-width: 1080px; margin: 0 auto; padding: 20px 16px 32px; }
+  h1 { color: var(--navy); font-size: clamp(1.625rem, 4.5vw, 2.125rem); font-weight: 800; line-height: 1.15; letter-spacing: -.01em; margin: 0 0 6px; }
+  h2 { color: var(--navy); font-size: 1.0625rem; font-weight: 700; margin: 0; }
+  h3 { font-size: 1.0625rem; margin: 0; line-height: 1.25; }
+  p, ol, ul { margin: 0; }
+  .lead { color: var(--muted); font-size: 1.0625rem; max-width: 46ch; margin-bottom: 20px; }
   .sr-only {
     position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
     overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
   }
   [hidden] { display: none !important; }
+  .icon { width: 20px; height: 20px; flex: none; fill: none; stroke: var(--navy); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-  /* Layout: phone first (stage objects, then controls, then cards) */
-  .layout { display: grid; gap: 16px; grid-template-areas: "seats" "track" "controls" "cards"; }
-  .seats-box { grid-area: seats; }
-  .track-box { grid-area: track; }
+  /* ---------- Layout: phone order is seats, route, controls, personas ---------- */
+  .layout { display: grid; gap: 14px; grid-template-areas: "seats" "track" "controls" "cards"; }
+  .stage { display: contents; }
+  .zone-seats { grid-area: seats; }
+  .zone-track { grid-area: track; }
+  .zone-cards { grid-area: cards; }
   .controls { grid-area: controls; }
-  .cards-box { grid-area: cards; }
-  @media (min-width: 820px) {
-    .layout {
-      grid-template-columns: 340px minmax(0, 1fr);
-      grid-template-areas: "controls seats" "controls track" "controls cards";
-      align-items: start;
-    }
+  .zone { background: var(--stage); border-radius: var(--radius); padding: 14px; }
+  @media (min-width: 840px) {
+    .layout { grid-template-columns: 330px minmax(0, 1fr); grid-template-areas: "controls stage"; align-items: start; gap: 24px; }
     .controls { position: sticky; top: 16px; }
+    .stage { display: block; grid-area: stage; background: var(--stage); border-radius: 18px; padding: 6px 20px 20px; }
+    .stage .zone { background: none; border-radius: 0; padding: 16px 0; }
+    .stage .zone + .zone { border-top: 1px solid var(--line); }
   }
+  .zone-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .zone-head .caption { margin-left: auto; }
+  .caption { color: var(--muted); font-size: .875rem; font-weight: 600; }
+  .zone.changed { animation: none; }
 
-  .box { border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
-  .box-title { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
-  .box-title h2 { margin: 0; }
-  .caption { color: var(--muted); font-size: .9375rem; }
-  .caption strong { color: var(--ink); }
-
-  /* Seats */
-  .seats { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-  .seat { display: grid; place-items: center; aspect-ratio: 1; max-width: 64px; width: 100%; justify-self: center; position: relative; }
-  .seat svg { width: 100%; height: 100%; display: block; position: absolute; inset: 0; }
-  .seat .token { transform: scale(.3); opacity: 0; }
-  .seat.filled .token { transform: scale(1); opacity: 1; }
+  /* ---------- Seats ---------- */
+  .seats {
+    list-style: none; padding: 0 0 12px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;
+    background: linear-gradient(var(--line), var(--line)) left bottom / 100% 4px no-repeat;
+  }
+  .seat { display: grid; justify-items: center; gap: 4px; }
+  .seat-shape { position: relative; width: 100%; max-width: 54px; aspect-ratio: 1; }
+  .seat-shape svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .seat .token { transform: translateY(10px) scale(.4); opacity: 0; }
+  .seat.filled .token { transform: none; opacity: 1; }
   .seat.filled .outline { opacity: 0; }
+  .seat-name { font-size: .75rem; font-weight: 600; color: var(--muted); line-height: 1.2; text-align: center; min-height: 1.2em; }
+  .seat.filled .seat-name { color: var(--ink); }
 
-  /* Route track */
-  .track-svg { display: block; width: 100%; max-width: 480px; height: auto; margin: 0 auto; }
-  .track-svg .rail { stroke: var(--line); stroke-width: 6; stroke-linecap: round; }
-  .track-svg .move { fill: none; stroke: var(--navy-2); stroke-width: 2.5; }
+  /* ---------- Route track ---------- */
+  .track-svg { display: block; width: 100%; max-width: 500px; height: auto; margin: 0 auto; overflow: visible; }
+  .track-svg .rail { stroke: var(--line); stroke-width: 8; stroke-linecap: round; }
+  .track-svg .move { fill: none; stroke: var(--navy-2); stroke-width: 2.5; stroke-linecap: round; }
   .track-svg .node { fill: #fff; stroke: var(--navy); stroke-width: 2.5; }
   .track-svg .node-num { fill: var(--navy); font-weight: 700; font-size: 14px; }
-  .track-svg .visits { fill: var(--muted); font-size: 13px; }
+  .track-svg .badge circle { fill: var(--navy); }
+  .track-svg .badge text { fill: #fff; font-size: 11.5px; font-weight: 700; }
+  .legend { color: var(--muted); font-size: .8125rem; text-align: center; margin-top: 6px; }
 
-  /* Controls */
-  .controls { border: 2px solid var(--navy); border-radius: 12px; padding: 12px; }
-  .slider + .slider { margin-top: 18px; }
-  .slider-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  /* ---------- Controls ---------- */
+  .controls { background: #fff; border: 1px solid var(--line); border-top: 4px solid var(--navy); border-radius: var(--radius); padding: 16px; box-shadow: 0 6px 20px rgba(27, 42, 74, .08); }
+  .controls > h2 { font-size: 1.125rem; }
+  .hint-line { color: var(--muted); font-size: .875rem; margin: 2px 0 14px; }
+  .slider + .slider { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .slider-head { display: flex; align-items: center; gap: 8px; }
   .slider-head label { font-weight: 700; color: var(--navy); }
-  .slider-val { font-weight: 600; }
-  .range-wrap { position: relative; height: 52px; margin: 4px 0 0; }
+  .slider-val { margin-left: auto; background: var(--navy); color: #fff; font-size: .8125rem; font-weight: 700; border-radius: 999px; padding: 2px 10px; white-space: nowrap; }
+  .range-wrap { position: relative; height: 52px; margin-top: 6px; }
   .range-wrap .rail {
     position: absolute; left: calc(var(--thumb) / 2); right: calc(var(--thumb) / 2); top: 50%;
-    height: 4px; margin-top: -2px; background: var(--line); border-radius: 2px;
+    height: 6px; margin-top: -3px; background: var(--line); border-radius: 3px;
   }
+  .range-wrap .fill { display: block; height: 100%; width: calc(var(--f, 0) * 100%); background: var(--navy-2); border-radius: 3px; }
   .range-wrap .tick {
     position: absolute; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px;
     border-radius: 50%; background: #fff; border: 2px solid var(--line-strong);
-    left: calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--f));
+    left: calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--t));
   }
+  .range-wrap .tick.on { border-color: var(--navy-2); background: var(--navy-2); }
+  .range-wrap .tick.shape { width: 18px; height: 18px; margin: -9px 0 0 -9px; border: 0; background: #fff; border-radius: 0; }
+  .range-wrap .tick.shape svg { display: block; width: 100%; height: 100%; }
   .range-wrap .trace {
-    position: absolute; left: calc(var(--thumb) / 2); right: calc(var(--thumb) / 2); top: 6px;
+    position: absolute; left: calc(var(--thumb) / 2); top: 6px;
     height: 40px; width: calc(100% - var(--thumb));
   }
-  .range-wrap .trace polyline { fill: none; stroke: var(--line-strong); stroke-width: 2; }
+  .range-wrap .trace polyline { fill: none; stroke: var(--line-strong); stroke-width: 2; stroke-linejoin: round; }
+  .range-wrap .trace.lit { clip-path: inset(0 calc((1 - var(--f, 0)) * 100%) 0 0); }
+  .range-wrap .trace.lit polyline { stroke: var(--navy-2); stroke-width: 2.5; }
   input[type=range] {
     -webkit-appearance: none; appearance: none;
     position: absolute; inset: 0; width: 100%; height: 100%; margin: 0;
@@ -112,37 +130,54 @@
     position: absolute; top: 4px; width: var(--thumb); height: var(--thumb);
     left: calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--f, 0));
     transform: translateX(-50%); pointer-events: none; z-index: 2; border-radius: 50%;
+    filter: drop-shadow(0 2px 3px rgba(27, 42, 74, .25));
   }
   .thumb svg { display: block; width: 100%; height: 100%; }
   input[type=range]:focus-visible ~ .thumb { box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--focus); }
-  .ends { display: flex; justify-content: space-between; gap: 8px; font-size: .875rem; color: var(--muted); }
+  .ends { display: flex; justify-content: space-between; gap: 8px; font-size: .8125rem; color: var(--muted); }
 
-  .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 16px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin-top: 18px; }
   button {
-    font: inherit; font-weight: 600; min-height: 44px; padding: 8px 16px; border-radius: 8px;
+    font: inherit; font-weight: 700; min-height: 44px; padding: 8px 18px; border-radius: 10px;
     border: 2px solid var(--navy); background: #fff; color: var(--navy); cursor: pointer;
   }
   button.primary { background: var(--navy); color: #fff; }
   button:hover { background: var(--soft); }
-  button.primary:hover { background: var(--navy-2); }
+  button.primary:hover { background: var(--navy-2); border-color: var(--navy-2); }
+  #lock { width: 100%; }
   button:focus-visible, textarea:focus-visible, [tabindex="-1"]:focus-visible {
     outline: 3px solid var(--focus); outline-offset: 3px;
   }
-  .summary { font-weight: 700; color: var(--navy); }
-  .note { color: var(--muted); font-size: .9375rem; }
+  .summary { font-weight: 700; color: var(--navy); font-size: 1.0625rem; }
+  .note { color: var(--muted); font-size: .875rem; }
 
-  /* Cards */
-  .cards { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); }
-  .card { position: relative; background: #fff; border: 2px solid var(--line-strong); border-radius: 12px; padding: 12px; }
-  .card-head { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
-  .card-head svg { width: 40px; height: 40px; flex: none; }
-  .role { color: var(--muted); font-size: .9375rem; }
-  .bubble { position: relative; background: var(--soft); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin: 8px 0; }
+  /* ---------- Persona cards ---------- */
+  .tier-line { color: var(--muted); font-size: .9375rem; margin: -4px 0 14px; }
+  .tier-line strong { color: var(--ink); }
+  .cards { list-style: none; padding: 6px 0 0; display: grid; gap: 18px 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+  .card { position: relative; background: #fff; border: 2px solid var(--line-strong); border-radius: 12px; padding: 14px; box-shadow: 0 1px 2px rgba(27, 42, 74, .06); }
+  .card-head { display: flex; gap: 10px; align-items: center; }
+  .card-head svg { width: 42px; height: 42px; flex: none; }
+  .role { color: var(--muted); font-size: .875rem; }
+  .ctx { color: var(--muted); font-size: .875rem; margin-top: 8px; }
+  .bubble { position: relative; background: var(--soft); border: 1.5px solid var(--line); border-radius: 14px; padding: 10px 12px; margin: 14px 0 10px; }
+  .bubble::before {
+    content: ""; position: absolute; top: -8px; left: 20px; width: 13px; height: 13px;
+    background: inherit; border-left: inherit; border-top: inherit; transform: rotate(45deg);
+  }
   .bubble q { display: block; quotes: "\201C" "\201D"; }
-  .tag { display: none; align-items: center; gap: 6px; font-size: .8125rem; font-weight: 700; color: var(--navy); border: 1.5px solid var(--navy); border-radius: 999px; padding: 2px 10px 2px 6px; }
+  .tag { display: none; align-items: center; gap: 6px; font-size: .8125rem; font-weight: 700; color: var(--navy); background: #fff; border: 1.5px solid var(--navy); border-radius: 999px; padding: 2px 10px 2px 7px; margin-bottom: 10px; }
   .tag svg { width: 14px; height: 14px; }
-  .route { font-size: .875rem; color: var(--muted); margin-top: 8px; }
-  .route b { color: var(--ink); font-weight: 600; }
+  .route-label { font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+  .route { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 4px; margin-top: 6px; font-size: .8125rem; }
+  .chip { display: inline-flex; align-items: center; gap: 5px; border: 1.5px solid var(--line); background: #fff; border-radius: 999px; padding: 1px 8px 1px 3px; color: var(--ink); }
+  .chip .n { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--navy); color: #fff; font-size: .6875rem; font-weight: 700; }
+  .chip.again { border-style: dashed; border-color: var(--line-strong); }
+  .chip.again .n { background: #fff; color: var(--navy); border: 1.5px solid var(--navy); }
+  .chip .re { font-weight: 700; color: var(--navy); }
+  .route li + li::before { content: "›" / ""; color: var(--line-strong); font-weight: 700; margin-right: 4px; }
+  .route li { display: inline-flex; align-items: center; }
+
   /* Tier 1: smooth solid edge, clear bubble */
   .card.tier-1 { border-style: solid; }
   /* Tier 2: dashed edge, shortened bubble */
@@ -161,78 +196,102 @@
   .card.tier-4::after { bottom: -8px; transform: scaleY(-1); }
   .card.tier-4 .tag { display: inline-flex; }
 
-  /* Review */
-  .review { margin-top: 20px; border: 2px solid var(--navy); border-radius: 12px; padding: 12px; }
+  /* ---------- Review ---------- */
+  .review { margin-top: 24px; background: #fff; border: 1px solid var(--line); border-top: 4px solid var(--navy); border-radius: var(--radius); padding: 16px; box-shadow: 0 6px 20px rgba(27, 42, 74, .08); }
+  .review h2 { font-size: 1.25rem; margin-bottom: 10px; }
   .review label { display: block; font-weight: 700; margin-bottom: 6px; }
   textarea {
-    width: 100%; min-height: 320px; font: .875rem/1.5 ui-monospace, "Cascadia Mono", Consolas, monospace;
-    color: var(--ink); border: 2px solid var(--line-strong); border-radius: 8px; padding: 10px; resize: vertical;
+    width: 100%; min-height: 320px; font: .875rem/1.55 ui-monospace, "Cascadia Mono", Consolas, monospace;
+    color: var(--ink); background: var(--stage); border: 2px solid var(--line); border-radius: 10px; padding: 12px; resize: vertical;
   }
   .hint { font-weight: 600; color: var(--navy); }
 
-  /* Motion only when the learner allows it */
+  /* ---------- Motion, only when the learner allows it ---------- */
   @media (prefers-reduced-motion: no-preference) {
-    .seat .token, .seat .outline { transition: transform .25s ease-out, opacity .2s; }
-    .thumb { transition: left .12s ease-out; }
+    .seat .token, .seat .outline { transition: transform .3s cubic-bezier(.3, 1.4, .5, 1), opacity .2s; }
+    .thumb { transition: left .14s ease-out; }
+    .range-wrap .fill { transition: width .14s ease-out; }
+    .range-wrap .trace.lit { transition: clip-path .14s ease-out; }
     .card.enter { animation: card-in .3s ease-out; }
-    .track-svg .move.draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw .35s ease-out forwards; animation-delay: calc(var(--i) * 140ms); }
+    .bubble.swap q, .route.swap { animation: swap-in .25s ease-out; }
+    .zone.changed { animation: zone-flash .7s ease-out; }
+    .track-svg.draw .move { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw .3s ease-out forwards; animation-delay: calc(var(--i) * 120ms); }
+    .track-svg.draw .badge { opacity: 0; animation: pop .2s ease-out forwards; animation-delay: calc(var(--i) * 120ms); }
   }
-  @keyframes card-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @keyframes card-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @keyframes swap-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes zone-flash { from { box-shadow: 0 0 0 3px rgba(44, 74, 133, .45); } to { box-shadow: 0 0 0 3px rgba(44, 74, 133, 0); } }
   @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes pop { to { opacity: 1; } }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-panel" viewBox="0 0 24 24"><circle cx="7" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><path d="M2 20c0-3 2.2-5 5-5s5 2 5 5M12 20c0-3 2.2-5 5-5s5 2 5 5"/></symbol>
+  <symbol id="i-stress" viewBox="0 0 24 24"><path d="M2 12h4l2-3 2 7 3-12 3 14 2-6h4"/></symbol>
+  <symbol id="i-journey" viewBox="0 0 24 24"><circle cx="4" cy="18" r="2"/><circle cx="20" cy="18" r="2"/><path d="M6 18h12M15 16c0-6-8-6-8 0"/><path d="M5 14l2 2 2-2"/></symbol>
+</svg>
 <main>
   <h1>Build Your Test Panel</h1>
-  <p class="scenario">Your panel tests an AI assistant that turns a weekly task into a checklist.</p>
+  <p class="lead">Your panel tests an AI assistant that turns a weekly task into a checklist.</p>
 
   <div class="layout">
-    <section class="box seats-box" aria-labelledby="seats-h">
-      <div class="box-title"><h2 id="seats-h">Seats</h2><p class="caption" id="seats-caption"></p></div>
-      <ul class="seats" id="seats"></ul>
-    </section>
+    <div class="stage">
+      <section class="zone zone-seats" id="zone-seats" aria-labelledby="seats-h">
+        <div class="zone-head"><svg class="icon" aria-hidden="true"><use href="#i-panel"/></svg><h2 id="seats-h">Seats</h2><p class="caption" id="seats-caption"></p></div>
+        <ul class="seats" id="seats"></ul>
+      </section>
 
-    <section class="box track-box" aria-labelledby="track-h">
-      <div class="box-title"><h2 id="track-h">Shared journey pattern</h2><p class="caption" id="track-caption"></p></div>
-      <svg class="track-svg" id="track" viewBox="0 22 320 128" role="img" aria-labelledby="track-desc">
-        <title id="track-desc"></title>
-        <defs>
-          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M0 0 L10 5 L0 10 z" fill="#24407a"/>
-          </marker>
-        </defs>
-        <line class="rail" x1="40" y1="110" x2="280" y2="110"/>
-        <g id="moves"></g>
-        <g id="nodes"></g>
-      </svg>
-    </section>
+      <section class="zone zone-track" id="zone-track" aria-labelledby="track-h">
+        <div class="zone-head"><svg class="icon" aria-hidden="true"><use href="#i-journey"/></svg><h2 id="track-h">Shared journey pattern</h2><p class="caption" id="track-caption"></p></div>
+        <svg class="track-svg" id="track" viewBox="0 0 320 122" role="img" aria-labelledby="track-desc">
+          <title id="track-desc"></title>
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="#2c4a85"/>
+            </marker>
+          </defs>
+          <line class="rail" x1="40" y1="80" x2="280" y2="80"/>
+          <g id="moves"></g>
+          <g id="nodes"></g>
+        </svg>
+        <p class="legend" aria-hidden="true">Badges show the order of visits. Dashed chips on each card mark a repeat visit.</p>
+      </section>
+
+      <section class="zone zone-cards" id="zone-cards" aria-labelledby="cards-h">
+        <div class="zone-head"><svg class="icon" aria-hidden="true"><use href="#i-stress"/></svg><h2 id="cards-h">Personas</h2></div>
+        <p class="tier-line" id="tier-caption"></p>
+        <ul class="cards" id="cards"></ul>
+      </section>
+    </div>
 
     <section class="controls" aria-labelledby="controls-h">
       <h2 id="controls-h">Shape your panel</h2>
-      <p class="note" id="controls-hint" style="margin-bottom:12px">Drag each marker, or select it and use the arrow keys.</p>
+      <p class="hint-line" id="controls-hint">Drag each marker, or select it and use the arrow keys.</p>
       <div id="sliders">
         <div class="slider">
-          <div class="slider-head"><label for="panel">Panel size</label><span class="slider-val" id="panel-val" aria-hidden="true"></span></div>
+          <div class="slider-head"><svg class="icon" aria-hidden="true"><use href="#i-panel"/></svg><label for="panel">Panel size</label><span class="slider-val" id="panel-val" aria-hidden="true"></span></div>
           <div class="range-wrap" id="panel-wrap">
-            <div class="rail"></div>
+            <div class="rail"><span class="fill"></span></div>
             <input type="range" id="panel" min="1" max="6" step="1" value="3">
             <span class="thumb" id="panel-thumb" aria-hidden="true"></span>
           </div>
           <div class="ends"><span>Just one</span><span>Full panel</span></div>
         </div>
         <div class="slider">
-          <div class="slider-head"><label for="stress">Stress</label><span class="slider-val" id="stress-val" aria-hidden="true"></span></div>
+          <div class="slider-head"><svg class="icon" aria-hidden="true"><use href="#i-stress"/></svg><label for="stress">Stress</label><span class="slider-val" id="stress-val" aria-hidden="true"></span></div>
           <div class="range-wrap" id="stress-wrap">
-            <svg class="trace" viewBox="0 0 300 40" preserveAspectRatio="none" aria-hidden="true"><polyline id="trace-line" vector-effect="non-scaling-stroke"/></svg>
+            <svg class="trace" viewBox="0 0 300 40" preserveAspectRatio="none" aria-hidden="true"><polyline class="trace-line" vector-effect="non-scaling-stroke"/></svg>
+            <svg class="trace lit" viewBox="0 0 300 40" preserveAspectRatio="none" aria-hidden="true"><polyline class="trace-line" vector-effect="non-scaling-stroke"/></svg>
             <input type="range" id="stress" min="1" max="4" step="1" value="1">
             <span class="thumb" id="stress-thumb" aria-hidden="true"></span>
           </div>
           <div class="ends"><span>Typical</span><span>Edge Case</span></div>
         </div>
         <div class="slider">
-          <div class="slider-head"><label for="journey">Journey</label><span class="slider-val" id="journey-val" aria-hidden="true"></span></div>
+          <div class="slider-head"><svg class="icon" aria-hidden="true"><use href="#i-journey"/></svg><label for="journey">Journey</label><span class="slider-val" id="journey-val" aria-hidden="true"></span></div>
           <div class="range-wrap" id="journey-wrap">
-            <div class="rail"></div>
+            <div class="rail"><span class="fill"></span></div>
             <input type="range" id="journey" min="1" max="5" step="1" value="1">
             <span class="thumb" id="journey-thumb" aria-hidden="true"></span>
           </div>
@@ -244,12 +303,6 @@
         <p class="summary" id="summary"></p>
         <div class="actions"><button type="button" id="edit">Edit panel</button></div>
       </div>
-    </section>
-
-    <section class="box cards-box" aria-labelledby="cards-h">
-      <div class="box-title"><h2 id="cards-h">Personas</h2></div>
-      <p class="caption" id="tier-caption" style="margin-bottom:12px"></p>
-      <ul class="cards" id="cards"></ul>
     </section>
   </div>
 
@@ -356,19 +409,19 @@ const SHAPES = {
   diamond: '<polygon points="20,1 39,20 20,39 1,20"/>',
   hexagon: '<polygon points="20,2 36,11 36,29 20,38 4,29 4,11"/>',
   pentagon: '<polygon points="20,2 38,15 31,37 9,37 2,15"/>'};
+const textY = i => LOOKS[i].shape === "triangle" ? 27 : 20;
 function tokenSVG(i, cls) {
-  const look = LOOKS[i], y = look.shape === "triangle" ? 27 : 20;
   return `<svg class="${cls || ""}" viewBox="0 0 40 40" aria-hidden="true" focusable="false">` +
-    `<g fill="${look.hue}" stroke="#fff" stroke-width="1.5">${SHAPES[look.shape]}</g>` +
-    `<text x="20" y="${y}" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="16" font-weight="700" font-family="Segoe UI, system-ui, sans-serif">${PERSONAS[i].name[0]}</text></svg>`;
+    `<g fill="${LOOKS[i].hue}" stroke="#fff" stroke-width="1.5">${SHAPES[LOOKS[i].shape]}</g>` +
+    `<text x="20" y="${textY(i)}" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="16" font-weight="700" font-family="Segoe UI, system-ui, sans-serif">${PERSONAS[i].name[0]}</text></svg>`;
 }
-function outlineSVG(i) {
-  return `<svg class="outline" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><g fill="none" stroke="#9aa5b1" stroke-width="1.5" stroke-dasharray="3 3">${SHAPES[LOOKS[i].shape]}</g>` +
-    `<text x="20" y="${LOOKS[i].shape === "triangle" ? 27 : 20}" text-anchor="middle" dominant-baseline="central" fill="#52606d" font-size="12" font-family="Segoe UI, system-ui, sans-serif">${i + 1}</text></svg>`;
+function outlineSVG(i, withNumber) {
+  return `<svg class="outline" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><g fill="#fff" stroke="#7b8794" stroke-width="2" stroke-dasharray="${withNumber ? "3 3" : "0"}">${SHAPES[LOOKS[i].shape]}</g>` +
+    (withNumber ? `<text x="20" y="${textY(i)}" text-anchor="middle" dominant-baseline="central" fill="#52606d" font-size="12" font-family="Segoe UI, system-ui, sans-serif">${i + 1}</text>` : "") + `</svg>`;
 }
-const NEEDLE = '<svg viewBox="0 0 44 44"><path d="M22 3 L26 13 L23.5 13 L23.5 34 L20.5 34 L20.5 13 L18 13 Z" fill="#1b2a4a"/><circle cx="22" cy="36" r="6" fill="#1b2a4a" stroke="#fff" stroke-width="2"/></svg>';
-const PIP = '<svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="11" fill="#1b2a4a" stroke="#fff" stroke-width="3"/><circle cx="22" cy="22" r="4" fill="#fff"/></svg>';
-const NODE_X = [40, 120, 200, 280], RAIL_Y = 110;
+const NEEDLE = '<svg viewBox="0 0 44 44"><path d="M22 3 L26.5 13 L23.6 13 L23.6 33 L20.4 33 L20.4 13 L17.5 13 Z" fill="#1b2a4a"/><circle cx="22" cy="35" r="6.5" fill="#1b2a4a" stroke="#fff" stroke-width="2.5"/></svg>';
+const PIP = '<svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="13" fill="#1b2a4a" stroke="#fff" stroke-width="3"/><path d="M16 24.5 C16 17, 28 17, 28 24.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M25.5 22.5 L28 25 L30.5 22.5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const NODE_X = [40, 120, 200, 280], RAIL_Y = 80;
 
 function trackMarkup(seq) {
   const spanCount = {};
@@ -376,18 +429,22 @@ function trackMarkup(seq) {
   for (let k = 1; k < seq.length; k++) {
     const a = seq[k - 1], b = seq[k], xa = NODE_X[a - 1], xb = NODE_X[b - 1];
     if (b > a) {
-      moves += `<path class="move" style="--i:${k - 1}" pathLength="1" d="M${xa + 15} ${RAIL_Y} L${xb - 16} ${RAIL_Y}" marker-end="url(#arrow)"/>`;
+      moves += `<path class="move" style="--i:${k - 1}" pathLength="1" d="M${xa + 17} ${RAIL_Y} L${xb - 19} ${RAIL_Y}" marker-end="url(#arrow)"/>`;
     } else {
+      // Back-moves arc above the rail; repeats of the same jump stack higher.
       const key = a + "-" + b, n = spanCount[key] = (spanCount[key] || 0) + 1;
-      const h = (20 + 22 * (a - b) + 16 * (n - 1)) * 1.33;
-      moves += `<path class="move back" style="--i:${k - 1}" pathLength="1" d="M${xa - 4} ${RAIL_Y - 14} C${xa - 4} ${RAIL_Y - h}, ${xb + 4} ${RAIL_Y - h}, ${xb + 4} ${RAIL_Y - 15}" marker-end="url(#arrow)"/>`;
+      const h = (12 + 16 * (a - b) + 12 * (n - 1)) * 1.33;
+      moves += `<path class="move back" style="--i:${k - 1}" pathLength="1" d="M${xa - 5} ${RAIL_Y - 16} C${xa - 5} ${RAIL_Y - 16 - h}, ${xb + 5} ${RAIL_Y - 16 - h}, ${xb + 5} ${RAIL_Y - 19}" marker-end="url(#arrow)"/>`;
     }
   }
   let nodes = "";
   NODE_X.forEach((x, idx) => {
     const visits = seq.map((s, v) => s === idx + 1 ? v + 1 : 0).filter(Boolean);
-    nodes += `<circle class="node" cx="${x}" cy="${RAIL_Y}" r="13"/><text class="node-num" x="${x}" y="${RAIL_Y}" text-anchor="middle" dominant-baseline="central">${idx + 1}</text>` +
-      `<text class="visits" x="${x}" y="${RAIL_Y + 30}" text-anchor="middle">${visits.length > 1 ? "visits " : "visit "}${visits.join(", ")}</text>`;
+    nodes += `<circle class="node" cx="${x}" cy="${RAIL_Y}" r="16"/><text class="node-num" x="${x}" y="${RAIL_Y}" text-anchor="middle" dominant-baseline="central">${idx + 1}</text>`;
+    visits.forEach((v, j) => {
+      const bx = x + (j - (visits.length - 1) / 2) * 22;
+      nodes += `<g class="badge" style="--i:${v - 1}"><circle cx="${bx}" cy="${RAIL_Y + 32}" r="10"/><text x="${bx}" y="${RAIL_Y + 32}" text-anchor="middle" dominant-baseline="central">${v}</text></g>`;
+    });
   });
   return {moves, nodes};
 }
@@ -409,16 +466,20 @@ let lastJourney = null, cardEls = [], locked = false, briefEdited = false;
 
 function setupStatic() {
   $("seats").innerHTML = PERSONAS.map((p, i) =>
-    `<li class="seat" data-i="${i}">${outlineSVG(i)}${tokenSVG(i, "token")}<span class="sr-only"></span></li>`).join("");
+    `<li class="seat"><span class="seat-shape">${outlineSVG(i, true)}${tokenSVG(i, "token")}</span>` +
+    `<span class="seat-name" aria-hidden="true"></span><span class="sr-only"></span></li>`).join("");
   ["panel", "journey"].forEach(id => {
     const inp = inputs[id], max = +inp.max, min = +inp.min, wrap = $(id + "-wrap");
     for (let v = min; v <= max; v++) {
       const t = document.createElement("span");
-      t.className = "tick"; t.style.setProperty("--f", (v - min) / (max - min));
+      t.className = id === "panel" ? "tick shape" : "tick";
+      t.style.setProperty("--t", (v - min) / (max - min));
+      // Panel ticks preview each persona's seat shape.
+      if (id === "panel") t.dataset.i = v - 1;
       wrap.insertBefore(t, inp);
     }
   });
-  $("trace-line").setAttribute("points", tracePoints());
+  document.querySelectorAll(".trace-line").forEach(l => l.setAttribute("points", tracePoints()));
   $("stress-thumb").innerHTML = NEEDLE;
   $("journey-thumb").innerHTML = PIP;
 }
@@ -428,33 +489,46 @@ function makeCard(i) {
   li.className = "card";
   li.innerHTML =
     `<div class="card-head">${tokenSVG(i)}<div><h3></h3><p class="role"></p></div></div>` +
-    `<p class="role ctx"></p>` +
+    `<p class="ctx"></p>` +
     `<div class="bubble"><q></q></div>` +
     `<span class="tag"><svg viewBox="0 0 14 14" aria-hidden="true"></svg><span class="tag-text"></span></span>` +
-    `<p class="route"></p>`;
+    `<p class="route-label">Route</p><ol class="route"></ol>`;
   return li;
+}
+
+// Restart a one-shot CSS animation class (no-op visually under reduced motion).
+function replay(el, cls) {
+  el.classList.remove(cls);
+  void el.offsetWidth;
+  el.classList.add(cls);
 }
 
 function render() {
   const v = deriveView(state);
 
-  // Sliders: thumbs, visible values, aria-valuetext
+  // Sliders: thumbs, fills, visible values, aria-valuetext
   for (const id of ["panel", "stress", "journey"]) {
     const inp = inputs[id];
     inp.value = state[id];
     inp.setAttribute("aria-valuetext", v.valueText[id]);
-    $(id + "-thumb").style.setProperty("--f", (state[id] - inp.min) / (inp.max - inp.min));
+    $(id + "-wrap").style.setProperty("--f", (state[id] - inp.min) / (inp.max - inp.min));
   }
   $("panel-val").textContent = `${v.panel} persona${v.panel === 1 ? "" : "s"}`;
   $("stress-val").textContent = v.tier.label;
   $("journey-val").textContent = v.pattern.label;
   $("panel-thumb").innerHTML = tokenSVG(v.panel - 1);
+  $("panel-wrap").querySelectorAll(".tick").forEach(t => {
+    const i = +t.dataset.i;
+    t.innerHTML = i < v.panel - 1 ? tokenSVG(i) : outlineSVG(i, false);
+  });
+  $("journey-wrap").querySelectorAll(".tick").forEach((t, i) => t.classList.toggle("on", i < v.journey - 1));
 
   // Panel owns WHO: seats and cards
   $("seats-caption").textContent = `Panel of ${v.panel}`;
   document.querySelectorAll(".seat").forEach((s, i) => {
     const on = i < v.panel;
     s.classList.toggle("filled", on);
+    s.querySelector(".seat-name").textContent = on ? firstName(PERSONAS[i]) : "Open";
     s.querySelector(".sr-only").textContent = `Seat ${i + 1}: ${on ? PERSONAS[i].name : "empty"}`;
   });
   const list = $("cards");
@@ -462,20 +536,33 @@ function render() {
   while (cardEls.length < v.panel) {
     const el = makeCard(cardEls.length);
     el.classList.add("enter");
-    el.addEventListener("animationend", () => el.classList.remove("enter"), {once: true});
+    el.addEventListener("animationend", e => { if (e.target === el) el.classList.remove("enter"); });
     list.appendChild(el); cardEls.push(el);
   }
   v.seated.forEach((p, i) => {
     const el = cardEls[i];
     el.className = el.className.replace(/\btier-\d\b/g, "").trim() + " tier-" + v.stress;
     el.querySelector("h3").textContent = p.name;
-    el.querySelector(".card-head .role").textContent = p.role;
+    el.querySelector(".role").textContent = p.role;
     el.querySelector(".ctx").textContent = p.context;
-    el.querySelector("q").textContent = p.line;          // stress owns behavior
+    const q = el.querySelector("q");
+    if (q.textContent !== p.line) {                     // stress owns behavior
+      if (q.textContent) replay(el.querySelector(".bubble"), "swap");
+      q.textContent = p.line;
+    }
     const tag = TAGS[v.stress];
     if (tag) { el.querySelector(".tag svg").innerHTML = tag.icon; el.querySelector(".tag-text").textContent = tag.text; }
-    el.querySelector(".route").innerHTML = "<b>Route:</b> " + p.routeShort
-      .map(s => `<span>${s}</span>`).join('<span aria-hidden="true"> → </span><span class="sr-only">, then </span>');
+    const route = el.querySelector(".route");            // journey owns movement
+    if (route.dataset.j !== String(v.journey)) {
+      const seen = new Set();
+      route.innerHTML = v.pattern.seq.map((n, k) => {
+        const again = seen.has(n); seen.add(n);
+        return `<li><span class="chip${again ? " again" : ""}"><span class="n" aria-hidden="true">${n}</span>` +
+          `${PERSONAS[i].short[n - 1]}${again ? '<span class="re" aria-hidden="true">↺</span><span class="sr-only"> again</span>' : ""}</span></li>`;
+      }).join("");
+      if (route.dataset.j) replay(route, "swap");
+      route.dataset.j = v.journey;
+    }
   });
 
   // Stress owns WHAT behavior: tier caption
@@ -487,8 +574,7 @@ function render() {
     const t = trackMarkup(v.pattern.seq);
     $("moves").innerHTML = t.moves;
     $("nodes").innerHTML = t.nodes;
-    if (lastJourney !== null && !reduceMotion.matches)
-      $("moves").querySelectorAll(".move").forEach(m => m.classList.add("draw"));
+    if (lastJourney !== null && !reduceMotion.matches) replay($("track"), "draw");
     $("track-caption").textContent = v.pattern.label;
     $("track-desc").textContent = `Route track, steps 1 to 4. ${v.pattern.aria}.`;
     lastJourney = v.journey;
@@ -496,6 +582,9 @@ function render() {
 
   $("summary").textContent = v.summary;
 }
+
+// Which stage zones each slider owns, so a move visibly lands somewhere.
+const ZONES = {panel: ["zone-seats"], stress: ["zone-cards"], journey: ["zone-track"]};
 
 // ---------- Status line: only for results with no native announcement ----------
 // Slider changes are announced by the focused range's own aria-valuetext.
@@ -510,6 +599,7 @@ for (const id of ["panel", "stress", "journey"]) {
   inputs[id].addEventListener("input", e => {
     state[id] = +e.target.value;
     render();
+    if (!reduceMotion.matches) ZONES[id].forEach(z => replay($(z), "changed"));
   });
 }
 
