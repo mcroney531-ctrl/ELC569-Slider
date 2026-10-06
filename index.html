@@ -115,7 +115,6 @@
   }
   .thumb svg { display: block; width: 100%; height: 100%; }
   input[type=range]:focus-visible ~ .thumb { box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--focus); }
-  input[type=range]:focus-visible ~ .rail { background: var(--focus); }
   .ends { display: flex; justify-content: space-between; gap: 8px; font-size: .875rem; color: var(--muted); }
 
   .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 16px; }
@@ -139,9 +138,7 @@
   .card-head svg { width: 40px; height: 40px; flex: none; }
   .role { color: var(--muted); font-size: .9375rem; }
   .bubble { position: relative; background: var(--soft); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin: 8px 0; }
-  .bubble q { position: relative; z-index: 1; display: block; quotes: "\201C" "\201D"; }
-  .crack { position: absolute; inset: 0; width: 100%; height: 100%; display: none; }
-  .crack polyline { fill: none; stroke: var(--line-strong); stroke-width: 2; }
+  .bubble q { display: block; quotes: "\201C" "\201D"; }
   .tag { display: none; align-items: center; gap: 6px; font-size: .8125rem; font-weight: 700; color: var(--navy); border: 1.5px solid var(--navy); border-radius: 999px; padding: 2px 10px 2px 6px; }
   .tag svg { width: 14px; height: 14px; }
   .route { font-size: .875rem; color: var(--muted); margin-top: 8px; }
@@ -151,9 +148,9 @@
   /* Tier 2: dashed edge, shortened bubble */
   .card.tier-2 { border-style: dashed; }
   .card.tier-2 .bubble { width: 72%; }
-  /* Tier 3: a crack drawn through the bubble */
-  .card.tier-3 .crack { display: block; }
-  .card.tier-3 .bubble { border-style: dashed; }
+  /* Tier 3: dashed bubble plus "Conflicting answer" tag */
+  .card.tier-3 .bubble { border-style: dashed; border-width: 2px; border-color: var(--line-strong); }
+  .card.tier-3 .tag { display: inline-flex; }
   /* Tier 4: ragged notched edge plus tag */
   .card.tier-4 { border-top-color: transparent; border-bottom-color: transparent; border-radius: 0; border-left-style: dotted; border-right-style: dotted; }
   .card.tier-4::before, .card.tier-4::after {
@@ -196,7 +193,7 @@
     </section>
 
     <section class="box track-box" aria-labelledby="track-h">
-      <div class="box-title"><h2 id="track-h">Shared route</h2><p class="caption" id="track-caption"></p></div>
+      <div class="box-title"><h2 id="track-h">Shared journey pattern</h2><p class="caption" id="track-caption"></p></div>
       <svg class="track-svg" id="track" viewBox="0 22 320 128" role="img" aria-labelledby="track-desc">
         <title id="track-desc"></title>
         <defs>
@@ -212,6 +209,7 @@
 
     <section class="controls" aria-labelledby="controls-h">
       <h2 id="controls-h">Shape your panel</h2>
+      <p class="note" id="controls-hint" style="margin-bottom:12px">Drag each marker, or select it and use the arrow keys.</p>
       <div id="sliders">
         <div class="slider">
           <div class="slider-head"><label for="panel">Panel size</label><span class="slider-val" id="panel-val" aria-hidden="true"></span></div>
@@ -240,11 +238,11 @@
           </div>
           <div class="ends"><span>Straight through</span><span>Restarts often</span></div>
         </div>
-        <div class="actions"><button type="button" class="primary" id="lock">Lock panel</button></div>
+        <div class="actions"><button type="button" class="primary" id="lock" aria-describedby="lock-note">Lock panel</button><span class="note" id="lock-note"></span></div>
       </div>
       <div id="locked-row" hidden>
         <p class="summary" id="summary"></p>
-        <div class="actions"><button type="button" id="edit">Edit panel</button><span class="note" id="edit-note"></span></div>
+        <div class="actions"><button type="button" id="edit">Edit panel</button></div>
       </div>
     </section>
 
@@ -307,6 +305,10 @@ const PERSONAS = [
 const LOOKS = [
   {hue:"#3d5a80", shape:"circle"}, {hue:"#6b4e71", shape:"square"}, {hue:"#2f6f5e", shape:"triangle"},
   {hue:"#8a5a2b", shape:"diamond"}, {hue:"#7a3e48", shape:"hexagon"}, {hue:"#4a5a2a", shape:"pentagon"}];
+// Text tags for the stress tiers that need one (never style alone).
+const TAGS = {
+  3: {text: "Conflicting answer", icon: '<path d="M2 4.5 H10 M8 2 L10.5 4.5 L8 7 M12 9.5 H4 M6 7 L3.5 9.5 L6 12" fill="none" stroke="currentColor" stroke-width="1.6"/>'},
+  4: {text: "Unexpected request", icon: '<path d="M7 1 L13 13 L1 13 Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7 5.5 V9 M7 10.6 V11.2" stroke="currentColor" stroke-width="1.6"/>'}};
 const SCENARIO = "Scenario: an AI assistant helps someone describe a weekly task and turn it into a checklist.";
 
 // ---------- Pure functions ----------
@@ -427,8 +429,8 @@ function makeCard(i) {
   li.innerHTML =
     `<div class="card-head">${tokenSVG(i)}<div><h3></h3><p class="role"></p></div></div>` +
     `<p class="role ctx"></p>` +
-    `<div class="bubble"><svg class="crack" viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><polyline vector-effect="non-scaling-stroke" points="58,0 52,10 60,18 50,27 57,34 53,40"/></svg><q></q></div>` +
-    `<span class="tag"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1 L13 13 L1 13 Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7 5.5 V9 M7 10.6 V11.2" stroke="currentColor" stroke-width="1.6"/></svg>Unexpected request</span>` +
+    `<div class="bubble"><q></q></div>` +
+    `<span class="tag"><svg viewBox="0 0 14 14" aria-hidden="true"></svg><span class="tag-text"></span></span>` +
     `<p class="route"></p>`;
   return li;
 }
@@ -470,6 +472,8 @@ function render() {
     el.querySelector(".card-head .role").textContent = p.role;
     el.querySelector(".ctx").textContent = p.context;
     el.querySelector("q").textContent = p.line;          // stress owns behavior
+    const tag = TAGS[v.stress];
+    if (tag) { el.querySelector(".tag svg").innerHTML = tag.icon; el.querySelector(".tag-text").textContent = tag.text; }
     el.querySelector(".route").innerHTML = "<b>Route:</b> " + p.routeShort
       .map(s => `<span>${s}</span>`).join('<span aria-hidden="true"> → </span><span class="sr-only">, then </span>');
   });
@@ -493,40 +497,42 @@ function render() {
   $("summary").textContent = v.summary;
 }
 
-// ---------- Status line: one polite, debounced announcement ----------
+// ---------- Status line: only for results with no native announcement ----------
+// Slider changes are announced by the focused range's own aria-valuetext.
 let statusTimer = null;
-function announce(text, delay) {
+function announce(text) {
   clearTimeout(statusTimer);
-  statusTimer = setTimeout(() => { $("status").textContent = text; }, delay == null ? 300 : delay);
+  $("status").textContent = "";
+  statusTimer = setTimeout(() => { $("status").textContent = text; }, 50);
 }
 
 for (const id of ["panel", "stress", "journey"]) {
   inputs[id].addEventListener("input", e => {
     state[id] = +e.target.value;
     render();
-    announce(inputs[id].getAttribute("aria-valuetext"));
   });
 }
 
 // ---------- Lock / review / export ----------
 function lock() {
-  const had = $("brief").value !== "" && briefEdited;
   locked = true;
   $("brief").value = buildBrief(state);
   briefEdited = false;
-  $("edit-note").textContent = had ? "Brief regenerated; your earlier edits were replaced." : "";
+  $("lock-note").textContent = "";
   $("export-msg").textContent = "";
   $("sliders").hidden = true;
   $("locked-row").hidden = false;
   $("review").hidden = false;
   $("brief-h").focus();
-  announce(had ? "Panel locked. Brief regenerated; your earlier edits were replaced." : "Panel locked. " + deriveView(state).summary, 50);
+  announce("Panel locked. " + deriveView(state).summary);
 }
 function unlock() {
   locked = false;
   $("sliders").hidden = false;
   $("locked-row").hidden = true;
   $("review").hidden = true;
+  // Warn before the edits are lost, not after.
+  $("lock-note").textContent = briefEdited ? "Locking again will regenerate the brief and replace your edits." : "";
   inputs.panel.focus();
 }
 $("lock").addEventListener("click", lock);
@@ -536,16 +542,16 @@ $("brief").addEventListener("input", () => { briefEdited = true; });
 function fallbackSelect(prefix) {
   const ta = $("brief");
   ta.focus(); ta.select();
-  const msg = prefix + " The brief is selected: press Ctrl/Cmd+C.";
+  const msg = prefix + " The brief is selected. Use your device or browser's Copy command.";
   $("export-msg").textContent = msg;
-  announce(msg, 50);
+  announce(msg);
 }
 $("copy").addEventListener("click", async () => {
   try {
     if (!navigator.clipboard || !window.isSecureContext) throw new Error("no clipboard");
     await navigator.clipboard.writeText($("brief").value);
     $("export-msg").textContent = "Brief copied.";
-    announce("Brief copied.", 50);
+    announce("Brief copied.");
   } catch (err) {
     fallbackSelect("Copy isn't available here.");
   }
@@ -557,11 +563,10 @@ $("download").addEventListener("click", () => {
     a.href = url; a.download = "test-panel-brief.md";
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    let framed = true;
-    try { framed = window.self !== window.top; } catch (e) { /* cross-origin frame */ }
-    const msg = framed ? "Download started. If no file appears, use Copy brief." : "Downloaded test-panel-brief.md.";
+    // A sandboxed frame can block the file silently, so don't claim it arrived.
+    const msg = "Download requested. If no file appears, use Copy brief.";
     $("export-msg").textContent = msg;
-    announce(msg, 50);
+    announce(msg);
   } catch (err) {
     fallbackSelect("Download isn't available here.");
   }
