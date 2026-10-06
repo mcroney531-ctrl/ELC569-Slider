@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Build Your Test Panel</title>
+<style>
+  :root {
+    --navy: #1b2a4a;
+    --navy-2: #24407a;
+    --ink: #1f2933;
+    --muted: #52606d;
+    --line: #cbd2d9;
+    --line-strong: #7b8794;
+    --soft: #f3f6fa;
+    --focus: #1a56db;
+    --thumb: 44px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: #fff;
+    color: var(--ink);
+    font: 16px/1.5 "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  }
+  main { max-width: 1040px; margin: 0 auto; padding: 16px; }
+  h1 { color: var(--navy); font-size: 1.5rem; line-height: 1.2; margin: 0 0 4px; }
+  h2 { color: var(--navy); font-size: 1.125rem; margin: 0 0 8px; }
+  h3 { font-size: 1rem; margin: 0; }
+  p { margin: 0; }
+  .scenario { color: var(--muted); margin-bottom: 16px; }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  [hidden] { display: none !important; }
+
+  /* Layout: phone first (stage objects, then controls, then cards) */
+  .layout { display: grid; gap: 16px; grid-template-areas: "seats" "track" "controls" "cards"; }
+  .seats-box { grid-area: seats; }
+  .track-box { grid-area: track; }
+  .controls { grid-area: controls; }
+  .cards-box { grid-area: cards; }
+  @media (min-width: 820px) {
+    .layout {
+      grid-template-columns: 340px minmax(0, 1fr);
+      grid-template-areas: "controls seats" "controls track" "controls cards";
+      align-items: start;
+    }
+    .controls { position: sticky; top: 16px; }
+  }
+
+  .box { border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+  .box-title { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+  .box-title h2 { margin: 0; }
+  .caption { color: var(--muted); font-size: .9375rem; }
+  .caption strong { color: var(--ink); }
+
+  /* Seats */
+  .seats { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+  .seat { display: grid; place-items: center; aspect-ratio: 1; max-width: 64px; width: 100%; justify-self: center; position: relative; }
+  .seat svg { width: 100%; height: 100%; display: block; position: absolute; inset: 0; }
+  .seat .token { transform: scale(.3); opacity: 0; }
+  .seat.filled .token { transform: scale(1); opacity: 1; }
+  .seat.filled .outline { opacity: 0; }
+
+  /* Route track */
+  .track-svg { display: block; width: 100%; max-width: 480px; height: auto; margin: 0 auto; }
+  .track-svg .rail { stroke: var(--line); stroke-width: 6; stroke-linecap: round; }
+  .track-svg .move { fill: none; stroke: var(--navy-2); stroke-width: 2.5; }
+  .track-svg .node { fill: #fff; stroke: var(--navy); stroke-width: 2.5; }
+  .track-svg .node-num { fill: var(--navy); font-weight: 700; font-size: 14px; }
+  .track-svg .visits { fill: var(--muted); font-size: 13px; }
+
+  /* Controls */
+  .controls { border: 2px solid var(--navy); border-radius: 12px; padding: 12px; }
+  .slider + .slider { margin-top: 18px; }
+  .slider-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .slider-head label { font-weight: 700; color: var(--navy); }
+  .slider-val { font-weight: 600; }
+  .range-wrap { position: relative; height: 52px; margin: 4px 0 0; }
+  .range-wrap .rail {
+    position: absolute; left: calc(var(--thumb) / 2); right: calc(var(--thumb) / 2); top: 50%;
+    height: 4px; margin-top: -2px; background: var(--line); border-radius: 2px;
+  }
+  .range-wrap .tick {
+    position: absolute; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px;
+    border-radius: 50%; background: #fff; border: 2px solid var(--line-strong);
+    left: calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--f));
+  }
+  .range-wrap .trace {
+    position: absolute; left: calc(var(--thumb) / 2); right: calc(var(--thumb) / 2); top: 6px;
+    height: 40px; width: calc(100% - var(--thumb));
+  }
+  .range-wrap .trace polyline { fill: none; stroke: var(--line-strong); stroke-width: 2; }
+  input[type=range] {
+    -webkit-appearance: none; appearance: none;
+    position: absolute; inset: 0; width: 100%; height: 100%; margin: 0;
+    background: transparent; cursor: pointer; z-index: 1;
+  }
+  input[type=range]:focus { outline: none; }
+  input[type=range]::-webkit-slider-runnable-track { height: 52px; background: transparent; border: 0; }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: var(--thumb); height: var(--thumb); margin-top: 4px;
+    background: transparent; border: 0; border-radius: 50%;
+  }
+  input[type=range]::-moz-range-track { height: 52px; background: transparent; border: 0; }
+  input[type=range]::-moz-range-thumb { width: var(--thumb); height: var(--thumb); background: transparent; border: 0; border-radius: 50%; }
+  .thumb {
+    position: absolute; top: 4px; width: var(--thumb); height: var(--thumb);
+    left: calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--f, 0));
+    transform: translateX(-50%); pointer-events: none; z-index: 2; border-radius: 50%;
+  }
+  .thumb svg { display: block; width: 100%; height: 100%; }
+  input[type=range]:focus-visible ~ .thumb { box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--focus); }
+  input[type=range]:focus-visible ~ .rail { background: var(--focus); }
+  .ends { display: flex; justify-content: space-between; gap: 8px; font-size: .875rem; color: var(--muted); }
+
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 16px; }
+  button {
+    font: inherit; font-weight: 600; min-height: 44px; padding: 8px 16px; border-radius: 8px;
+    border: 2px solid var(--navy); background: #fff; color: var(--navy); cursor: pointer;
+  }
+  button.primary { background: var(--navy); color: #fff; }
+  button:hover { background: var(--soft); }
+  button.primary:hover { background: var(--navy-2); }
+  button:focus-visible, textarea:focus-visible, [tabindex="-1"]:focus-visible {
+    outline: 3px solid var(--focus); outline-offset: 3px;
+  }
+  .summary { font-weight: 700; color: var(--navy); }
+  .note { color: var(--muted); font-size: .9375rem; }
+
+  /* Cards */
+  .cards { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); }
+  .card { position: relative; background: #fff; border: 2px solid var(--line-strong); border-radius: 12px; padding: 12px; }
+  .card-head { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
+  .card-head svg { width: 40px; height: 40px; flex: none; }
+  .role { color: var(--muted); font-size: .9375rem; }
+  .bubble { position: relative; background: var(--soft); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin: 8px 0; }
+  .bubble q { position: relative; z-index: 1; display: block; quotes: "\201C" "\201D"; }
+  .crack { position: absolute; inset: 0; width: 100%; height: 100%; display: none; }
+  .crack polyline { fill: none; stroke: var(--line-strong); stroke-width: 2; }
+  .tag { display: none; align-items: center; gap: 6px; font-size: .8125rem; font-weight: 700; color: var(--navy); border: 1.5px solid var(--navy); border-radius: 999px; padding: 2px 10px 2px 6px; }
+  .tag svg { width: 14px; height: 14px; }
+  .route { font-size: .875rem; color: var(--muted); margin-top: 8px; }
+  .route b { color: var(--ink); font-weight: 600; }
+  /* Tier 1: smooth solid edge, clear bubble */
+  .card.tier-1 { border-style: solid; }
+  /* Tier 2: dashed edge, shortened bubble */
+  .card.tier-2 { border-style: dashed; }
+  .card.tier-2 .bubble { width: 72%; }
+  /* Tier 3: a crack drawn through the bubble */
+  .card.tier-3 .crack { display: block; }
+  .card.tier-3 .bubble { border-style: dashed; }
+  /* Tier 4: ragged notched edge plus tag */
+  .card.tier-4 { border-top-color: transparent; border-bottom-color: transparent; border-radius: 0; border-left-style: dotted; border-right-style: dotted; }
+  .card.tier-4::before, .card.tier-4::after {
+    content: ""; position: absolute; left: -2px; right: -2px; height: 10px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='10'%3E%3Cpath d='M0 9 L7 1 L14 9' fill='none' stroke='%237b8794' stroke-width='2'/%3E%3C/svg%3E") repeat-x;
+  }
+  .card.tier-4::before { top: -8px; }
+  .card.tier-4::after { bottom: -8px; transform: scaleY(-1); }
+  .card.tier-4 .tag { display: inline-flex; }
+
+  /* Review */
+  .review { margin-top: 20px; border: 2px solid var(--navy); border-radius: 12px; padding: 12px; }
+  .review label { display: block; font-weight: 700; margin-bottom: 6px; }
+  textarea {
+    width: 100%; min-height: 320px; font: .875rem/1.5 ui-monospace, "Cascadia Mono", Consolas, monospace;
+    color: var(--ink); border: 2px solid var(--line-strong); border-radius: 8px; padding: 10px; resize: vertical;
+  }
+  .hint { font-weight: 600; color: var(--navy); }
+
+  /* Motion only when the learner allows it */
+  @media (prefers-reduced-motion: no-preference) {
+    .seat .token, .seat .outline { transition: transform .25s ease-out, opacity .2s; }
+    .thumb { transition: left .12s ease-out; }
+    .card.enter { animation: card-in .3s ease-out; }
+    .track-svg .move.draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw .35s ease-out forwards; animation-delay: calc(var(--i) * 140ms); }
+  }
+  @keyframes card-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Build Your Test Panel</h1>
+  <p class="scenario">Your panel tests an AI assistant that turns a weekly task into a checklist.</p>
+
+  <div class="layout">
+    <section class="box seats-box" aria-labelledby="seats-h">
+      <div class="box-title"><h2 id="seats-h">Seats</h2><p class="caption" id="seats-caption"></p></div>
+      <ul class="seats" id="seats"></ul>
+    </section>
+
+    <section class="box track-box" aria-labelledby="track-h">
+      <div class="box-title"><h2 id="track-h">Shared route</h2><p class="caption" id="track-caption"></p></div>
+      <svg class="track-svg" id="track" viewBox="0 22 320 128" role="img" aria-labelledby="track-desc">
+        <title id="track-desc"></title>
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="#24407a"/>
+          </marker>
+        </defs>
+        <line class="rail" x1="40" y1="110" x2="280" y2="110"/>
+        <g id="moves"></g>
+        <g id="nodes"></g>
+      </svg>
+    </section>
+
+    <section class="controls" aria-labelledby="controls-h">
+      <h2 id="controls-h">Shape your panel</h2>
+      <div id="sliders">
+        <div class="slider">
+          <div class="slider-head"><label for="panel">Panel size</label><span class="slider-val" id="panel-val" aria-hidden="true"></span></div>
+          <div class="range-wrap" id="panel-wrap">
+            <div class="rail"></div>
+            <input type="range" id="panel" min="1" max="6" step="1" value="3">
+            <span class="thumb" id="panel-thumb" aria-hidden="true"></span>
+          </div>
+          <div class="ends"><span>Just one</span><span>Full panel</span></div>
+        </div>
+        <div class="slider">
+          <div class="slider-head"><label for="stress">Stress</label><span class="slider-val" id="stress-val" aria-hidden="true"></span></div>
+          <div class="range-wrap" id="stress-wrap">
+            <svg class="trace" viewBox="0 0 300 40" preserveAspectRatio="none" aria-hidden="true"><polyline id="trace-line" vector-effect="non-scaling-stroke"/></svg>
+            <input type="range" id="stress" min="1" max="4" step="1" value="1">
+            <span class="thumb" id="stress-thumb" aria-hidden="true"></span>
+          </div>
+          <div class="ends"><span>Typical</span><span>Edge Case</span></div>
+        </div>
+        <div class="slider">
+          <div class="slider-head"><label for="journey">Journey</label><span class="slider-val" id="journey-val" aria-hidden="true"></span></div>
+          <div class="range-wrap" id="journey-wrap">
+            <div class="rail"></div>
+            <input type="range" id="journey" min="1" max="5" step="1" value="1">
+            <span class="thumb" id="journey-thumb" aria-hidden="true"></span>
+          </div>
+          <div class="ends"><span>Straight through</span><span>Restarts often</span></div>
+        </div>
+        <div class="actions"><button type="button" class="primary" id="lock">Lock panel</button></div>
+      </div>
+      <div id="locked-row" hidden>
+        <p class="summary" id="summary"></p>
+        <div class="actions"><button type="button" id="edit">Edit panel</button><span class="note" id="edit-note"></span></div>
+      </div>
+    </section>
+
+    <section class="box cards-box" aria-labelledby="cards-h">
+      <div class="box-title"><h2 id="cards-h">Personas</h2></div>
+      <p class="caption" id="tier-caption" style="margin-bottom:12px"></p>
+      <ul class="cards" id="cards"></ul>
+    </section>
+  </div>
+
+  <section class="review" id="review" hidden aria-labelledby="brief-h">
+    <h2 id="brief-h" tabindex="-1">Your persona brief</h2>
+    <label for="brief">Persona brief (editable)</label>
+    <textarea id="brief" spellcheck="false"></textarea>
+    <div class="actions">
+      <button type="button" class="primary" id="copy">Copy brief</button>
+      <button type="button" id="download">Download .md</button>
+      <span class="hint" id="export-msg"></span>
+    </div>
+  </section>
+
+  <p class="sr-only" id="status" role="status" aria-live="polite"></p>
+</main>
+
+<script>
+"use strict";
+// ---------- Data (section 4) ----------
+const TIERS = [
+  {label:"Typical", sentence:"Describes the task clearly and completely, in order.", aria:"Level 1 of 4, typical: clear, complete answers"},
+  {label:"Rushed", sentence:"Gives a short, incomplete description and assumes the assistant fills in the rest.", aria:"Level 2 of 4, rushed: short, incomplete answers"},
+  {label:"Contradictory", sentence:"States a rule, then contradicts it, leaving the assistant to choose or ask.", aria:"Level 3 of 4, contradictory: answers conflict with themselves"},
+  {label:"Edge Case", sentence:"Adds an unexpected constraint or request the standard checklist doesn't cover.", aria:"Level 4 of 4, edge case: personas add an unexpected constraint"}];
+const PATTERNS = [
+  {label:"Straight through", seq:[1,2,3,4], aria:"Level 1 of 5, straight through: follows the steps in order"},
+  {label:"One step back", seq:[1,2,3,2,4], aria:"Level 2 of 5, one step back: returns to step 2 once"},
+  {label:"A few detours", seq:[1,2,1,3,2,4], aria:"Level 3 of 5, a few detours: goes back twice"},
+  {label:"Loops back", seq:[1,2,3,1,2,3,4], aria:"Level 4 of 5, loops back: repeats steps 1 to 3 before finishing"},
+  {label:"Restarts often", seq:[1,2,3,1,2,3,1,4], aria:"Level 5 of 5, restarts often: loops steps 1 to 3 twice, then returns to step 1 before finishing"}];
+const PERSONAS = [
+  {name:"Marisol Vega", role:"Florist", context:"Prepares the week's event orders.",
+   steps:["Take the order","Check stock","Quote the price","Confirm delivery"], short:["Order","Stock","Price","Delivery"],
+   lines:["Each Monday I take the week's event orders, check my stock, quote a price, and confirm delivery.","Orders, stock, prices, delivery. Same as always.","Every client gets a text confirmation. Actually, no texts. Clients hate texts.","Can the checklist handle a funeral order and a wedding order the same way, on half a page?"]},
+  {name:"Kenji Okada", role:"Tow-truck dispatcher", context:"Hands off the overnight calls.",
+   steps:["Log the overnight calls","Assign the open jobs","Call the drivers","Close out the sheet"], short:["Log calls","Assign","Call drivers","Close out"],
+   lines:["Every morning I log the overnight calls, assign the open jobs, phone the drivers, and close out the sheet.","Log calls, assign, call drivers. Close out if there's time.","Every job gets assigned before I call anyone. Except I call the drivers first to see who's free.","Make it work when two drivers call in sick and the sheet is on paper."]},
+  {name:"Odalys Rivera", role:"Public librarian", context:"Runs the weekly holds shelf.",
+   steps:["Pull the holds shelf","Check pickup dates","Notify patrons","Reshelve expired holds"], short:["Pull holds","Check dates","Notify","Reshelve"],
+   lines:["Weekly I pull the holds shelf, check pickup dates, notify patrons, and reshelve anything expired.","Pull holds, check dates, notify. Expired ones go back.","Patrons always get a call. Never call anyone, email only.","Can it also cover the days the notification system is down?"]},
+  {name:"Beau Fontenot", role:"Piano tuner", context:"Plans the week's piano route.",
+   steps:["Book the visits","Check each piano's history","Tune and note repairs","Send the invoice"], short:["Book","History","Tune","Invoice"],
+   lines:["Each week I book the visits, check each piano's history, tune and note repairs, then send the invoice.","Book visits, tune, invoice. History's in my head.","Every piano gets a full tuning. Unless it's been tuned this year, then just a check.","Make it work for a church with eleven pianos and one invoice."]},
+  {name:"Anneke Visser", role:"Vet receptionist", context:"Runs the daily front-desk routine.",
+   steps:["Check the day's appointments","Call about reminders","Update the records","Order low supplies"], short:["Appointments","Reminders","Records","Supplies"],
+   lines:["Every day I check the appointments, call about reminders, update the records, and order low supplies.","Appointments, reminder calls, records. Supplies when I remember.","Reminders go out two days ahead. Wait, same day is better. Two days ahead.","Can it still make sense if the clinic is closed Wednesdays and open Sundays?"]},
+  {name:"Tariq Haddad", role:"School bus coordinator", context:"Handles the weekly route changes.",
+   steps:["Collect change requests","Redraw the routes","Tell the drivers","Update the parent notice"], short:["Requests","Routes","Drivers","Notice"],
+   lines:["Each week I collect route change requests, redraw the routes, tell the drivers, and update the parent notice.","Changes in, routes redrawn, drivers told. Notice later.","Parents get the notice before the drivers do. Drivers always hear first.","Make it work when a route changes in the middle of the day."]}];
+
+// One muted hue + one unique shape per persona (shape carries identity, not color).
+const LOOKS = [
+  {hue:"#3d5a80", shape:"circle"}, {hue:"#6b4e71", shape:"square"}, {hue:"#2f6f5e", shape:"triangle"},
+  {hue:"#8a5a2b", shape:"diamond"}, {hue:"#7a3e48", shape:"hexagon"}, {hue:"#4a5a2a", shape:"pentagon"}];
+const SCENARIO = "Scenario: an AI assistant helps someone describe a weekly task and turn it into a checklist.";
+
+// ---------- Pure functions ----------
+const firstName = p => p.name.split(" ")[0];
+
+// Names for each visit in a pattern; a repeat visit reads "<step> again".
+function routeParts(seq, names) {
+  const seen = new Set();
+  return seq.map(n => { const s = names[n - 1] + (seen.has(n) ? " again" : ""); seen.add(n); return s; });
+}
+function routeSentence(seq, steps) {
+  const s = routeParts(seq, steps.map(x => x.toLowerCase())).join(" -> ");
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+const panelValueText = n => `${n} persona${n === 1 ? "" : "s"}: ${PERSONAS.slice(0, n).map(firstName).join(", ")}`;
+
+// Everything on screen and in the export comes from these three integers.
+function deriveView({panel, stress, journey}) {
+  const tier = TIERS[stress - 1], pattern = PATTERNS[journey - 1];
+  return {
+    panel, stress, journey, tier, pattern,
+    summary: `Panel of ${panel} · ${tier.label} · ${pattern.label}`,
+    valueText: {panel: panelValueText(panel), stress: tier.aria, journey: pattern.aria},
+    seated: PERSONAS.slice(0, panel).map((p, i) => ({
+      i, name: p.name, role: p.role, context: p.context,
+      line: p.lines[stress - 1],                      // stress owns behavior
+      routeShort: routeParts(pattern.seq, p.short),   // journey owns movement
+      route: routeSentence(pattern.seq, p.steps)
+    }))
+  };
+}
+function buildBrief(state) {
+  const v = deriveView(state);
+  const out = ["# Test Panel Brief", "", `Panel of ${v.panel} · Stress: ${v.tier.label} · Journey: ${v.pattern.label}`, "", SCENARIO];
+  v.seated.forEach(p => out.push("", `## ${p.name}: ${p.role}`, "", `Context: ${p.context}`, "",
+    `Tendency: ${v.tier.sentence}`, "", `Example response: "${p.line}"`, "", `Route: ${p.route}`));
+  return out.join("\n") + "\n";
+}
+
+// ---------- SVG helpers ----------
+const SHAPES = {
+  circle: '<circle cx="20" cy="20" r="18"/>',
+  square: '<rect x="3" y="3" width="34" height="34" rx="4"/>',
+  triangle: '<polygon points="20,2 38,37 2,37"/>',
+  diamond: '<polygon points="20,1 39,20 20,39 1,20"/>',
+  hexagon: '<polygon points="20,2 36,11 36,29 20,38 4,29 4,11"/>',
+  pentagon: '<polygon points="20,2 38,15 31,37 9,37 2,15"/>'};
+function tokenSVG(i, cls) {
+  const look = LOOKS[i], y = look.shape === "triangle" ? 27 : 20;
+  return `<svg class="${cls || ""}" viewBox="0 0 40 40" aria-hidden="true" focusable="false">` +
+    `<g fill="${look.hue}" stroke="#fff" stroke-width="1.5">${SHAPES[look.shape]}</g>` +
+    `<text x="20" y="${y}" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="16" font-weight="700" font-family="Segoe UI, system-ui, sans-serif">${PERSONAS[i].name[0]}</text></svg>`;
+}
+function outlineSVG(i) {
+  return `<svg class="outline" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><g fill="none" stroke="#9aa5b1" stroke-width="1.5" stroke-dasharray="3 3">${SHAPES[LOOKS[i].shape]}</g>` +
+    `<text x="20" y="${LOOKS[i].shape === "triangle" ? 27 : 20}" text-anchor="middle" dominant-baseline="central" fill="#52606d" font-size="12" font-family="Segoe UI, system-ui, sans-serif">${i + 1}</text></svg>`;
+}
+const NEEDLE = '<svg viewBox="0 0 44 44"><path d="M22 3 L26 13 L23.5 13 L23.5 34 L20.5 34 L20.5 13 L18 13 Z" fill="#1b2a4a"/><circle cx="22" cy="36" r="6" fill="#1b2a4a" stroke="#fff" stroke-width="2"/></svg>';
+const PIP = '<svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="11" fill="#1b2a4a" stroke="#fff" stroke-width="3"/><circle cx="22" cy="22" r="4" fill="#fff"/></svg>';
+const NODE_X = [40, 120, 200, 280], RAIL_Y = 110;
+
+function trackMarkup(seq) {
+  const spanCount = {};
+  let moves = "";
+  for (let k = 1; k < seq.length; k++) {
+    const a = seq[k - 1], b = seq[k], xa = NODE_X[a - 1], xb = NODE_X[b - 1];
+    if (b > a) {
+      moves += `<path class="move" style="--i:${k - 1}" pathLength="1" d="M${xa + 15} ${RAIL_Y} L${xb - 16} ${RAIL_Y}" marker-end="url(#arrow)"/>`;
+    } else {
+      const key = a + "-" + b, n = spanCount[key] = (spanCount[key] || 0) + 1;
+      const h = (20 + 22 * (a - b) + 16 * (n - 1)) * 1.33;
+      moves += `<path class="move back" style="--i:${k - 1}" pathLength="1" d="M${xa - 4} ${RAIL_Y - 14} C${xa - 4} ${RAIL_Y - h}, ${xb + 4} ${RAIL_Y - h}, ${xb + 4} ${RAIL_Y - 15}" marker-end="url(#arrow)"/>`;
+    }
+  }
+  let nodes = "";
+  NODE_X.forEach((x, idx) => {
+    const visits = seq.map((s, v) => s === idx + 1 ? v + 1 : 0).filter(Boolean);
+    nodes += `<circle class="node" cx="${x}" cy="${RAIL_Y}" r="13"/><text class="node-num" x="${x}" y="${RAIL_Y}" text-anchor="middle" dominant-baseline="central">${idx + 1}</text>` +
+      `<text class="visits" x="${x}" y="${RAIL_Y + 30}" text-anchor="middle">${visits.length > 1 ? "visits " : "visit "}${visits.join(", ")}</text>`;
+  });
+  return {moves, nodes};
+}
+function tracePoints() { // flat on the left, jagged on the right
+  const pts = [];
+  for (let x = 0, k = 0; x <= 300; x += 6, k++) {
+    const amp = 0.5 + 15 * Math.pow(x / 300, 1.6);
+    pts.push(`${x},${(20 + (k % 2 ? amp : -amp)).toFixed(1)}`);
+  }
+  return pts.join(" ");
+}
+
+// ---------- DOM ----------
+const $ = id => document.getElementById(id);
+const inputs = {panel: $("panel"), stress: $("stress"), journey: $("journey")};
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const state = {panel: 3, stress: 1, journey: 1};
+let lastJourney = null, cardEls = [], locked = false, briefEdited = false;
+
+function setupStatic() {
+  $("seats").innerHTML = PERSONAS.map((p, i) =>
+    `<li class="seat" data-i="${i}">${outlineSVG(i)}${tokenSVG(i, "token")}<span class="sr-only"></span></li>`).join("");
+  ["panel", "journey"].forEach(id => {
+    const inp = inputs[id], max = +inp.max, min = +inp.min, wrap = $(id + "-wrap");
+    for (let v = min; v <= max; v++) {
+      const t = document.createElement("span");
+      t.className = "tick"; t.style.setProperty("--f", (v - min) / (max - min));
+      wrap.insertBefore(t, inp);
+    }
+  });
+  $("trace-line").setAttribute("points", tracePoints());
+  $("stress-thumb").innerHTML = NEEDLE;
+  $("journey-thumb").innerHTML = PIP;
+}
+
+function makeCard(i) {
+  const li = document.createElement("li");
+  li.className = "card";
+  li.innerHTML =
+    `<div class="card-head">${tokenSVG(i)}<div><h3></h3><p class="role"></p></div></div>` +
+    `<p class="role ctx"></p>` +
+    `<div class="bubble"><svg class="crack" viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><polyline vector-effect="non-scaling-stroke" points="58,0 52,10 60,18 50,27 57,34 53,40"/></svg><q></q></div>` +
+    `<span class="tag"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1 L13 13 L1 13 Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7 5.5 V9 M7 10.6 V11.2" stroke="currentColor" stroke-width="1.6"/></svg>Unexpected request</span>` +
+    `<p class="route"></p>`;
+  return li;
+}
+
+function render() {
+  const v = deriveView(state);
+
+  // Sliders: thumbs, visible values, aria-valuetext
+  for (const id of ["panel", "stress", "journey"]) {
+    const inp = inputs[id];
+    inp.value = state[id];
+    inp.setAttribute("aria-valuetext", v.valueText[id]);
+    $(id + "-thumb").style.setProperty("--f", (state[id] - inp.min) / (inp.max - inp.min));
+  }
+  $("panel-val").textContent = `${v.panel} persona${v.panel === 1 ? "" : "s"}`;
+  $("stress-val").textContent = v.tier.label;
+  $("journey-val").textContent = v.pattern.label;
+  $("panel-thumb").innerHTML = tokenSVG(v.panel - 1);
+
+  // Panel owns WHO: seats and cards
+  $("seats-caption").textContent = `Panel of ${v.panel}`;
+  document.querySelectorAll(".seat").forEach((s, i) => {
+    const on = i < v.panel;
+    s.classList.toggle("filled", on);
+    s.querySelector(".sr-only").textContent = `Seat ${i + 1}: ${on ? PERSONAS[i].name : "empty"}`;
+  });
+  const list = $("cards");
+  while (cardEls.length > v.panel) cardEls.pop().remove();
+  while (cardEls.length < v.panel) {
+    const el = makeCard(cardEls.length);
+    el.classList.add("enter");
+    el.addEventListener("animationend", () => el.classList.remove("enter"), {once: true});
+    list.appendChild(el); cardEls.push(el);
+  }
+  v.seated.forEach((p, i) => {
+    const el = cardEls[i];
+    el.className = el.className.replace(/\btier-\d\b/g, "").trim() + " tier-" + v.stress;
+    el.querySelector("h3").textContent = p.name;
+    el.querySelector(".card-head .role").textContent = p.role;
+    el.querySelector(".ctx").textContent = p.context;
+    el.querySelector("q").textContent = p.line;          // stress owns behavior
+    el.querySelector(".route").innerHTML = "<b>Route:</b> " + p.routeShort
+      .map(s => `<span>${s}</span>`).join('<span aria-hidden="true"> → </span><span class="sr-only">, then </span>');
+  });
+
+  // Stress owns WHAT behavior: tier caption
+  $("tier-caption").innerHTML = `<strong>${v.tier.label}:</strong> `;
+  $("tier-caption").append(v.tier.sentence);
+
+  // Journey owns HOW they move: one shared track (redrawn only when journey changes)
+  if (lastJourney !== v.journey) {
+    const t = trackMarkup(v.pattern.seq);
+    $("moves").innerHTML = t.moves;
+    $("nodes").innerHTML = t.nodes;
+    if (lastJourney !== null && !reduceMotion.matches)
+      $("moves").querySelectorAll(".move").forEach(m => m.classList.add("draw"));
+    $("track-caption").textContent = v.pattern.label;
+    $("track-desc").textContent = `Route track, steps 1 to 4. ${v.pattern.aria}.`;
+    lastJourney = v.journey;
+  }
+
+  $("summary").textContent = v.summary;
+}
+
+// ---------- Status line: one polite, debounced announcement ----------
+let statusTimer = null;
+function announce(text, delay) {
+  clearTimeout(statusTimer);
+  statusTimer = setTimeout(() => { $("status").textContent = text; }, delay == null ? 300 : delay);
+}
+
+for (const id of ["panel", "stress", "journey"]) {
+  inputs[id].addEventListener("input", e => {
+    state[id] = +e.target.value;
+    render();
+    announce(inputs[id].getAttribute("aria-valuetext"));
+  });
+}
+
+// ---------- Lock / review / export ----------
+function lock() {
+  const had = $("brief").value !== "" && briefEdited;
+  locked = true;
+  $("brief").value = buildBrief(state);
+  briefEdited = false;
+  $("edit-note").textContent = had ? "Brief regenerated; your earlier edits were replaced." : "";
+  $("export-msg").textContent = "";
+  $("sliders").hidden = true;
+  $("locked-row").hidden = false;
+  $("review").hidden = false;
+  $("brief-h").focus();
+  announce(had ? "Panel locked. Brief regenerated; your earlier edits were replaced." : "Panel locked. " + deriveView(state).summary, 50);
+}
+function unlock() {
+  locked = false;
+  $("sliders").hidden = false;
+  $("locked-row").hidden = true;
+  $("review").hidden = true;
+  inputs.panel.focus();
+}
+$("lock").addEventListener("click", lock);
+$("edit").addEventListener("click", unlock);
+$("brief").addEventListener("input", () => { briefEdited = true; });
+
+function fallbackSelect(prefix) {
+  const ta = $("brief");
+  ta.focus(); ta.select();
+  const msg = prefix + " The brief is selected: press Ctrl/Cmd+C.";
+  $("export-msg").textContent = msg;
+  announce(msg, 50);
+}
+$("copy").addEventListener("click", async () => {
+  try {
+    if (!navigator.clipboard || !window.isSecureContext) throw new Error("no clipboard");
+    await navigator.clipboard.writeText($("brief").value);
+    $("export-msg").textContent = "Brief copied.";
+    announce("Brief copied.", 50);
+  } catch (err) {
+    fallbackSelect("Copy isn't available here.");
+  }
+});
+$("download").addEventListener("click", () => {
+  try {
+    const url = URL.createObjectURL(new Blob([$("brief").value], {type: "text/markdown"}));
+    const a = document.createElement("a");
+    a.href = url; a.download = "test-panel-brief.md";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    let framed = true;
+    try { framed = window.self !== window.top; } catch (e) { /* cross-origin frame */ }
+    const msg = framed ? "Download started. If no file appears, use Copy brief." : "Downloaded test-panel-brief.md.";
+    $("export-msg").textContent = msg;
+    announce(msg, 50);
+  } catch (err) {
+    fallbackSelect("Download isn't available here.");
+  }
+});
+
+setupStatic();
+render();
+</script>
+</body>
+</html>
