@@ -47,6 +47,25 @@
   .zone-cards { grid-area: cards; }
   .controls { grid-area: controls; }
   .zone { background: var(--stage); border-radius: var(--radius); padding: 14px; }
+  /* Phone: one tinted stage with the control console set into it, packed so
+     each slider and the zone it changes fit on one screen together. Visual
+     order still matches focus order. */
+  @media (max-width: 839.98px) {
+    .layout { background: var(--stage); border-radius: 18px; padding: 0 12px 12px; gap: 0; }
+    .zone { background: none; border-radius: 12px; padding: 12px 2px; }
+    .zone-head { margin-bottom: 8px; }
+    .zone-track { padding-bottom: 14px; }
+    .legend { font-size: .75rem; margin-top: 2px; }
+    .zone-track .caption { display: none; } /* same value sits in the Journey pill */
+    .controls { padding: 14px; box-shadow: 0 4px 14px rgba(27, 42, 74, .10); }
+    .hint-line { margin-bottom: 8px; }
+    .slider + .slider { margin-top: 10px; padding-top: 8px; }
+    .range-wrap { margin-top: 2px; }
+    .actions { margin-top: 12px; }
+    .tier-line { margin-bottom: 10px; }
+    .card { padding: 12px; }
+    .bubble { margin-top: 12px; }
+  }
   @media (min-width: 840px) {
     .layout { grid-template-columns: 330px minmax(0, 1fr); grid-template-areas: "controls stage"; align-items: start; gap: 24px; }
     .controls { position: sticky; top: 16px; }
@@ -80,7 +99,7 @@
   .track-svg .node { fill: #fff; stroke: var(--navy); stroke-width: 2.5; }
   .track-svg .node-num { fill: var(--navy); font-weight: 700; font-size: 14px; }
   .track-svg .badge circle { fill: var(--navy); }
-  .track-svg .badge text { fill: #fff; font-size: 11.5px; font-weight: 700; }
+  .track-svg .badge text { fill: #fff; font-size: 13px; font-weight: 700; }
   .legend { color: var(--muted); font-size: .8125rem; text-align: center; margin-top: 6px; }
 
   /* ---------- Controls ---------- */
@@ -244,7 +263,7 @@
 
       <section class="zone zone-track" id="zone-track" aria-labelledby="track-h">
         <div class="zone-head"><svg class="icon" aria-hidden="true"><use href="#i-journey"/></svg><h2 id="track-h">Shared journey pattern</h2><p class="caption" id="track-caption"></p></div>
-        <svg class="track-svg" id="track" viewBox="0 0 320 122" role="img" aria-labelledby="track-desc">
+        <svg class="track-svg" id="track" viewBox="0 -6 320 128" role="img" aria-labelledby="track-desc">
           <title id="track-desc"></title>
           <defs>
             <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -255,7 +274,7 @@
           <g id="moves"></g>
           <g id="nodes"></g>
         </svg>
-        <p class="legend" aria-hidden="true">Badges show the order of visits. Dashed chips on each card mark a repeat visit.</p>
+        <p class="legend" aria-hidden="true">Badges: visit order · Dashed chips: repeat visits</p>
       </section>
 
       <section class="zone zone-cards" id="zone-cards" aria-labelledby="cards-h">
@@ -267,7 +286,7 @@
 
     <section class="controls" aria-labelledby="controls-h">
       <h2 id="controls-h">Shape your panel</h2>
-      <p class="hint-line" id="controls-hint">Drag each marker, or select it and use the arrow keys.</p>
+      <p class="hint-line" id="controls-hint">Drag a marker, or use the arrow keys.</p>
       <div id="sliders">
         <div class="slider">
           <div class="slider-head"><svg class="icon" aria-hidden="true"><use href="#i-panel"/></svg><label for="panel">Panel size</label><span class="slider-val" id="panel-val" aria-hidden="true"></span></div>
@@ -433,8 +452,10 @@ function trackMarkup(seq) {
     } else {
       // Back-moves arc above the rail; repeats of the same jump stack higher.
       const key = a + "-" + b, n = spanCount[key] = (spanCount[key] || 0) + 1;
-      const h = (12 + 16 * (a - b) + 12 * (n - 1)) * 1.33;
-      moves += `<path class="move back" style="--i:${k - 1}" pathLength="1" d="M${xa - 5} ${RAIL_Y - 16} C${xa - 5} ${RAIL_Y - 16 - h}, ${xb + 5} ${RAIL_Y - 16 - h}, ${xb + 5} ${RAIL_Y - 19}" marker-end="url(#arrow)"/>`;
+      // Each repeat nests outside the last: taller and with wider feet.
+      const h = (12 + 16 * (a - b) + 20 * (n - 1)) * 1.33, o = 10 * (n - 1);
+      const x1 = xa - 5 + o, x2 = xb + 5 - o;
+      moves += `<path class="move back" style="--i:${k - 1}" pathLength="1" d="M${x1} ${RAIL_Y - 16} C${x1} ${RAIL_Y - 16 - h}, ${x2} ${RAIL_Y - 16 - h}, ${x2} ${RAIL_Y - 19}" marker-end="url(#arrow)"/>`;
     }
   }
   let nodes = "";
@@ -442,8 +463,8 @@ function trackMarkup(seq) {
     const visits = seq.map((s, v) => s === idx + 1 ? v + 1 : 0).filter(Boolean);
     nodes += `<circle class="node" cx="${x}" cy="${RAIL_Y}" r="16"/><text class="node-num" x="${x}" y="${RAIL_Y}" text-anchor="middle" dominant-baseline="central">${idx + 1}</text>`;
     visits.forEach((v, j) => {
-      const bx = x + (j - (visits.length - 1) / 2) * 22;
-      nodes += `<g class="badge" style="--i:${v - 1}"><circle cx="${bx}" cy="${RAIL_Y + 32}" r="10"/><text x="${bx}" y="${RAIL_Y + 32}" text-anchor="middle" dominant-baseline="central">${v}</text></g>`;
+      const bx = x + (j - (visits.length - 1) / 2) * 26;
+      nodes += `<g class="badge" style="--i:${v - 1}"><circle cx="${bx}" cy="${RAIL_Y + 32}" r="11.5"/><text x="${bx}" y="${RAIL_Y + 32}" text-anchor="middle" dominant-baseline="central">${v}</text></g>`;
     });
   });
   return {moves, nodes};
