@@ -1,0 +1,28 @@
+// The bakeoff's accessibility heuristics, on hand-built panels.
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { checks } from "../bakeoff/checks.mjs";
+
+const SIT = { testing: "A safety course that must work for screen-reader users.", audience: "Some employees use screen readers.", expect: "screen[- ]reader" };
+const panel = (stableSR, overlaySR = {}) => ({
+  experience: { summary: "s", audience: "", moments: ["A", "B", "C", "D"].map((m) => ({ short: m, full: m })) },
+  personas: Array.from({ length: 6 }, (_, i) => ({
+    name: `Name${i} Last`, whoTheyAre: "w", goal: "g", startingPoint: i < stableSR ? "Uses a screen reader at work." : "Sighted keyboard user.",
+    workingStyle: "careful", baselineSaysOrDoes: `does thing ${i}`, judgesBy: "j?", coreRisk: "r",
+    overlays: ["behavior", "saysOrDoes", "risk"].map((f, k) => ({ behavior: "b", saysOrDoes: `s${i}${k}`, risk: "r?", ...(overlaySR[i] === k ? { [f]: "Their screen reader skips the quiz." } : {}) })),
+  })),
+});
+const has = (flags, re) => flags.some((f) => re.test(f));
+
+test("context kept by some stable personas: no flag", () => {
+  assert.equal(has(checks(SIT, panel(2)), /expected context/), false);
+});
+test("context kept by no stable persona is flagged", () => {
+  assert.ok(has(checks(SIT, panel(0)), /kept by no stable persona/));
+});
+test("context given to all six is flagged as flattening", () => {
+  assert.ok(has(checks(SIT, panel(6)), /all six/));
+});
+test("context used in any overlay field is flagged", () => {
+  for (const k of [0, 1, 2]) assert.ok(has(checks(SIT, panel(2, { 3: k })), /used in 1 challenge overlay/), `overlay field ${k}`);
+});

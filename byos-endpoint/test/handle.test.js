@@ -117,4 +117,8 @@ test("per-model params: Haiku omits effort and fallbacks; EFFORT can be cleared"
   assert.equal(o.max_tokens, 6000);
   const n = buildParams(input, readConfig({ MODEL: "claude-sonnet-5-5", EFFORT: "" }));
   assert.equal(n.output_config.effort, undefined);
+  const pinned = buildParams(input, readConfig({ MODEL: "claude-sonnet-5-5", FALLBACKS: "off" }));
+  assert.equal(pinned.fallbacks, undefined);
+  assert.equal(pinned.betas, undefined);
+  assert.equal(pinned.output_config.effort, "low");
 });

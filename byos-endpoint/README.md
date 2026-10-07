@@ -15,19 +15,25 @@ It is a Cloudflare Worker. The code is plain `fetch` handler JavaScript, so it c
 
 ```bash
 npm install
-export ANTHROPIC_API_KEY=...        # a key from the spend-limited workspace
-node bakeoff/run.mjs                # all configs; or e.g. `node bakeoff/run.mjs haiku sonnet-low`
+export ANTHROPIC_API_KEY=...        # a key from the spend-limited workspace (set the limit first)
+node bakeoff/run.mjs                              # round 1
+node bakeoff/run.mjs --playoff sonnet-low opus-low   # round 2, with your top two
 ```
 
-- **What it runs:** the 10 situations in `bakeoff/situations.json` against four configs: `haiku`, `sonnet-low`, `opus-low`, and `opus-medium` as a quality benchmark. The situations are a learning module, a form, a checkout with supplied moments, a game, a chatbot, an onboarding flow, a vague one-liner, an accessibility-specific course, an AI workflow, and one with instructions embedded in the input.
+**Round 1 (breadth, 40 calls)** runs the 10 situations in `bakeoff/situations.json` against four configs: `haiku`, `sonnet-low`, `opus-low`, and `opus-medium` as the quality reference. The situations are a learning module, a form, a checkout with supplied moments, a game, a chatbot, an onboarding flow, a vague one-liner, an accessibility-specific course, an AI workflow, and one with instructions embedded in the input. Use it to eliminate the obvious losers.
+
+**Round 2 (consistency playoff, 18 calls)** runs your top two configs on the three hardest situations (vague, accessibility, AI workflow), three times each. Pick the config whose *worst* run is still usable, not the one with the best single draw.
+
+- **Pinned models:** every bakeoff request has server-side fallbacks turned off (`FALLBACKS = "off"`), so each row is the named model's own work. The model that served each response is recorded, and any run served by a different model is discarded. Production fallback behavior is a separate decision, made after the winner is chosen.
 - **Prompt and checks:** it uses the endpoint's own prompt, schema and validation, so what passes here is what the page would get.
-- **Cost:** about 40 calls in total, likely a few dollars. Each run's cost is reported.
-- **Output:** written to `bakeoff/results/<timestamp>/`, which is gitignored.
-  - `report.md` has a summary per config (valid count, latency, output tokens, cost per panel, a suggested `MAX_TOKENS`), heuristic flags, and every panel laid out for reading.
+- **Cost:** likely a few dollars for both rounds. Each report states its total.
+- **Output:** written to `bakeoff/results/round1-…` or `playoff-…`, which are gitignored.
+  - `report.md` has the per-config summary (valid count, latency, output tokens, cost per panel, a suggested `MAX_TOKENS`), a consistency table in the playoff, and every panel laid out for reading.
+  - It also has heuristic flags. For the accessibility situation, it flags context kept by no stable persona, context given to all six (flattening the lenses), and context used in any overlay field.
   - `scores.csv` is for your 1–5 judgements: lenses distinct, Typical preserves the person, overlays are the same person, moments useful, and would you use it.
 - **Dry run:** `BAKEOFF_DRY=1 node bakeoff/run.mjs` checks the harness with a fake model, at no cost.
 
-Pick the cheapest config whose panels you'd actually test with. Opus at medium is the reference for what "good" looks like, not the default.
+Opus at medium is the reference for what "good" looks like, not the default.
 
 ## Deploy
 
@@ -64,6 +70,7 @@ The endpoint is public and credentialless. It doesn't use Origin checks, because
 | Concurrency | `MAX_CONCURRENT` (default 3) |
 | Daily ceiling | `DAILY_LIMIT` (default 200), only when `BYOS_KV` is bound |
 | Output cap | `MAX_TOKENS` (default 8,000; tighten from the bakeoff) |
+| Refusal fallbacks | `FALLBACKS` (`"default"` or `"off"`); decide for production after the bakeoff |
 | Timeout | `TIMEOUT_MS` (default 80,000); the page gives up at 90 seconds |
 | Validation | Request fields before the call; response shape after the call (structured outputs + the same checks the page runs) |
 

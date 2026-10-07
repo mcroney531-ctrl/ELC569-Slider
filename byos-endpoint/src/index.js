@@ -5,8 +5,8 @@ import Anthropic from "@anthropic-ai/sdk";
 
 const LIMITS = { body: 2000, testing: 300, audience: 120, moment: 24 };
 // MODEL has no default on purpose: pick it from the bakeoff (see bakeoff/README.md).
-const DEFAULTS = { MODEL: "", EFFORT: "low", MAX_TOKENS: 8000, PER_IP_PER_HOUR: 5, MAX_CONCURRENT: 3, DAILY_LIMIT: 200, TIMEOUT_MS: 80000 };
-const TEXT_SETTINGS = ["MODEL", "EFFORT"];
+const DEFAULTS = { MODEL: "", EFFORT: "low", FALLBACKS: "default", MAX_TOKENS: 8000, PER_IP_PER_HOUR: 5, MAX_CONCURRENT: 3, DAILY_LIMIT: 200, TIMEOUT_MS: 80000 };
+const TEXT_SETTINGS = ["MODEL", "EFFORT", "FALLBACKS"];
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -134,6 +134,7 @@ Build the panel for this situation.`;
 
 // ---------- Model call ----------
 // Haiku 4.5 takes neither effort nor server-side fallbacks; the other candidates take both.
+// FALLBACKS = "off" pins the request to MODEL (the bakeoff needs that to compare models fairly).
 const isHaiku = (model) => model.startsWith("claude-haiku");
 
 export function buildParams(input, cfg) {
@@ -146,8 +147,10 @@ export function buildParams(input, cfg) {
     messages: [{ role: "user", content: userMessage(input) }],
   };
   if (!isHaiku(cfg.MODEL)) {
-    params.betas = ["server-side-fallback-2026-07-01"];
-    params.fallbacks = "default";
+    if (cfg.FALLBACKS !== "off") {
+      params.betas = ["server-side-fallback-2026-07-01"];
+      params.fallbacks = "default";
+    }
     if (cfg.EFFORT) params.output_config.effort = cfg.EFFORT;
   }
   return params;

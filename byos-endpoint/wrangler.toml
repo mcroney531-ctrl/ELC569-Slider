@@ -7,6 +7,7 @@ compatibility_flags = ["nodejs_compat"]
 [vars]
 MODEL = ""                     # set from the bakeoff result, e.g. "claude-sonnet-5-5"
 EFFORT = "low"                 # "" to omit; ignored for Haiku
+FALLBACKS = "default"          # "off" pins requests to MODEL; decide after the bakeoff
 MAX_TOKENS = "8000"            # tighten to the bakeoff's suggested value
 SPEND_LIMIT_CONFIRMED = "no"   # set "yes" only after the workspace spend limit exists (README step 1)
 PER_IP_PER_HOUR = "5"
