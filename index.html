@@ -708,6 +708,8 @@ function validatePanel(raw) {
       if (!p || !Array.isArray(p.overlays) || p.overlays.length !== 3) throw new Error("need 3 overlays");
       const out = {};
       CORE_FIELDS.forEach(f => { out[f] = cleanText(p[f], f === "name" ? 60 : 260); });
+      // The page adds its own quote marks, so drop any the model wrapped around the question.
+      out.judgesBy = out.judgesBy.replace(/^["“”]+|["“”]+$/g, "").trim() || out.judgesBy;
       out.overlays = p.overlays.map(o => {
         const c = {};
         OVERLAY_FIELDS.forEach(f => { c[f] = cleanText(o && o[f], 260); });
