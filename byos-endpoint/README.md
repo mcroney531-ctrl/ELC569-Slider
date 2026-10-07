@@ -63,6 +63,7 @@ Total spend across the three rounds: $3.72.
    ```html
    <meta name="byos-endpoint" content="https://byos-panel.<your-subdomain>.workers.dev">
    ```
+   The page currently points at the staging Worker (`byos-panel-staging`). Switch it to the production URL once production is deployed with its own key and workspace.
 
 ## Request and response
 
