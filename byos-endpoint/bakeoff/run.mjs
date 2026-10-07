@@ -27,7 +27,7 @@ const CONFIGS = {
   "opus-low": { ...PIN, MODEL: "claude-opus-5-5", EFFORT: "low" },
   "opus-medium": { ...PIN, MODEL: "claude-opus-5-5", EFFORT: "medium" }, // quality reference
 };
-const PLAYOFF_SITUATIONS = ["vague", "accessibility", "ai-workflow"];
+const PLAYOFF_SITUATIONS = ["vague", "accessibility", "game"];
 const PLAYOFF_REPEATS = 3;
 // $ per million tokens (input, output), from the API pricing table cached 2026-09-25. Check before quoting.
 const PRICE = { "claude-haiku-4-5": [1, 5], "claude-sonnet-5-5": [2, 10], "claude-opus-5-5": [4, 20] };
