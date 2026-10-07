@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Build Your Test Panel</title>
+<title>Persona QA Testing Tool</title>
 <!-- URL of the BYOS generation endpoint (see byos-endpoint/README.md). Empty = sample only. -->
 <meta name="byos-endpoint" content="">
 <style>
@@ -268,6 +268,36 @@
   .help-line { color: var(--muted); font-size: .9375rem; margin-bottom: 12px; }
   .honesty { margin-top: 12px; }
 
+  /* ---------- Onboarding (in front of the tool) ---------- */
+  #onboard { max-width: 720px; margin: 0 auto; }
+  .ob-screen { padding: 8px 0 24px; }
+  .ob-screen p, .ob-screen ul, .ob-screen ol, .ob-screen dl { margin: 0 0 14px; }
+  .ob-screen h1 { margin-bottom: 8px; }
+  .ob-screen h2 { font-size: 1.5rem; margin: 2px 0 14px; }
+  .ob-screen h3 { color: var(--navy); font-size: 1.125rem; margin: 22px 0 8px; }
+  .ob-eyebrow, .ob-count { color: var(--muted); font-size: .8125rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+  .ob-sub { font-size: 1.25rem; color: var(--navy); font-weight: 600; }
+  .ob-honest { color: var(--muted); font-size: .9375rem; border-left: 4px solid var(--line); padding-left: 12px; }
+  .ob-key { background: var(--stage); border-left: 4px solid var(--navy); border-radius: 0 10px 10px 0; padding: 12px 14px; font-weight: 600; color: var(--navy); }
+  .ob-list { padding-left: 1.2em; }
+  .ob-list li + li { margin-top: 4px; }
+  .ob-cols { columns: 2 220px; column-gap: 24px; }
+  .ob-flow { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 4px; counter-reset: flow; }
+  .ob-flow li { counter-increment: flow; display: inline-flex; align-items: center; gap: 6px; background: var(--stage); border-radius: 999px; padding: 4px 12px 4px 4px; font-weight: 600; font-size: .9375rem; }
+  .ob-flow li::before { content: counter(flow) / ""; display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; font-size: .75rem; }
+  .ob-controls, .ob-terms, .ob-example { display: grid; gap: 10px; }
+  .ob-controls > div, .ob-terms > div, .ob-example > div { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+  .ob-screen dt { font-weight: 700; color: var(--navy); }
+  .ob-screen dd { margin: 2px 0 0; }
+  .ob-example > div { display: grid; grid-template-columns: minmax(0, 160px) 1fr; gap: 4px 12px; }
+  @media (max-width: 520px) { .ob-example > div { grid-template-columns: 1fr; } }
+  .ob-actions { display: flex; flex-wrap: wrap; gap: 10px 12px; align-items: center; margin-top: 20px; }
+  .ob-skip, .refresher { background: none; border-color: transparent; text-decoration: underline; padding-left: 8px; padding-right: 8px; }
+  .ob-skip { margin-left: auto; }
+  .ob-skip:hover, .refresher:hover { background: var(--soft); }
+  .intro-top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; }
+  .refresher { font-size: .9375rem; min-height: 44px; }
+
   /* ---------- Motion, only when the learner allows it ---------- */
   @media (prefers-reduced-motion: no-preference) {
     .seat .token, .seat .outline { transition: transform .3s cubic-bezier(.3, 1.4, .5, 1), opacity .2s; }
@@ -294,8 +324,126 @@
   <symbol id="i-journey" viewBox="0 0 24 24"><circle cx="4" cy="18" r="2"/><circle cx="20" cy="18" r="2"/><path d="M6 18h12M15 16c0-6-8-6-8 0"/><path d="M5 14l2 2 2-2"/></symbol>
 </svg>
 <main>
+  <div id="onboard">
+    <!-- Landing -->
+    <section class="ob-screen" data-step="0" aria-labelledby="ob-h0">
+      <p class="ob-eyebrow">Persona QA</p>
+      <h1 id="ob-h0" tabindex="-1">Persona QA Testing Tool</h1>
+      <p class="ob-sub">Test your experience from more than one point of view.</p>
+      <p>Use AI-generated test personas to explore how different people, situations, and behaviors might expose issues in something you've built, before you put it in front of real users.</p>
+      <p>This tool helps you create a small panel of simulated users, change the conditions they're testing under, and take those personas into your build for structured exploratory testing.</p>
+      <p class="ob-honest">These are simulated test personas. They can broaden what you think to test, but they do not replace usability testing or research with real people.</p>
+      <div class="ob-actions">
+        <button type="button" class="primary" data-go="1">Start</button>
+        <button type="button" class="ob-skip" data-go="tool">Skip intro</button>
+      </div>
+    </section>
+
+    <!-- 1. Why persona testing -->
+    <section class="ob-screen" data-step="1" aria-labelledby="ob-h1" hidden>
+      <p class="ob-count">Step 1 of 4</p>
+      <h2 id="ob-h1" tabindex="-1">Why persona testing?</h2>
+      <p>It's easy to test a build the way you expect someone to use it. Persona testing gives you a reason to approach the same experience differently.</p>
+      <p>Instead of only asking <strong>"Does this work?"</strong>, you can also ask:</p>
+      <ul class="ob-list">
+        <li>Does this still work for someone who is new to the topic?</li>
+        <li>What happens when someone is in a hurry?</li>
+        <li>What if their situation doesn't fit the path I designed?</li>
+      </ul>
+      <p>A good test persona gives you a specific point of view to adopt while testing. That can help uncover unclear instructions, missing paths, assumptions, confusing interactions, weak recovery states, and situations you may not have thought to try.</p>
+      <p class="ob-key">The goal isn't to predict what every real user will do. The goal is to expand the range of things you deliberately test.</p>
+      <div class="ob-actions">
+        <button type="button" data-go="0">Back</button>
+        <button type="button" class="primary" data-go="2">Next</button>
+        <button type="button" class="ob-skip" data-go="tool">Skip intro</button>
+      </div>
+    </section>
+
+    <!-- 2. Why AI can help -->
+    <section class="ob-screen" data-step="2" aria-labelledby="ob-h2" hidden>
+      <p class="ob-count">Step 2 of 4</p>
+      <h2 id="ob-h2" tabindex="-1">Why AI can help</h2>
+      <p>AI helps you test more kinds of situations and perspectives without inventing every persona yourself. Useful dimensions include:</p>
+      <ul class="ob-list ob-cols">
+        <li>Experience with the task</li>
+        <li>Familiarity with the subject</li>
+        <li>Confidence</li>
+        <li>Time and attention</li>
+        <li>Working habits</li>
+        <li>Device or situational constraints</li>
+        <li>Unusual but realistic circumstances</li>
+      </ul>
+      <p class="ob-key">AI generates possibilities to test, not evidence about your users.</p>
+      <p>A generated persona can help expose a real problem in the design, but the persona itself doesn't prove that real users have that problem. Use it alongside real-user research and testing, not instead of it.</p>
+      <div class="ob-actions">
+        <button type="button" data-go="1">Back</button>
+        <button type="button" class="primary" data-go="3">Next</button>
+        <button type="button" class="ob-skip" data-go="tool">Skip intro</button>
+      </div>
+    </section>
+
+    <!-- 3. What this tool does -->
+    <section class="ob-screen" data-step="3" aria-labelledby="ob-h3" hidden>
+      <p class="ob-count">Step 3 of 4</p>
+      <h2 id="ob-h3" tabindex="-1">What this tool does</h2>
+      <ol class="ob-flow">
+        <li>Describe your build</li>
+        <li>Create a test panel</li>
+        <li>Shape the test</li>
+        <li>Take the persona into the experience</li>
+      </ol>
+      <dl class="ob-controls">
+        <div><dt>Panel size</dt><dd><strong>Who are you testing with?</strong> Each seat adds a coverage lens: a different perspective.</dd></div>
+        <div><dt>Challenge</dt><dd><strong>What condition are they testing under?</strong> Typical, Rushed, Inconsistent or Edge case.</dd></div>
+        <div><dt>Journey</dt><dd><strong>How do they move through the experience?</strong> Straight through, backtracking, detours, loops or restarts.</dd></div>
+      </dl>
+      <p class="ob-key">The persona tells you who you are testing as.<br>Challenge changes what happens during the test.<br>Journey changes where you go next.</p>
+      <div class="ob-actions">
+        <button type="button" data-go="2">Back</button>
+        <button type="button" class="primary" data-go="4">Next</button>
+        <button type="button" class="ob-skip" data-go="tool">Skip intro</button>
+      </div>
+    </section>
+
+    <!-- 4. Key terms + worked example -->
+    <section class="ob-screen" data-step="4" aria-labelledby="ob-h4" hidden>
+      <p class="ob-count">Step 4 of 4</p>
+      <h2 id="ob-h4" tabindex="-1">Key terms</h2>
+      <dl class="ob-terms">
+        <div><dt>Persona</dt><dd>A simulated user you temporarily adopt while testing. Each persona has a stable goal, starting point, working style and perspective.</dd></div>
+        <div><dt>Test panel</dt><dd>The group of personas you're currently testing with.</dd></div>
+        <div><dt>Coverage lens</dt><dd>The reason a persona is included. A newcomer tests assumptions about prior knowledge; a time-constrained user tests what happens when attention is limited.</dd></div>
+        <div><dt>Typical</dt><dd>No added challenge. The persona behaves according to their normal working style.</dd></div>
+        <div><dt>Rushed</dt><dd>The same persona is under time pressure and cuts corners compared with how they normally behave.</dd></div>
+        <div><dt>Inconsistent</dt><dd>The persona contradicts something they said, selected, answered or did earlier in the same test pass. <em>Example: they say they want email updates, then later select "Do not contact me."</em></dd></div>
+        <div><dt>Edge case</dt><dd>A real but less-common circumstance the experience may not have been designed around. <em>Example: a volunteer form assumes everyone has a fixed weekly schedule, but this persona's availability changes every week.</em> An edge case isn't bizarre behavior added just to break the design; it's a legitimate situation the design may not cover well.</dd></div>
+        <div><dt>Key moment</dt><dd>An important checkpoint worth testing, such as choosing a plan, submitting a form, receiving feedback or recovering from an error.</dd></div>
+        <div><dt>Journey</dt><dd>The route the persona takes through those key moments.</dd></div>
+      </dl>
+
+      <h3 class="ob-ex-h">Worked example</h3>
+      <p>Priya is an experienced employee completing a benefits form.</p>
+      <dl class="ob-example">
+        <div><dt>Typical</dt><dd>She already knows what she wants and moves efficiently through familiar fields.</dd></div>
+        <div><dt>Rushed</dt><dd>She has five minutes before a meeting and starts accepting defaults without checking them.</dd></div>
+        <div><dt>Inconsistent</dt><dd>She selects employee-only coverage, then later adds a dependent.</dd></div>
+        <div><dt>Edge case</dt><dd>Her current plan no longer appears in the available options.</dd></div>
+        <div><dt>Journey: One step back</dt><dd>She reaches Review, notices something wrong, returns to plan selection, then continues.</dd></div>
+      </dl>
+      <p class="ob-key">Priya stays Priya. The test condition changes around the same person.</p>
+      <div class="ob-actions">
+        <button type="button" data-go="3">Back</button>
+        <button type="button" class="primary" data-go="tool">Open the tool</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="tool" hidden>
   <div class="intro">
-    <h1>Build a test panel for your project</h1>
+    <div class="intro-top">
+      <h1 id="tool-h" tabindex="-1">Build a test panel for your project</h1>
+      <button type="button" class="refresher" id="refresher">Need a refresher?</button>
+    </div>
     <p class="lead">Describe what you're testing. Build a panel of simulated users. Use them to stress-test your experience before real users do.</p>
     <ol class="steps">
       <li><span><strong>Describe it.</strong> One sentence about what you're building and who it's for.</span></li>
@@ -429,6 +577,7 @@
     </div>
     <p class="note honesty">Simulated users help you find problems early. They don't replace testing with real people.</p>
   </section>
+  </div>
 
   <p class="sr-only" id="status" role="status" aria-live="polite"></p>
 </main>
@@ -1018,9 +1167,43 @@ $("byos-form").addEventListener("submit", async e => {
   }
 });
 
+// ---------- Onboarding: landing → orientation → tool ----------
+// Screens are shown one at a time; focus moves to each screen's heading so
+// keyboard and screen-reader users land at the top of the new content.
+const obScreens = [...document.querySelectorAll(".ob-screen")];
+let obReturnFocus = null;
+function showStep(n) {
+  $("onboard").hidden = false;
+  $("tool").hidden = true;
+  obScreens.forEach(s => { s.hidden = +s.dataset.step !== n; });
+  const screen = obScreens.find(s => +s.dataset.step === n);
+  screen.querySelector("h1, h2").focus();
+  window.scrollTo(0, 0);
+}
+function enterTool() {
+  $("onboard").hidden = true;
+  $("tool").hidden = false;
+  window.scrollTo(0, 0);
+  // Back from a refresher: return to the button that opened it.
+  (obReturnFocus || $("tool-h")).focus();
+  obReturnFocus = null;
+}
+$("onboard").addEventListener("click", e => {
+  const go = e.target.closest("[data-go]");
+  if (!go) return;
+  go.dataset.go === "tool" ? enterTool() : showStep(+go.dataset.go);
+});
+$("refresher").addEventListener("click", () => {
+  obReturnFocus = $("refresher");
+  showStep(1);
+});
+
 setupStatic();
 mountPanel();
 render();
+// "#tool" opens the tool directly (useful for embeds and repeat visits).
+if (location.hash === "#tool") { $("onboard").hidden = true; $("tool").hidden = false; }
+else obScreens.forEach(s => { s.hidden = +s.dataset.step !== 0; });
 </script>
 </body>
 </html>
