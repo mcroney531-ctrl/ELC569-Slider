@@ -219,6 +219,9 @@
   .review { margin-top: 24px; background: #fff; border: 1px solid var(--line); border-top: 4px solid var(--navy); border-radius: var(--radius); padding: 16px; box-shadow: 0 6px 20px rgba(27, 42, 74, .08); }
   .review h2 { font-size: 1.25rem; margin-bottom: 10px; }
   .review label { display: block; font-weight: 700; margin-bottom: 6px; }
+  .review .format { border: 0; padding: 0; margin: 0 0 12px; }
+  .review .format legend { font-weight: 700; margin-bottom: 6px; padding: 0; }
+  .review .format label { display: inline-flex; align-items: center; gap: 6px; margin: 0 18px 4px 0; font-weight: 600; }
   textarea {
     width: 100%; min-height: 320px; font: .875rem/1.55 ui-monospace, "Cascadia Mono", Consolas, monospace;
     color: var(--ink); background: var(--stage); border: 2px solid var(--line); border-radius: 10px; padding: 12px; resize: vertical;
@@ -567,8 +570,13 @@
 
   <section class="review" id="review" hidden aria-labelledby="brief-h">
     <h2 id="brief-h" tabindex="-1">Your test panel brief</h2>
-    <p class="help-line">Each persona is a script for one test pass. Open your build, become that person, follow their route, and note where your experience helps, breaks, or lets them slip through.</p>
-    <label for="brief">Persona brief (editable)</label>
+    <fieldset class="format">
+      <legend>Export as</legend>
+      <label><input type="radio" name="format" value="brief" checked> Walkthrough brief</label>
+      <label><input type="radio" name="format" value="prompt"> AI test prompt (trial)</label>
+    </fieldset>
+    <p class="help-line" id="format-help"></p>
+    <label for="brief" id="brief-label">Persona brief (editable)</label>
     <textarea id="brief" spellcheck="false"></textarea>
     <div class="actions">
       <button type="button" class="primary" id="copy">Copy brief</button>
@@ -791,6 +799,66 @@ function buildBrief(panel, s) {
       `  3. Watch for: the points above, plus the shared journey check.`,
       `  4. Log: where it helped, where it broke, where it let ${firstName(p)} through when it shouldn't have, and where ${firstName(p)} would give up.`);
   });
+  return out.join("\n") + "\n";
+}
+
+// The AI test prompt: the same panel and settings, written as instructions for the
+// person's own AI assistant to play each persona against their real project material.
+// With `only` (a seat index), it covers that one persona.
+function buildPrompt(panel, s, only = null) {
+  const v = deriveView(panel, s), ex = v.experience;
+  const seated = only === null ? v.seated : [v.seated[only]];
+  const route = routeSentence(v.pattern.seq, ex.moments.map(x => x.short));
+  const out = ["# Persona test prompt", "",
+    "You are helping me run an exploratory walkthrough of a digital experience I built, using test personas. You will play one persona at a time and react to the real project material I share with you: screenshots, storyboards, scripts, quiz questions or descriptions.", "",
+    "## Project", "",
+    `Testing: ${ex.summary}`];
+  if (ex.audience) out.push(`For: ${ex.audience}`);
+  out.push("", "Key moments, in order from the beginning of the experience to the end:",
+    ...ex.moments.map((x, i) => `${i + 1}. ${x.short}: ${x.full}`), "",
+    "## Settings", "",
+    `Panel ${panel.id} · ${configCode(s)}`,
+    `Challenge level: ${v.level.label}. ${v.level.sentence}`,
+    `Journey: ${v.pattern.label}. ${v.journeyText.behavior}`,
+    `Route, the same for every persona: ${route}`, "",
+    "## Rules while you play a persona", "",
+    "1. Act as the persona, not as a UX reviewer. Include the mistakes, uncertainty, shortcuts and misunderstandings that follow from who they are.",
+    "2. Don't infer what I intended, and don't help the persona succeed.",
+    "3. The persona knows only their starting point, their stable traits, and what they have actually encountered in this test. Don't use anything from later moments or material I haven't shown yet.",
+    "4. Don't invent buttons, text, feedback, navigation, system behavior or outcomes. If the material doesn't show what happens next, ask me.",
+    "5. Follow the route exactly. The challenge level can change how the persona behaves within a moment, including an interruption, pause, exit or re-entry, but it never chooses the next moment.",
+    "6. Keep each persona exactly as capable, motivated, experienced and confident as their profile says.",
+    "7. Stay at the stated challenge level. Don't escalate difficulty to find more problems.",
+    "8. On a repeat visit, the persona remembers what they plausibly learned before. Don't assume my product kept or reset anything unless I show you.",
+    "9. Don't add accessibility needs, assistive technology or personal characteristics that the profile doesn't state.",
+    "10. While in character, speak and act only as the persona. Step out of character only for the log.", "",
+    only === null ? "## Personas" : "## Persona");
+  seated.forEach(x => {
+    const p = x.p;
+    out.push("", `### ${p.name} (${x.lens})`, "",
+      `- Who they are: ${p.whoTheyAre}`,
+      `- Goal: ${p.goal}`,
+      `- Starting point: ${p.startingPoint}`,
+      `- Working style: ${p.workingStyle}`,
+      `- Judges it by: "${p.judgesBy}"`,
+      `- At this challenge level: ${x.behavior}`,
+      `- Example of what they say or do: ${x.saysOrDoes}`,
+      `- Watch for: ${[p.coreRisk, x.levelRisk].filter(Boolean).join(" ")}`);
+  });
+  const first = ex.moments[v.pattern.seq[0] - 1].short;
+  out.push("", "## How we'll work", "",
+    only === null
+      ? "1. Do not summarize this prompt. First ask only which persona I want to run. After I choose, ask me for the first moment on the route."
+      : `1. Do not summarize this prompt. You are running ${seated[0].p.name}. First ask me only for the first moment on the route: “${first}”.`,
+    "2. For each moment I share, respond in character: what they notice, try, say, misunderstand or skip. Then ask me for the next moment on the route, by name.",
+    "3. When the route is complete, step out of character and log:",
+    "   - Helped: where the experience worked for them",
+    "   - Broke: where it failed them",
+    "   - Slipped through: where it let them pass when it shouldn't have",
+    "   - Gave up: where they would quit, if anywhere",
+    `   - Journey check: ${v.journeyText.risk}`);
+  if (only === null) out.push("4. Then offer to run the next persona.");
+  out.push("", "Test personas help you find problems early. They don't replace testing with real people.");
   return out.join("\n") + "\n";
 }
 
@@ -1046,9 +1114,29 @@ for (const id of ["panel", "challenge", "journey"]) {
 }
 
 // ---------- Lock / review / export ----------
+// Two exports from the same panel and settings. Edits are kept per format until the next lock.
+const FORMATS = {
+  brief: {label: "Persona brief (editable)", copy: "Copy brief", done: "Brief", file: "test-panel-brief.md",
+    help: "Each persona is a script for one test pass. Open your build, become that person, follow their route, and note where your experience helps, breaks, or lets them slip through."},
+  prompt: {label: "AI test prompt (editable)", copy: "Copy prompt", done: "Prompt", file: "test-panel-prompt.md",
+    help: "Paste this into your AI assistant, then share your project material moment by moment. It plays each persona and logs what it finds."}};
+let format = "brief", drafts = {};
+function showFormat(f) {
+  drafts[format] = $("brief").value;
+  format = f;
+  $("brief").value = drafts[f];
+  $("brief-label").textContent = FORMATS[f].label;
+  $("copy").textContent = FORMATS[f].copy;
+  $("format-help").textContent = FORMATS[f].help;
+  $("export-msg").textContent = "";
+}
+document.querySelectorAll('input[name="format"]').forEach(r => r.addEventListener("change", () => { if (r.checked) showFormat(r.value); }));
+
 function lock() {
   locked = true;
-  $("brief").value = buildBrief(current, state);
+  drafts = {brief: buildBrief(current, state), prompt: buildPrompt(current, state)};
+  $("brief").value = drafts[format];
+  showFormat(format);
   briefEdited = false;
   $("lock-note").textContent = "";
   $("export-msg").textContent = "";
@@ -1064,7 +1152,7 @@ function showSliders() {
   $("locked-row").hidden = true;
   $("review").hidden = true;
   // Warn before the edits are lost, not after.
-  $("lock-note").textContent = briefEdited ? "Locking again will regenerate the brief and replace your edits." : "";
+  $("lock-note").textContent = briefEdited ? "Locking again will regenerate the export and replace your edits." : "";
 }
 function unlock() {
   showSliders();
@@ -1077,7 +1165,7 @@ $("brief").addEventListener("input", () => { briefEdited = true; });
 function fallbackSelect(prefix) {
   const ta = $("brief");
   ta.focus(); ta.select();
-  const msg = prefix + " The brief is selected. Use your device or browser's Copy command.";
+  const msg = prefix + " The text is selected. Use your device or browser's Copy command.";
   $("export-msg").textContent = msg;
   announce(msg);
 }
@@ -1085,8 +1173,9 @@ $("copy").addEventListener("click", async () => {
   try {
     if (!navigator.clipboard || !window.isSecureContext) throw new Error("no clipboard");
     await navigator.clipboard.writeText($("brief").value);
-    $("export-msg").textContent = "Brief copied.";
-    announce("Brief copied.");
+    const msg = FORMATS[format].done + " copied.";
+    $("export-msg").textContent = msg;
+    announce(msg);
   } catch (err) {
     fallbackSelect("Copy isn't available here.");
   }
@@ -1095,11 +1184,11 @@ $("download").addEventListener("click", () => {
   try {
     const url = URL.createObjectURL(new Blob([$("brief").value], {type: "text/markdown"}));
     const a = document.createElement("a");
-    a.href = url; a.download = "test-panel-brief.md";
+    a.href = url; a.download = FORMATS[format].file;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     // A sandboxed frame can block the file silently, so don't claim it arrived.
-    const msg = "Download requested. If no file appears, use Copy brief.";
+    const msg = `Download requested. If no file appears, use ${FORMATS[format].copy}.`;
     $("export-msg").textContent = msg;
     announce(msg);
   } catch (err) {
