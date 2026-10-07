@@ -3,8 +3,12 @@ main = "src/index.js"
 compatibility_date = "2026-10-01"
 compatibility_flags = ["nodejs_compat"]
 
+# Production. The Worker answers 503 until MODEL is set and the spend limit is confirmed.
 [vars]
-# MODEL = "claude-opus-5-5"   # default; set a different model id here if you choose to
+MODEL = ""                     # set from the bakeoff result, e.g. "claude-sonnet-5-5"
+EFFORT = "low"                 # "" to omit; ignored for Haiku
+MAX_TOKENS = "8000"            # tighten to the bakeoff's suggested value
+SPEND_LIMIT_CONFIRMED = "no"   # set "yes" only after the workspace spend limit exists (README step 1)
 PER_IP_PER_HOUR = "5"
 MAX_CONCURRENT = "3"
 DAILY_LIMIT = "200"
@@ -12,7 +16,21 @@ TIMEOUT_MS = "80000"
 
 # Optional global daily ceiling. Create a namespace with
 #   npx wrangler kv namespace create BYOS_KV
-# then uncomment and paste its id:
+# then uncomment and paste its id (repeat under env.staging if wanted):
 # [[kv_namespaces]]
 # binding = "BYOS_KV"
 # id = "<namespace id>"
+
+# Staging: deploy with `npx wrangler deploy --env staging` to try a candidate model in the real page.
+[env.staging]
+name = "byos-panel-staging"
+
+[env.staging.vars]
+MODEL = "claude-sonnet-5-5"
+EFFORT = "low"
+MAX_TOKENS = "8000"
+SPEND_LIMIT_CONFIRMED = "no"
+PER_IP_PER_HOUR = "10"
+MAX_CONCURRENT = "2"
+DAILY_LIMIT = "50"
+TIMEOUT_MS = "80000"
