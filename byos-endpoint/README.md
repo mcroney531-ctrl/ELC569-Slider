@@ -15,10 +15,12 @@ It is a Cloudflare Worker. The code is plain `fetch` handler JavaScript, so it c
 
 ```bash
 npm install
-export ANTHROPIC_API_KEY=...        # a key from the spend-limited workspace (set the limit first)
+export BYOS_BAKEOFF_KEY=...         # a key from the spend-limited workspace (set the limit first)
 node bakeoff/run.mjs                              # round 1
 node bakeoff/run.mjs --playoff sonnet-low opus-low   # round 2, with your top two
 ```
+
+In a Claude Code cloud environment, add the key as `BYOS_BAKEOFF_KEY`, because `ANTHROPIC_API_KEY` is reserved for Claude Code itself. That variables box is plain text, so delete the key after the bakeoff.
 
 **Round 1 (breadth, 40 calls)** runs the 10 situations in `bakeoff/situations.json` against four configs: `haiku`, `sonnet-low`, `opus-low`, and `opus-medium` as the quality reference. The situations are a learning module, a form, a checkout with supplied moments, a game, a chatbot, an onboarding flow, a vague one-liner, an accessibility-specific course, an AI workflow, and one with instructions embedded in the input. Use it to eliminate the obvious losers.
 

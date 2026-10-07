@@ -1,7 +1,7 @@
 // Real-model bakeoff, in two rounds, using the endpoint's own prompt, schema and
 // validation. Every candidate is pinned to its named model (no server-side
 // fallbacks), so a row labelled sonnet-low really is Sonnet's work.
-// Spends real money: needs ANTHROPIC_API_KEY.
+// Spends real money: needs BYOS_BAKEOFF_KEY (or ANTHROPIC_API_KEY).
 //
 //   Round 1, breadth (10 situations x each config, 40 calls):
 //     node bakeoff/run.mjs
@@ -43,7 +43,9 @@ const situations = playoff ? SITUATIONS.filter((s) => PLAYOFF_SITUATIONS.include
 const repeats = playoff ? PLAYOFF_REPEATS : 1;
 
 const DRY = process.env.BAKEOFF_DRY === "1";
-if (!DRY && !process.env.ANTHROPIC_API_KEY) { console.error("Set ANTHROPIC_API_KEY first."); process.exit(1); }
+// BYOS_BAKEOFF_KEY is preferred: in Claude Code cloud environments ANTHROPIC_API_KEY is reserved for Claude Code itself.
+const API_KEY = process.env.BYOS_BAKEOFF_KEY || process.env.ANTHROPIC_API_KEY;
+if (!DRY && !API_KEY) { console.error("Set BYOS_BAKEOFF_KEY (or ANTHROPIC_API_KEY) first."); process.exit(1); }
 const fakePanel = () => ({
   experience: { summary: "Dry run.", audience: "", moments: ["Start", "Middle", "Review", "Finish"].map((m) => ({ short: m, full: m + " step" })) },
   personas: LENSES.map((l, i) => ({ name: `Dry Person${i}`, whoTheyAre: `${l} | with a pipe`, goal: "g", startingPoint: i < 2 ? "uses a screen reader" : "s", workingStyle: "reads things",
@@ -51,7 +53,7 @@ const fakePanel = () => ({
 });
 const client = DRY
   ? { beta: { messages: { create: async (params) => { if (params.fallbacks || params.betas) throw new Error("bakeoff must not use fallbacks"); return { model: params.model, stop_reason: "end_turn", usage: { input_tokens: 1500, output_tokens: 2500 }, content: [{ type: "text", text: JSON.stringify(fakePanel()) }] }; } } } }
-  : new Anthropic({ maxRetries: 2 });
+  : new Anthropic({ apiKey: API_KEY, maxRetries: 2 });
 const outDir = path.join(here, "results", `${playoff ? "playoff" : "round1"}-${new Date().toISOString().replace(/[:.]/g, "-")}`);
 fs.mkdirSync(outDir, { recursive: true });
 
