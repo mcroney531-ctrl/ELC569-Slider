@@ -1,0 +1,14 @@
+{
+  "name": "byos-endpoint",
+  "private": true,
+  "type": "module",
+  "description": "One-call persona panel generator for Build Your Test Panel",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "dev": "npx wrangler dev",
+    "deploy": "npx wrangler deploy"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.131.0"
+  }
+}

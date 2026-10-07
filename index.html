@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Build Your Test Panel</title>
+<!-- URL of the BYOS generation endpoint (see byos-endpoint/README.md). Empty = sample only. -->
+<meta name="byos-endpoint" content="">
 <style>
   :root {
     --navy: #1b2a4a;
@@ -178,13 +180,11 @@
   .card-head { display: flex; gap: 10px; align-items: center; }
   .card-head svg { width: 42px; height: 42px; flex: none; }
   .role { color: var(--muted); font-size: .875rem; }
-  .ctx { color: var(--muted); font-size: .875rem; margin-top: 8px; }
   .bubble { position: relative; background: var(--soft); border: 1.5px solid var(--line); border-radius: 14px; padding: 10px 12px; margin: 14px 0 10px; }
   .bubble::before {
     content: ""; position: absolute; top: -8px; left: 20px; width: 13px; height: 13px;
     background: inherit; border-left: inherit; border-top: inherit; transform: rotate(45deg);
   }
-  .bubble q { display: block; quotes: "\201C" "\201D"; }
   .tag { display: none; align-items: center; gap: 6px; font-size: .8125rem; font-weight: 700; color: var(--navy); background: #fff; border: 1.5px solid var(--navy); border-radius: 999px; padding: 2px 10px 2px 7px; margin-bottom: 10px; }
   .tag svg { width: 14px; height: 14px; }
   .route-label { font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
@@ -225,6 +225,49 @@
   }
   .hint { font-weight: 600; color: var(--navy); }
 
+  /* ---------- Intro, panel bar, own-project form ---------- */
+  .intro { margin-bottom: 18px; }
+  .lead { margin-bottom: 14px; }
+  .steps { list-style: none; padding: 0; display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); counter-reset: step; }
+  .steps li { counter-increment: step; display: flex; gap: 10px; align-items: flex-start; font-size: .9375rem; color: var(--muted); }
+  .steps li::before { content: counter(step) / ""; flex: none; display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--navy); color: #fff; font-size: .8125rem; font-weight: 700; margin-top: 1px; }
+  .steps strong { color: var(--ink); }
+  .panel-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; border: 1px solid var(--line); border-left: 4px solid var(--navy); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 14px; background: #fff; }
+  .panel-bar .what { flex: 1 1 280px; min-width: 0; }
+  .panel-id { display: inline-block; font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--navy); background: var(--soft); border-radius: 6px; padding: 1px 8px; margin-bottom: 4px; }
+  .panel-bar h2 { font-size: 1rem; font-weight: 600; color: var(--ink); }
+  .panel-bar .for { color: var(--muted); font-size: .875rem; }
+  .byos { border: 1px solid var(--line); border-top: 4px solid var(--navy); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; background: #fff; box-shadow: 0 6px 20px rgba(27, 42, 74, .08); }
+  .byos h2 { font-size: 1.125rem; margin-bottom: 4px; }
+  .byos .field { margin-top: 14px; }
+  .byos label, .byos legend { display: block; font-weight: 700; color: var(--navy); margin-bottom: 4px; padding: 0; }
+  .byos .opt { font-weight: 400; color: var(--muted); }
+  .byos .help { color: var(--muted); font-size: .875rem; margin-bottom: 6px; }
+  .byos input[type=text], .byos textarea {
+    width: 100%; font: inherit; color: var(--ink); background: #fff; border: 2px solid var(--line-strong); border-radius: 8px; padding: 8px 10px; min-height: 44px;
+  }
+  .byos textarea { min-height: 72px; resize: vertical; }
+  .byos input[type=text]:focus-visible, .byos textarea:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .byos fieldset { border: 0; padding: 0; margin: 14px 0 0; min-width: 0; }
+  .moments { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr)); gap: 8px; }
+  .moments label { font-weight: 600; color: var(--muted); font-size: .8125rem; margin-bottom: 2px; }
+  .privacy { color: var(--muted); font-size: .8125rem; margin-top: 12px; }
+  .byos-error { color: #8a1c1c; font-weight: 600; font-size: .9375rem; }
+  .byos-error:empty { display: none; }
+  .code { color: var(--muted); font-size: .875rem; font-weight: 600; margin-top: 2px; }
+
+  /* ---------- Card fields added for BYOS ---------- */
+  .who { font-size: .875rem; color: var(--ink); margin-top: 8px; }
+  .judges { font-size: .875rem; color: var(--muted); margin-top: 6px; }
+  .judges b { color: var(--ink); font-weight: 600; }
+  .behavior { font-size: .875rem; color: var(--ink); margin-top: 12px; }
+  .behavior b { color: var(--navy); }
+  .bubble p { margin: 0; }
+  .track-svg .moment { fill: var(--ink); font-size: 11px; font-weight: 600; }
+
+  .help-line { color: var(--muted); font-size: .9375rem; margin-bottom: 12px; }
+  .honesty { margin-top: 12px; }
+
   /* ---------- Motion, only when the learner allows it ---------- */
   @media (prefers-reduced-motion: no-preference) {
     .seat .token, .seat .outline { transition: transform .3s cubic-bezier(.3, 1.4, .5, 1), opacity .2s; }
@@ -232,7 +275,7 @@
     .range-wrap .fill { transition: width .14s ease-out; }
     .range-wrap .trace.lit { transition: clip-path .14s ease-out; }
     .card.enter { animation: card-in .3s ease-out; }
-    .bubble.swap q, .route.swap { animation: swap-in .25s ease-out; }
+    .bubble.swap p, .route.swap { animation: swap-in .25s ease-out; }
     .zone.changed { animation: zone-flash .7s ease-out; }
     .track-svg.draw .move { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw .3s ease-out forwards; animation-delay: calc(var(--i) * 120ms); }
     .track-svg.draw .badge { opacity: 0; animation: pop .2s ease-out forwards; animation-delay: calc(var(--i) * 120ms); }
@@ -251,8 +294,56 @@
   <symbol id="i-journey" viewBox="0 0 24 24"><circle cx="4" cy="18" r="2"/><circle cx="20" cy="18" r="2"/><path d="M6 18h12M15 16c0-6-8-6-8 0"/><path d="M5 14l2 2 2-2"/></symbol>
 </svg>
 <main>
-  <h1>Build Your Test Panel</h1>
-  <p class="lead">Your panel tests an AI assistant that turns a weekly task into a checklist.</p>
+  <div class="intro">
+    <h1>Build a test panel for your project</h1>
+    <p class="lead">Describe what you're testing. Build a panel of simulated users. Use them to stress-test your experience before real users do.</p>
+    <ol class="steps">
+      <li><span><strong>Describe it.</strong> One sentence about what you're building and who it's for.</span></li>
+      <li><span><strong>Shape the panel.</strong> How many people, how hard they test it, and how they move through it.</span></li>
+      <li><span><strong>Take it to your build.</strong> Export a persona for each test pass, with what to watch for.</span></li>
+    </ol>
+  </div>
+
+  <section class="panel-bar" aria-labelledby="panel-h">
+    <div class="what">
+      <span class="panel-id" id="panel-id"></span>
+      <h2 id="panel-h" tabindex="-1"></h2>
+      <p class="for" id="panel-for"></p>
+    </div>
+    <button type="button" class="primary" id="own" aria-expanded="false" aria-controls="byos">Try it with your own project</button>
+  </section>
+
+  <section class="byos" id="byos" hidden aria-labelledby="byos-h">
+    <h2 id="byos-h">Your project</h2>
+    <p class="help">We'll build six simulated users for it. The sliders then shape the panel without building it again.</p>
+    <form id="byos-form" novalidate>
+      <div class="field">
+        <label for="f-testing">What are you testing?</label>
+        <p class="help" id="f-testing-help">One or two sentences, e.g. "A checkout form for a small online bakery."</p>
+        <textarea id="f-testing" maxlength="300" aria-describedby="f-testing-help byos-error"></textarea>
+      </div>
+      <div class="field">
+        <label for="f-audience">Who is it for? <span class="opt">(optional)</span></label>
+        <input type="text" id="f-audience" maxlength="120">
+      </div>
+      <fieldset>
+        <legend>Four key moments <span class="opt">(optional)</span></legend>
+        <p class="help">Leave blank and we'll pick four worth testing.</p>
+        <div class="moments">
+          <div><label for="f-m1">Moment 1</label><input type="text" id="f-m1" maxlength="24"></div>
+          <div><label for="f-m2">Moment 2</label><input type="text" id="f-m2" maxlength="24"></div>
+          <div><label for="f-m3">Moment 3</label><input type="text" id="f-m3" maxlength="24"></div>
+          <div><label for="f-m4">Moment 4</label><input type="text" id="f-m4" maxlength="24"></div>
+        </div>
+      </fieldset>
+      <p class="privacy">Sent once to generate your panel. Don't include confidential details.</p>
+      <div class="actions">
+        <button type="submit" class="primary" id="build">Build my panel</button>
+        <button type="button" id="cancel">Cancel</button>
+        <p class="byos-error" id="byos-error"></p>
+      </div>
+    </form>
+  </section>
 
   <div class="layout">
     <div class="stage">
@@ -262,8 +353,8 @@
       </section>
 
       <section class="zone zone-track" id="zone-track" aria-labelledby="track-h">
-        <div class="zone-head"><svg class="icon" aria-hidden="true"><use href="#i-journey"/></svg><h2 id="track-h">Shared journey pattern</h2><p class="caption" id="track-caption"></p></div>
-        <svg class="track-svg" id="track" viewBox="0 -6 320 128" role="img" aria-labelledby="track-desc">
+        <div class="zone-head"><svg class="icon" aria-hidden="true"><use href="#i-journey"/></svg><h2 id="track-h">Journey through your key moments</h2><p class="caption" id="track-caption"></p></div>
+        <svg class="track-svg" id="track" viewBox="0 -6 320 152" role="img" aria-labelledby="track-desc">
           <title id="track-desc"></title>
           <defs>
             <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -295,17 +386,17 @@
             <input type="range" id="panel" min="1" max="6" step="1" value="3">
             <span class="thumb" id="panel-thumb" aria-hidden="true"></span>
           </div>
-          <div class="ends"><span>Just one</span><span>Full panel</span></div>
+          <div class="ends"><span>Core user</span><span>Full coverage</span></div>
         </div>
         <div class="slider">
-          <div class="slider-head"><svg class="icon" aria-hidden="true"><use href="#i-stress"/></svg><label for="stress">Stress</label><span class="slider-val" id="stress-val" aria-hidden="true"></span></div>
-          <div class="range-wrap" id="stress-wrap">
+          <div class="slider-head"><svg class="icon" aria-hidden="true"><use href="#i-stress"/></svg><label for="challenge">Challenge level</label><span class="slider-val" id="challenge-val" aria-hidden="true"></span></div>
+          <div class="range-wrap" id="challenge-wrap">
             <svg class="trace" viewBox="0 0 300 40" preserveAspectRatio="none" aria-hidden="true"><polyline class="trace-line" vector-effect="non-scaling-stroke"/></svg>
             <svg class="trace lit" viewBox="0 0 300 40" preserveAspectRatio="none" aria-hidden="true"><polyline class="trace-line" vector-effect="non-scaling-stroke"/></svg>
-            <input type="range" id="stress" min="1" max="4" step="1" value="1">
-            <span class="thumb" id="stress-thumb" aria-hidden="true"></span>
+            <input type="range" id="challenge" min="1" max="4" step="1" value="1">
+            <span class="thumb" id="challenge-thumb" aria-hidden="true"></span>
           </div>
-          <div class="ends"><span>Typical</span><span>Edge Case</span></div>
+          <div class="ends"><span>Typical</span><span>Edge case</span></div>
         </div>
         <div class="slider">
           <div class="slider-head"><svg class="icon" aria-hidden="true"><use href="#i-journey"/></svg><label for="journey">Journey</label><span class="slider-val" id="journey-val" aria-hidden="true"></span></div>
@@ -320,13 +411,15 @@
       </div>
       <div id="locked-row" hidden>
         <p class="summary" id="summary"></p>
+        <p class="code" id="code"></p>
         <div class="actions"><button type="button" id="edit">Edit panel</button></div>
       </div>
     </section>
   </div>
 
   <section class="review" id="review" hidden aria-labelledby="brief-h">
-    <h2 id="brief-h" tabindex="-1">Your persona brief</h2>
+    <h2 id="brief-h" tabindex="-1">Your test panel brief</h2>
+    <p class="help-line">Each persona is a script for one test pass. Open your build, become that person, follow their route, and note where your experience helps, breaks, or lets them slip through.</p>
     <label for="brief">Persona brief (editable)</label>
     <textarea id="brief" spellcheck="false"></textarea>
     <div class="actions">
@@ -334,6 +427,7 @@
       <button type="button" id="download">Download .md</button>
       <span class="hint" id="export-msg"></span>
     </div>
+    <p class="note honesty">Simulated users help you find problems early. They don't replace testing with real people.</p>
   </section>
 
   <p class="sr-only" id="status" role="status" aria-live="polite"></p>
@@ -341,86 +435,220 @@
 
 <script>
 "use strict";
-// ---------- Data (section 4) ----------
-const TIERS = [
-  {label:"Typical", sentence:"Describes the task clearly and completely, in order.", aria:"Level 1 of 4, typical: clear, complete answers"},
-  {label:"Rushed", sentence:"Gives a short, incomplete description and assumes the assistant fills in the rest.", aria:"Level 2 of 4, rushed: short, incomplete answers"},
-  {label:"Contradictory", sentence:"States a rule, then contradicts it, leaving the assistant to choose or ask.", aria:"Level 3 of 4, contradictory: answers conflict with themselves"},
-  {label:"Edge Case", sentence:"Adds an unexpected constraint or request the standard checklist doesn't cover.", aria:"Level 4 of 4, edge case: personas add an unexpected constraint"}];
+// ---------- Fixed vocabulary (not generated) ----------
+// Level 1 is deterministic: the persona's own baseline. Levels 2–4 apply generated overlays.
+const LEVELS = [
+  {label:"Typical", sentence:"No added challenge. Each persona behaves according to their normal working style.", aria:"Level 1 of 4, typical: each persona's normal behavior, no added challenge"},
+  {label:"Rushed", sentence:"Under time pressure, each persona cuts corners relative to their own normal.", aria:"Level 2 of 4, rushed: cutting corners under time pressure"},
+  {label:"Inconsistent", sentence:"Their inputs conflict: they change answers or pick options that don't fit what they did earlier.", aria:"Level 3 of 4, inconsistent: inputs conflict with each other"},
+  {label:"Edge case", sentence:"Each brings a real circumstance the experience doesn't seem to cover.", aria:"Level 4 of 4, edge case: a situation the design may not cover"}];
+const BASELINE_BEHAVIOR = "No added challenge. Behaves according to their normal working style.";
 const PATTERNS = [
-  {label:"Straight through", seq:[1,2,3,4], aria:"Level 1 of 5, straight through: follows the steps in order"},
-  {label:"One step back", seq:[1,2,3,2,4], aria:"Level 2 of 5, one step back: returns to step 2 once"},
+  {label:"Straight through", seq:[1,2,3,4], aria:"Level 1 of 5, straight through: visits each key moment once, in order"},
+  {label:"One step back", seq:[1,2,3,2,4], aria:"Level 2 of 5, one step back: returns to moment 2 once"},
   {label:"A few detours", seq:[1,2,1,3,2,4], aria:"Level 3 of 5, a few detours: goes back twice"},
-  {label:"Loops back", seq:[1,2,3,1,2,3,4], aria:"Level 4 of 5, loops back: repeats steps 1 to 3 before finishing"},
-  {label:"Restarts often", seq:[1,2,3,1,2,3,1,4], aria:"Level 5 of 5, restarts often: loops steps 1 to 3 twice, then returns to step 1 before finishing"}];
-const PERSONAS = [
-  {name:"Marisol Vega", role:"Florist", context:"Prepares the week's event orders.",
-   steps:["Take the order","Check stock","Quote the price","Confirm delivery"], short:["Order","Stock","Price","Delivery"],
-   lines:["Each Monday I take the week's event orders, check my stock, quote a price, and confirm delivery.","Orders, stock, prices, delivery. Same as always.","Every client gets a text confirmation. Actually, no texts. Clients hate texts.","Can the checklist handle a funeral order and a wedding order the same way, on half a page?"]},
-  {name:"Kenji Okada", role:"Tow-truck dispatcher", context:"Hands off the overnight calls.",
-   steps:["Log the overnight calls","Assign the open jobs","Call the drivers","Close out the sheet"], short:["Log calls","Assign","Call drivers","Close out"],
-   lines:["Every morning I log the overnight calls, assign the open jobs, phone the drivers, and close out the sheet.","Log calls, assign, call drivers. Close out if there's time.","Every job gets assigned before I call anyone. Except I call the drivers first to see who's free.","Make it work when two drivers call in sick and the sheet is on paper."]},
-  {name:"Odalys Rivera", role:"Public librarian", context:"Runs the weekly holds shelf.",
-   steps:["Pull the holds shelf","Check pickup dates","Notify patrons","Reshelve expired holds"], short:["Pull holds","Check dates","Notify","Reshelve"],
-   lines:["Weekly I pull the holds shelf, check pickup dates, notify patrons, and reshelve anything expired.","Pull holds, check dates, notify. Expired ones go back.","Patrons always get a call. Never call anyone, email only.","Can it also cover the days the notification system is down?"]},
-  {name:"Beau Fontenot", role:"Piano tuner", context:"Plans the week's piano route.",
-   steps:["Book the visits","Check each piano's history","Tune and note repairs","Send the invoice"], short:["Book","History","Tune","Invoice"],
-   lines:["Each week I book the visits, check each piano's history, tune and note repairs, then send the invoice.","Book visits, tune, invoice. History's in my head.","Every piano gets a full tuning. Unless it's been tuned this year, then just a check.","Make it work for a church with eleven pianos and one invoice."]},
-  {name:"Anneke Visser", role:"Vet receptionist", context:"Runs the daily front-desk routine.",
-   steps:["Check the day's appointments","Call about reminders","Update the records","Order low supplies"], short:["Appointments","Reminders","Records","Supplies"],
-   lines:["Every day I check the appointments, call about reminders, update the records, and order low supplies.","Appointments, reminder calls, records. Supplies when I remember.","Reminders go out two days ahead. Wait, same day is better. Two days ahead.","Can it still make sense if the clinic is closed Wednesdays and open Sundays?"]},
-  {name:"Tariq Haddad", role:"School bus coordinator", context:"Handles the weekly route changes.",
-   steps:["Collect change requests","Redraw the routes","Tell the drivers","Update the parent notice"], short:["Requests","Routes","Drivers","Notice"],
-   lines:["Each week I collect route change requests, redraw the routes, tell the drivers, and update the parent notice.","Changes in, routes redrawn, drivers told. Notice later.","Parents get the notice before the drivers do. Drivers always hear first.","Make it work when a route changes in the middle of the day."]}];
+  {label:"Loops back", seq:[1,2,3,1,2,3,4], aria:"Level 4 of 5, loops back: repeats moments 1 to 3 before finishing"},
+  {label:"Restarts often", seq:[1,2,3,1,2,3,1,4], aria:"Level 5 of 5, restarts often: loops moments 1 to 3 twice, then returns to moment 1 before finishing"}];
+// Journey sentences and risks are rules over the four moment names (m = short names).
+const JOURNEY_TEXT = [
+  m => ({behavior: "Visits each key moment once, in order.", risk: "Does each moment make sense on a single pass, in order?"}),
+  m => ({behavior: `Goes back to “${m[1]}” once before finishing.`, risk: `When they return to “${m[1]}”, is their earlier work still there?`}),
+  m => ({behavior: `Takes two detours: back to “${m[0]}”, then back to “${m[1]}”.`, risk: "After jumping back twice, can they find their way forward without losing progress?"}),
+  m => ({behavior: `Repeats “${m[0]}” through “${m[2]}” before going on to “${m[3]}”.`, risk: `After repeating “${m[0]}” to “${m[2]}”, does progress or completion still show correctly?`}),
+  m => ({behavior: `Loops “${m[0]}” through “${m[2]}” twice, then returns to “${m[0]}” before “${m[3]}”.`, risk: `After restarting at “${m[0]}” again and again, does anything reset, duplicate or get stuck before “${m[3]}”?`})];
+// Panel size broadens coverage in this fixed order. It never assigns challenge.
+const LENSES = ["Core user", "Newcomer", "Experienced user", "Time-constrained", "Low confidence", "Context outlier"];
 
-// One muted hue + one unique shape per persona (shape carries identity, not color).
-const LOOKS = [
-  {hue:"#3d5a80", shape:"circle"}, {hue:"#6b4e71", shape:"square"}, {hue:"#2f6f5e", shape:"triangle"},
-  {hue:"#8a5a2b", shape:"diamond"}, {hue:"#7a3e48", shape:"hexagon"}, {hue:"#4a5a2a", shape:"pentagon"}];
-// Text tags for the stress tiers that need one (never style alone).
-const TAGS = {
-  3: {text: "Conflicting answer", icon: '<path d="M2 4.5 H10 M8 2 L10.5 4.5 L8 7 M12 9.5 H4 M6 7 L3.5 9.5 L6 12" fill="none" stroke="currentColor" stroke-width="1.6"/>'},
-  4: {text: "Unexpected request", icon: '<path d="M7 1 L13 13 L1 13 Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7 5.5 V9 M7 10.6 V11.2" stroke="currentColor" stroke-width="1.6"/>'}};
-const SCENARIO = "Scenario: an AI assistant helps someone describe a weekly task and turn it into a checklist.";
+// ---------- Sample panel (bundled, works offline) ----------
+const SAMPLE_PANEL = {
+  id: "SAMPLE",
+  experience: {
+    summary: "A 15-minute learning module for new managers about documenting performance issues.",
+    audience: "Newly promoted people managers in retail and operations.",
+    moments: [{short:"Why", full:"Why it matters"}, {short:"Model", full:"What good looks like"},
+              {short:"Practice", full:"Practice: write the note"}, {short:"Check", full:"Check & wrap-up"}]},
+  personas: [
+    {name:"Dana Okafor", whoTheyAre:"Store supervisor, promoted to team lead three weeks ago.",
+     goal:"Know exactly what to write so it's fair and not personal.",
+     startingPoint:"Has never written a formal note; knows the employee well and likes them.",
+     workingStyle:"Goes in order, reads carefully, takes the practice seriously.",
+     baselineSaysOrDoes:"Writes: “On 3/4 and 3/11 Jordan arrived 40 minutes late without calling in.”",
+     judgesBy:"Could I write this note tomorrow morning?",
+     coreRisk:"Writes feelings instead of facts because she's close to the employee.",
+     overlays:[
+       {behavior:"Unusually for her, skims the model example and submits the minimum.", saysOrDoes:"Types “late a lot, we talked” and presses Submit.", risk:"Does the module accept a vague note without coaching her?"},
+       {behavior:"Her answers conflict with each other.", saysOrDoes:"Labels the issue “attitude”, then lists only attendance dates; later picks the opposite answer on the check.", risk:"Does feedback catch the mismatch between the label and the evidence?"},
+       {behavior:"Brings a circumstance the module doesn't cover.", saysOrDoes:"“What if he's also on medical leave? Do I still document this?”", risk:"Does the module point her to HR instead of leaving her guessing?"}]},
+    {name:"Tomás Reyes", whoTheyAre:"Promoted from the sales floor to shift lead last week.",
+     goal:"Avoid getting it wrong and getting into trouble himself.",
+     startingPoint:"Has never had a formal HR conversation; unsure what “documenting” means here.",
+     workingStyle:"Reads slowly, rereads definitions, opens every optional “learn more” link.",
+     baselineSaysOrDoes:"Opens “What counts as a performance issue?” and reads it to the end before writing anything.",
+     judgesBy:"Does this explain the words, not just use them?",
+     coreRisk:"Gets lost in HR vocabulary the module assumes he already knows.",
+     overlays:[
+       {behavior:"Skips the definitions he normally relies on and guesses at the terms.", saysOrDoes:"Writes “gave verbal warning” without knowing whether a quick chat counts as one.", risk:"Does the module catch a term used wrongly?"},
+       {behavior:"Uses a term one way in his note and another way on the check.", saysOrDoes:"Calls the first talk “informal” in his note, then marks “formal warning given” on the check.", risk:"Does feedback notice the conflict between the note and the check?"},
+       {behavior:"Brings a question about his own unclear authority.", saysOrDoes:"“I'm not his official manager in the system yet. Can I still document this?”", risk:"Does the module say who can document, or where to ask?"}]},
+    {name:"Priya Raman", whoTheyAre:"Senior engineer who moved into management a year ago.",
+     goal:"Confirm she's already doing it right, quickly.",
+     startingPoint:"Gives lots of informal feedback; suspects documentation is box-ticking.",
+     workingStyle:"Skims explanations, goes straight to the practice and the check.",
+     baselineSaysOrDoes:"Writes: “Missed two deadlines in March (3/8, 3/22). Discussed 3/23.” and moves straight to the check.",
+     judgesBy:"Does this tell me anything I don't already know?",
+     coreRisk:"Gets a perfect score without changing how she'd actually document.",
+     overlays:[
+       {behavior:"Skips further than her normal: skips the model entirely and answers the check from experience.", saysOrDoes:"Jumps from “Why it matters” straight to the check and answers all five in under a minute.", risk:"Can she pass without engaging with the content at all?"},
+       {behavior:"Her note and her check answers follow different rules.", saysOrDoes:"Writes a dated, factual note, then picks “document only after the third incident” on the check.", risk:"Does feedback challenge a correct note paired with a wrong rule?"},
+       {behavior:"Brings a case from her own practice the module doesn't address.", saysOrDoes:"“My report is remote and three time zones away. Does a missed stand-up count as an incident?”", risk:"Does the module handle remote or async work, or fall silent?"}]},
+    {name:"Marcus Bell", whoTheyAre:"Night-shift warehouse supervisor.",
+     goal:"Finish without losing progress.",
+     startingPoint:"Takes it on his phone, on breaks, and gets interrupted.",
+     workingStyle:"Short sessions; types as little as possible.",
+     baselineSaysOrDoes:"Writes “late 2x this wk, no call” on his break, locks the phone, and finishes the check that evening.",
+     judgesBy:"Can I do this in two-minute chunks?",
+     coreRisk:"Loses his place or his practice answer when he resumes.",
+     overlays:[
+       {behavior:"Even shorter sessions than usual: answers in fragments between tasks.", saysOrDoes:"Types “late” in the practice box and taps Submit as his break ends.", risk:"Does a one-word note get coaching, or a pass?"},
+       {behavior:"Answers one way in one sitting and the opposite way in the next.", saysOrDoes:"Says the issue was “discussed” in the morning, then says “no conversation yet” that evening.", risk:"Does the module notice answers that conflict across sessions?"},
+       {behavior:"Brings a constraint the module doesn't plan for.", saysOrDoes:"Loses signal mid-practice and reopens the module on a shared break-room tablet.", risk:"Does progress survive a device switch, and is his draft kept private on a shared device?"}]},
+    {name:"Grace Liu", whoTheyAre:"Team lead who avoids conflict.",
+     goal:"Find a way to document that doesn't feel like an attack.",
+     startingPoint:"Worries that writing things down will damage trust with her team.",
+     workingStyle:"Hesitates at every writing prompt, rewrites her answer several times, softens the language.",
+     baselineSaysOrDoes:"Writes: “Jordan has had a few challenges with timing lately, which we're working on together.”",
+     judgesBy:"Will this make my team trust me less?",
+     coreRisk:"Softens the note until it no longer records the problem.",
+     overlays:[
+       {behavior:"Wants it over with: submits her first, vaguest draft.", saysOrDoes:"Types “some timing issues” and moves on before she can second-guess it.", risk:"Does the module push back on a note with no dates or facts?"},
+       {behavior:"Says one thing about the problem and documents another.", saysOrDoes:"Writes that the issue is “minor”, then picks “final written warning” on the check.", risk:"Does feedback catch severity that doesn't match the note?"},
+       {behavior:"Brings a situation that makes documenting feel unsafe.", saysOrDoes:"“The employee is my friend outside work. Should someone else write this?”", risk:"Does the module address conflicts of interest or point her to HR?"}]},
+    {name:"Sam Whitaker", whoTheyAre:"Manages a fully remote support team across three time zones.",
+     goal:"Document patterns that only show up in systems, not in person.",
+     startingPoint:"Sees performance problems in chat logs and ticket data, never face to face.",
+     workingStyle:"Reads everything and checks whether each example applies to remote work.",
+     baselineSaysOrDoes:"Writes: “Ticket backlog grew from 4 to 19 between 3/1 and 3/15; two missed handoffs logged in chat.”",
+     judgesBy:"Does any of this work when I never see my team in person?",
+     coreRisk:"Finds the examples assume an in-person workplace and tunes out.",
+     overlays:[
+       {behavior:"Skims, assuming the module is built for in-person teams.", saysOrDoes:"Scrolls past the model note and pastes a line from his ticket dashboard as his answer.", risk:"Does pasted system data get coaching on context, or a pass?"},
+       {behavior:"Mixes evidence from different time frames.", saysOrDoes:"Cites last quarter's ticket data as this week's issue, then dates it correctly on the check.", risk:"Does feedback catch evidence that doesn't match the stated period?"},
+       {behavior:"Brings a remote-work circumstance the module doesn't cover.", saysOrDoes:"“The employee works in a different country. Whose rules apply to this documentation?”", risk:"Does the module point him to HR or legal instead of implying one rule fits all?"}]}
+  ]};
+
+// ---------- Validation for generated panels (text only, strict shape) ----------
+const CORE_FIELDS = ["name", "whoTheyAre", "goal", "startingPoint", "workingStyle", "baselineSaysOrDoes", "judgesBy", "coreRisk"];
+const OVERLAY_FIELDS = ["behavior", "saysOrDoes", "risk"];
+function cleanText(v, max) {
+  if (typeof v !== "string") throw new Error("missing text");
+  const s = v.replace(/[\u0000-\u001f\u007f]+/g, " ").replace(/\s+/g, " ").trim();
+  if (!s || s.length > max) throw new Error("text out of range");
+  return s;
+}
+function validatePanel(raw) {
+  if (!raw || typeof raw !== "object") throw new Error("not an object");
+  const ex = raw.experience || {};
+  if (!Array.isArray(ex.moments) || ex.moments.length !== 4) throw new Error("need 4 moments");
+  if (!Array.isArray(raw.personas) || raw.personas.length !== 6) throw new Error("need 6 personas");
+  return {
+    experience: {
+      summary: cleanText(ex.summary, 300),
+      audience: typeof ex.audience === "string" && ex.audience.trim() ? cleanText(ex.audience, 200) : "",
+      moments: ex.moments.map(m => ({short: cleanText(m && m.short, 24), full: cleanText(m && m.full, 80)}))},
+    personas: raw.personas.map(p => {
+      if (!p || !Array.isArray(p.overlays) || p.overlays.length !== 3) throw new Error("need 3 overlays");
+      const out = {};
+      CORE_FIELDS.forEach(f => { out[f] = cleanText(p[f], f === "name" ? 60 : 260); });
+      out.overlays = p.overlays.map(o => {
+        const c = {};
+        OVERLAY_FIELDS.forEach(f => { c[f] = cleanText(o && o[f], 260); });
+        return c;
+      });
+      return out;
+    })};
+}
+function makePanelId() {
+  const A = "ABCDEFGHJKMNPQRSTUVWXYZ23456789", b = new Uint32Array(4);
+  crypto.getRandomValues(b);
+  return Array.from(b, n => A[n % A.length]).join("");
+}
 
 // ---------- Pure functions ----------
 const firstName = p => p.name.split(" ")[0];
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"}[c]));
 
-// Names for each visit in a pattern; a repeat visit reads "<step> again".
+// Names for each visit in a pattern; a repeat visit reads "<moment> again".
 function routeParts(seq, names) {
   const seen = new Set();
   return seq.map(n => { const s = names[n - 1] + (seen.has(n) ? " again" : ""); seen.add(n); return s; });
 }
-function routeSentence(seq, steps) {
-  const s = routeParts(seq, steps.map(x => x.toLowerCase())).join(" -> ");
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
-const panelValueText = n => `${n} persona${n === 1 ? "" : "s"}: ${PERSONAS.slice(0, n).map(firstName).join(", ")}`;
+const routeSentence = (seq, names) => routeParts(seq, names).join(" -> ");
+const configCode = s => `P${s.panel}-C${s.challenge}-J${s.journey}`;
 
-// Everything on screen and in the export comes from these three integers.
-function deriveView({panel, stress, journey}) {
-  const tier = TIERS[stress - 1], pattern = PATTERNS[journey - 1];
+// Everything on screen and in the export comes from the current panel and three integers.
+function deriveView(panel, {panel: n, challenge, journey}) {
+  const level = LEVELS[challenge - 1], pattern = PATTERNS[journey - 1];
+  const m = panel.experience.moments, shorts = m.map(x => x.short);
+  const jt = JOURNEY_TEXT[journey - 1](shorts);
   return {
-    panel, stress, journey, tier, pattern,
-    summary: `Panel of ${panel} · ${tier.label} · ${pattern.label}`,
-    valueText: {panel: panelValueText(panel), stress: tier.aria, journey: pattern.aria},
-    seated: PERSONAS.slice(0, panel).map((p, i) => ({
-      i, name: p.name, role: p.role, context: p.context,
-      line: p.lines[stress - 1],                      // stress owns behavior
-      routeShort: routeParts(pattern.seq, p.short),   // journey owns movement
-      route: routeSentence(pattern.seq, p.steps)
-    }))
-  };
+    panel: n, challenge, journey, level, pattern, id: panel.id, experience: panel.experience,
+    summary: `Panel of ${n} · ${level.label} · ${pattern.label}`,
+    code: `Panel ${panel.id} · ${configCode({panel: n, challenge, journey})}`,
+    valueText: {
+      panel: `${n} persona${n === 1 ? "" : "s"}: ${panel.personas.slice(0, n).map(firstName).join(", ")}`,
+      challenge: level.aria, journey: pattern.aria},
+    journeyText: jt,
+    seated: panel.personas.slice(0, n).map((p, i) => {
+      const o = challenge > 1 ? p.overlays[challenge - 2] : null;   // challenge owns behavior
+      return {
+        i, p, lens: LENSES[i],
+        behavior: o ? o.behavior : BASELINE_BEHAVIOR,
+        saysOrDoes: o ? o.saysOrDoes : p.baselineSaysOrDoes,
+        levelRisk: o ? o.risk : null,
+        routeShort: routeParts(pattern.seq, shorts),                  // journey owns movement
+        route: routeSentence(pattern.seq, m.map(x => x.full))};
+    })};
 }
-function buildBrief(state) {
-  const v = deriveView(state);
-  const out = ["# Test Panel Brief", "", `Panel of ${v.panel} · Stress: ${v.tier.label} · Journey: ${v.pattern.label}`, "", SCENARIO];
-  v.seated.forEach(p => out.push("", `## ${p.name}: ${p.role}`, "", `Context: ${p.context}`, "",
-    `Tendency: ${v.tier.sentence}`, "", `Example response: "${p.line}"`, "", `Route: ${p.route}`));
+function buildBrief(panel, s) {
+  const v = deriveView(panel, s), ex = v.experience;
+  const out = ["# Test Panel Brief", "", v.code, "",
+    `**Testing:** ${ex.summary}`];
+  if (ex.audience) out.push(`**For:** ${ex.audience}`);
+  out.push(`**Key moments:** ${ex.moments.map(x => x.full).join(" -> ")}`,
+    `**Challenge level:** ${v.level.label}. ${v.level.sentence}`,
+    `**Journey:** ${v.pattern.label}. ${v.journeyText.behavior}`, "",
+    "Each persona is a script for one test pass. Become that person, follow their route through your build, and note where your experience helps them, breaks, or lets them slip through.", "",
+    "_Simulated users help you find problems early. They don't replace testing with real people._");
+  v.seated.forEach(x => {
+    const p = x.p, watch = [p.coreRisk, x.levelRisk, v.journeyText.risk].filter(Boolean);
+    out.push("", `## ${p.name} (${x.lens})`, "",
+      `- **Who they are:** ${p.whoTheyAre}`,
+      `- **Goal:** ${p.goal}`,
+      `- **Starting point:** ${p.startingPoint}`,
+      `- **Working style:** ${p.workingStyle}`,
+      `- **Judges it by:** "${p.judgesBy}"`,
+      `- **Current test behavior:** ${x.behavior}`,
+      `- **Says / does:** ${x.saysOrDoes}`,
+      `- **Journey behavior:** ${v.journeyText.behavior}`,
+      `- **Route:** ${x.route}`,
+      `- **Watch for:**`, ...watch.map(w => `  - ${w}`),
+      `- **Run this test:**`,
+      `  1. Set up: open your build fresh, as ${firstName(p)}. Starting point: ${p.startingPoint}`,
+      `  2. Play: follow the route above. At each moment, behave as described under Current test behavior.`,
+      `  3. Watch for: the points above.`,
+      `  4. Log: where it helped, where it broke, where it let ${firstName(p)} through when it shouldn't have, and where ${firstName(p)} would give up.`);
+  });
   return out.join("\n") + "\n";
 }
 
 // ---------- SVG helpers ----------
+const LOOKS = [
+  {hue:"#3d5a80", shape:"circle"}, {hue:"#6b4e71", shape:"square"}, {hue:"#2f6f5e", shape:"triangle"},
+  {hue:"#8a5a2b", shape:"diamond"}, {hue:"#7a3e48", shape:"hexagon"}, {hue:"#4a5a2a", shape:"pentagon"}];
+// Text tags for the challenge levels that need one (never style alone).
+const TAGS = {
+  3: {text: "Conflicting answer", icon: '<path d="M2 4.5 H10 M8 2 L10.5 4.5 L8 7 M12 9.5 H4 M6 7 L3.5 9.5 L6 12" fill="none" stroke="currentColor" stroke-width="1.6"/>'},
+  4: {text: "Unexpected request", icon: '<path d="M7 1 L13 13 L1 13 Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7 5.5 V9 M7 10.6 V11.2" stroke="currentColor" stroke-width="1.6"/>'}};
 const SHAPES = {
   circle: '<circle cx="20" cy="20" r="18"/>',
   square: '<rect x="3" y="3" width="34" height="34" rx="4"/>',
@@ -430,9 +658,10 @@ const SHAPES = {
   pentagon: '<polygon points="20,2 38,15 31,37 9,37 2,15"/>'};
 const textY = i => LOOKS[i].shape === "triangle" ? 27 : 20;
 function tokenSVG(i, cls) {
+  const initial = esc((current.personas[i].name.trim()[0] || "?").toUpperCase());
   return `<svg class="${cls || ""}" viewBox="0 0 40 40" aria-hidden="true" focusable="false">` +
     `<g fill="${LOOKS[i].hue}" stroke="#fff" stroke-width="1.5">${SHAPES[LOOKS[i].shape]}</g>` +
-    `<text x="20" y="${textY(i)}" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="16" font-weight="700" font-family="Segoe UI, system-ui, sans-serif">${PERSONAS[i].name[0]}</text></svg>`;
+    `<text x="20" y="${textY(i)}" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="16" font-weight="700" font-family="Segoe UI, system-ui, sans-serif">${initial}</text></svg>`;
 }
 function outlineSVG(i, withNumber) {
   return `<svg class="outline" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><g fill="#fff" stroke="#7b8794" stroke-width="2" stroke-dasharray="${withNumber ? "3 3" : "0"}">${SHAPES[LOOKS[i].shape]}</g>` +
@@ -442,7 +671,7 @@ const NEEDLE = '<svg viewBox="0 0 44 44"><path d="M22 3 L26.5 13 L23.6 13 L23.6 
 const PIP = '<svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="13" fill="#1b2a4a" stroke="#fff" stroke-width="3"/><path d="M16 24.5 C16 17, 28 17, 28 24.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M25.5 22.5 L28 25 L30.5 22.5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const NODE_X = [40, 120, 200, 280], RAIL_Y = 80;
 
-function trackMarkup(seq) {
+function trackMarkup(seq, shorts) {
   const spanCount = {};
   let moves = "";
   for (let k = 1; k < seq.length; k++) {
@@ -450,9 +679,8 @@ function trackMarkup(seq) {
     if (b > a) {
       moves += `<path class="move" style="--i:${k - 1}" pathLength="1" d="M${xa + 17} ${RAIL_Y} L${xb - 19} ${RAIL_Y}" marker-end="url(#arrow)"/>`;
     } else {
-      // Back-moves arc above the rail; repeats of the same jump stack higher.
+      // Back-moves arc above the rail; each repeat nests outside the last: taller and with wider feet.
       const key = a + "-" + b, n = spanCount[key] = (spanCount[key] || 0) + 1;
-      // Each repeat nests outside the last: taller and with wider feet.
       const h = (12 + 16 * (a - b) + 20 * (n - 1)) * 1.33, o = 10 * (n - 1);
       const x1 = xa - 5 + o, x2 = xb + 5 - o;
       moves += `<path class="move back" style="--i:${k - 1}" pathLength="1" d="M${x1} ${RAIL_Y - 16} C${x1} ${RAIL_Y - 16 - h}, ${x2} ${RAIL_Y - 16 - h}, ${x2} ${RAIL_Y - 19}" marker-end="url(#arrow)"/>`;
@@ -466,6 +694,7 @@ function trackMarkup(seq) {
       const bx = x + (j - (visits.length - 1) / 2) * 26;
       nodes += `<g class="badge" style="--i:${v - 1}"><circle cx="${bx}" cy="${RAIL_Y + 32}" r="11.5"/><text x="${bx}" y="${RAIL_Y + 32}" text-anchor="middle" dominant-baseline="central">${v}</text></g>`;
     });
+    nodes += `<text class="moment" x="${x}" y="${RAIL_Y + 60}" text-anchor="middle">${esc(shorts[idx])}</text>`;
   });
   return {moves, nodes};
 }
@@ -480,15 +709,13 @@ function tracePoints() { // flat on the left, jagged on the right
 
 // ---------- DOM ----------
 const $ = id => document.getElementById(id);
-const inputs = {panel: $("panel"), stress: $("stress"), journey: $("journey")};
+const inputs = {panel: $("panel"), challenge: $("challenge"), journey: $("journey")};
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-const state = {panel: 3, stress: 1, journey: 1};
-let lastJourney = null, cardEls = [], locked = false, briefEdited = false;
+const state = {panel: 3, challenge: 1, journey: 1};
+let current = SAMPLE_PANEL;            // the one coherent source panel the sliders work on
+let lastTrackKey = null, cardEls = [], locked = false, briefEdited = false;
 
 function setupStatic() {
-  $("seats").innerHTML = PERSONAS.map((p, i) =>
-    `<li class="seat"><span class="seat-shape">${outlineSVG(i, true)}${tokenSVG(i, "token")}</span>` +
-    `<span class="seat-name" aria-hidden="true"></span><span class="sr-only"></span></li>`).join("");
   ["panel", "journey"].forEach(id => {
     const inp = inputs[id], max = +inp.max, min = +inp.min, wrap = $(id + "-wrap");
     for (let v = min; v <= max; v++) {
@@ -501,8 +728,23 @@ function setupStatic() {
     }
   });
   document.querySelectorAll(".trace-line").forEach(l => l.setAttribute("points", tracePoints()));
-  $("stress-thumb").innerHTML = NEEDLE;
+  $("challenge-thumb").innerHTML = NEEDLE;
   $("journey-thumb").innerHTML = PIP;
+}
+
+// Seats and cards are rebuilt only when the source panel changes.
+function mountPanel() {
+  $("seats").innerHTML = current.personas.map((p, i) =>
+    `<li class="seat"><span class="seat-shape">${outlineSVG(i, true)}${tokenSVG(i, "token")}</span>` +
+    `<span class="seat-name" aria-hidden="true"></span><span class="sr-only"></span></li>`).join("");
+  cardEls.forEach(el => el.remove());
+  cardEls = [];
+  lastTrackKey = null;
+  const sample = current.id === "SAMPLE";
+  $("panel-id").textContent = sample ? "Sample panel" : `Panel ${current.id}`;
+  $("panel-h").textContent = (sample ? "You're looking at a sample panel for: " : "Your panel for: ") + current.experience.summary;
+  $("panel-for").textContent = current.experience.audience ? `For: ${current.experience.audience}` : "";
+  $("own").textContent = sample ? "Try it with your own project" : "Change project or rebuild";
 }
 
 function makeCard(i) {
@@ -510,8 +752,9 @@ function makeCard(i) {
   li.className = "card";
   li.innerHTML =
     `<div class="card-head">${tokenSVG(i)}<div><h3></h3><p class="role"></p></div></div>` +
-    `<p class="ctx"></p>` +
-    `<div class="bubble"><q></q></div>` +
+    `<p class="who"></p><p class="judges"><b>Judges it by:</b> <span></span></p>` +
+    `<p class="behavior"></p>` +
+    `<div class="bubble"><p></p></div>` +
     `<span class="tag"><svg viewBox="0 0 14 14" aria-hidden="true"></svg><span class="tag-text"></span></span>` +
     `<p class="route-label">Route</p><ol class="route"></ol>`;
   return li;
@@ -525,17 +768,17 @@ function replay(el, cls) {
 }
 
 function render() {
-  const v = deriveView(state);
+  const v = deriveView(current, state);
 
   // Sliders: thumbs, fills, visible values, aria-valuetext
-  for (const id of ["panel", "stress", "journey"]) {
+  for (const id of ["panel", "challenge", "journey"]) {
     const inp = inputs[id];
     inp.value = state[id];
     inp.setAttribute("aria-valuetext", v.valueText[id]);
     $(id + "-wrap").style.setProperty("--f", (state[id] - inp.min) / (inp.max - inp.min));
   }
   $("panel-val").textContent = `${v.panel} persona${v.panel === 1 ? "" : "s"}`;
-  $("stress-val").textContent = v.tier.label;
+  $("challenge-val").textContent = v.level.label;
   $("journey-val").textContent = v.pattern.label;
   $("panel-thumb").innerHTML = tokenSVG(v.panel - 1);
   $("panel-wrap").querySelectorAll(".tick").forEach(t => {
@@ -547,10 +790,10 @@ function render() {
   // Panel owns WHO: seats and cards
   $("seats-caption").textContent = `Panel of ${v.panel}`;
   document.querySelectorAll(".seat").forEach((s, i) => {
-    const on = i < v.panel;
+    const on = i < v.panel, p = current.personas[i];
     s.classList.toggle("filled", on);
-    s.querySelector(".seat-name").textContent = on ? firstName(PERSONAS[i]) : "Open";
-    s.querySelector(".sr-only").textContent = `Seat ${i + 1}: ${on ? PERSONAS[i].name : "empty"}`;
+    s.querySelector(".seat-name").textContent = on ? firstName(p) : "Open";
+    s.querySelector(".sr-only").textContent = `Seat ${i + 1}, ${LENSES[i]}: ${on ? p.name : "empty"}`;
   });
   const list = $("cards");
   while (cardEls.length > v.panel) cardEls.pop().remove();
@@ -560,52 +803,60 @@ function render() {
     el.addEventListener("animationend", e => { if (e.target === el) el.classList.remove("enter"); });
     list.appendChild(el); cardEls.push(el);
   }
-  v.seated.forEach((p, i) => {
-    const el = cardEls[i];
-    el.className = el.className.replace(/\btier-\d\b/g, "").trim() + " tier-" + v.stress;
+  v.seated.forEach((x, i) => {
+    const el = cardEls[i], p = x.p;
+    el.className = el.className.replace(/\btier-\d\b/g, "").trim() + " tier-" + v.challenge;
     el.querySelector("h3").textContent = p.name;
-    el.querySelector(".role").textContent = p.role;
-    el.querySelector(".ctx").textContent = p.context;
-    const q = el.querySelector("q");
-    if (q.textContent !== p.line) {                     // stress owns behavior
-      if (q.textContent) replay(el.querySelector(".bubble"), "swap");
-      q.textContent = p.line;
+    el.querySelector(".role").textContent = x.lens;
+    el.querySelector(".who").textContent = p.whoTheyAre;
+    el.querySelector(".judges span").textContent = `“${p.judgesBy}”`;
+    // Challenge owns behavior; at level 1 the behavior line shows their own working style.
+    el.querySelector(".behavior").innerHTML = v.challenge > 1
+      ? `<b>${esc(v.level.label)}:</b> ${esc(x.behavior)}`
+      : `<b>Typical:</b> ${esc(p.workingStyle)}`;
+    const said = el.querySelector(".bubble p");
+    if (said.textContent !== x.saysOrDoes) {
+      if (said.textContent) replay(el.querySelector(".bubble"), "swap");
+      said.textContent = x.saysOrDoes;
     }
-    const tag = TAGS[v.stress];
+    const tag = TAGS[v.challenge];
     if (tag) { el.querySelector(".tag svg").innerHTML = tag.icon; el.querySelector(".tag-text").textContent = tag.text; }
     const route = el.querySelector(".route");            // journey owns movement
     if (route.dataset.j !== String(v.journey)) {
       const seen = new Set();
-      route.innerHTML = v.pattern.seq.map((n, k) => {
+      route.innerHTML = v.pattern.seq.map(n => {
         const again = seen.has(n); seen.add(n);
         return `<li><span class="chip${again ? " again" : ""}"><span class="n" aria-hidden="true">${n}</span>` +
-          `${PERSONAS[i].short[n - 1]}${again ? '<span class="re" aria-hidden="true">↺</span><span class="sr-only"> again</span>' : ""}</span></li>`;
+          `${esc(current.experience.moments[n - 1].short)}${again ? '<span class="re" aria-hidden="true">↺</span><span class="sr-only"> again</span>' : ""}</span></li>`;
       }).join("");
       if (route.dataset.j) replay(route, "swap");
       route.dataset.j = v.journey;
     }
   });
 
-  // Stress owns WHAT behavior: tier caption
-  $("tier-caption").innerHTML = `<strong>${v.tier.label}:</strong> `;
-  $("tier-caption").append(v.tier.sentence);
+  // Challenge owns WHAT behavior: level caption
+  $("tier-caption").innerHTML = `<strong>${esc(v.level.label)}:</strong> `;
+  $("tier-caption").append(v.level.sentence);
 
-  // Journey owns HOW they move: one shared track (redrawn only when journey changes)
-  if (lastJourney !== v.journey) {
-    const t = trackMarkup(v.pattern.seq);
+  // Journey owns HOW they move: one shared track (redrawn only when journey or panel changes)
+  const trackKey = current.id + ":" + v.journey;
+  if (lastTrackKey !== trackKey) {
+    const shorts = current.experience.moments.map(m => m.short);
+    const t = trackMarkup(v.pattern.seq, shorts);
     $("moves").innerHTML = t.moves;
     $("nodes").innerHTML = t.nodes;
-    if (lastJourney !== null && !reduceMotion.matches) replay($("track"), "draw");
+    if (lastTrackKey !== null && !reduceMotion.matches) replay($("track"), "draw");
     $("track-caption").textContent = v.pattern.label;
-    $("track-desc").textContent = `Route track, steps 1 to 4. ${v.pattern.aria}.`;
-    lastJourney = v.journey;
+    $("track-desc").textContent = `Route through four key moments: ${shorts.join(", ")}. ${v.pattern.aria}.`;
+    lastTrackKey = trackKey;
   }
 
   $("summary").textContent = v.summary;
+  $("code").textContent = v.code;
 }
 
 // Which stage zones each slider owns, so a move visibly lands somewhere.
-const ZONES = {panel: ["zone-seats"], stress: ["zone-cards"], journey: ["zone-track"]};
+const ZONES = {panel: ["zone-seats"], challenge: ["zone-cards"], journey: ["zone-track"]};
 
 // ---------- Status line: only for results with no native announcement ----------
 // Slider changes are announced by the focused range's own aria-valuetext.
@@ -616,7 +867,7 @@ function announce(text) {
   statusTimer = setTimeout(() => { $("status").textContent = text; }, 50);
 }
 
-for (const id of ["panel", "stress", "journey"]) {
+for (const id of ["panel", "challenge", "journey"]) {
   inputs[id].addEventListener("input", e => {
     state[id] = +e.target.value;
     render();
@@ -627,7 +878,7 @@ for (const id of ["panel", "stress", "journey"]) {
 // ---------- Lock / review / export ----------
 function lock() {
   locked = true;
-  $("brief").value = buildBrief(state);
+  $("brief").value = buildBrief(current, state);
   briefEdited = false;
   $("lock-note").textContent = "";
   $("export-msg").textContent = "";
@@ -635,15 +886,18 @@ function lock() {
   $("locked-row").hidden = false;
   $("review").hidden = false;
   $("brief-h").focus();
-  announce("Panel locked. " + deriveView(state).summary);
+  announce("Panel locked. " + deriveView(current, state).summary);
 }
-function unlock() {
+function showSliders() {
   locked = false;
   $("sliders").hidden = false;
   $("locked-row").hidden = true;
   $("review").hidden = true;
   // Warn before the edits are lost, not after.
   $("lock-note").textContent = briefEdited ? "Locking again will regenerate the brief and replace your edits." : "";
+}
+function unlock() {
+  showSliders();
   inputs.panel.focus();
 }
 $("lock").addEventListener("click", lock);
@@ -683,7 +937,89 @@ $("download").addEventListener("click", () => {
   }
 });
 
+// ---------- Bring your own situation ----------
+// One live call per Build/Rebuild; sliders never call the endpoint.
+const ENDPOINT = window.BYOS_ENDPOINT || (document.querySelector('meta[name="byos-endpoint"]') || {}).content || "";
+let building = false;
+
+function openByos() {
+  $("byos").hidden = false;
+  $("own").setAttribute("aria-expanded", "true");
+  $("byos-error").textContent = "";
+  $("f-testing").focus();
+}
+function closeByos(returnFocus) {
+  $("byos").hidden = true;
+  $("own").setAttribute("aria-expanded", "false");
+  if (returnFocus) $("own").focus();
+}
+$("own").addEventListener("click", () => $("byos").hidden ? openByos() : closeByos(true));
+$("cancel").addEventListener("click", () => closeByos(true));
+
+function byosFail(msg) {
+  $("byos-error").textContent = msg;
+  announce(msg);
+}
+async function requestPanel(body) {
+  const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 90000);
+  try {
+    const res = await fetch(ENDPOINT, {method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(body), signal: ctrl.signal});
+    let data = null;
+    try { data = await res.json(); } catch (e) { /* handled below */ }
+    if (!res.ok) throw new Error((data && data.error) || "The panel builder is unavailable right now.");
+    try { return validatePanel(data && data.panel); }
+    catch (e) { throw new Error("The panel came back incomplete."); }
+  } finally {
+    clearTimeout(timer);
+  }
+}
+$("byos-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  if (building) return;
+  const testing = $("f-testing").value.trim();
+  if (!testing) {
+    byosFail("Describe what you're testing first.");
+    $("f-testing").setAttribute("aria-invalid", "true");
+    $("f-testing").focus();
+    return;
+  }
+  $("f-testing").removeAttribute("aria-invalid");
+  if (!ENDPOINT) {
+    byosFail("Building your own panel isn't set up on this copy of the page yet. You can keep exploring the sample.");
+    return;
+  }
+  building = true;
+  $("byos-error").textContent = "";
+  $("byos-form").setAttribute("aria-busy", "true");
+  $("build").textContent = "Building your panel…";
+  announce("Building your panel. This can take up to a minute.");
+  try {
+    const panel = await requestPanel({
+      testing, audience: $("f-audience").value.trim(),
+      moments: ["f-m1", "f-m2", "f-m3", "f-m4"].map(id => $(id).value.trim())});
+    panel.id = makePanelId();
+    current = panel;
+    if (locked) showSliders();
+    briefEdited = false;
+    $("lock-note").textContent = "";
+    mountPanel();
+    render();
+    closeByos(false);
+    $("panel-h").focus();
+    announce(`Panel ${panel.id} is ready: six personas for ${panel.experience.summary}`);
+  } catch (err) {
+    const msg = err && err.name === "AbortError" ? "Building took too long." : (err && err.message) || "Something went wrong.";
+    byosFail(`Couldn't build your panel. ${msg} Try rephrasing, or keep exploring this one.`);
+  } finally {
+    building = false;
+    $("byos-form").removeAttribute("aria-busy");
+    $("build").textContent = "Build my panel";
+  }
+});
+
 setupStatic();
+mountPanel();
 render();
 </script>
 </body>
