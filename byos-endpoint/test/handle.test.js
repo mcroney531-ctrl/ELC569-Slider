@@ -52,6 +52,9 @@ test("valid request returns a validated panel and one model call", async () => {
   assert.match(p.system, /experienced user \(brings established knowledge/);
   assert.match(p.system, /the journey alone owns movement between key moments/);
   assert.doesNotMatch(p.system, /may skip ahead/);
+  assert.match(p.system, /use each one exactly as typed for "short"/);
+  assert.match(p.system, /may bring an interruption, exit, pause or re-entry within the current moment/);
+  assert.match(p.system, /must never decide which key moment comes next or change the route/);
   assert.match(p.system, /Avoid ornate, unusual or double-barrelled names/);
   assert.match(p.system, /Use only the exact assistive technology the stable core names/);
   assert.match(p.messages[0].content, /1: Cart; 2: \(choose\)/);
@@ -130,4 +133,10 @@ test("per-model params: Haiku omits effort and fallbacks; EFFORT can be cleared"
   assert.equal(pinned.fallbacks, undefined);
   assert.equal(pinned.betas, undefined);
   assert.equal(pinned.output_config.effort, "low");
+});
+
+test("typed moment names are kept exactly; blanks keep the model's label", async () => {
+  const res = await handle(req({ testing: "t", moments: ["  Course   start ", "", "Hazard report", ""] }), E(), { client: fakeClient(ok) });
+  const shorts = (await res.json()).panel.experience.moments.map((m) => m.short);
+  assert.deepEqual(shorts, ["Course start", "Details", "Hazard report", "Done"]);
 });

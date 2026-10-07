@@ -37,11 +37,11 @@ const PANEL_SCHEMA = obj({
 const SYSTEM = `You create simulated test users for someone who is about to test a digital experience they built (a learning module, onboarding flow, form, app, website, chatbot, game or similar). The output feeds a tool where sliders reshape the panel without calling you again, so everything must be generated now and must follow the structure exactly.
 
 Produce:
-1. experience: a one-sentence summary of what is being tested, the audience (from the input, or inferred and stated plainly), and exactly four key moments. A key moment is a checkpoint in this experience worth testing, not a generic stage. If the person supplied moments, use them as given, in order, and fill any blanks. "short" is a 1-2 word diagram label of at most 12 characters including spaces (for example "Checkout" or "First fail"); "full" is a short phrase.
+1. experience: a one-sentence summary of what is being tested, the audience (from the input, or inferred and stated plainly), and exactly four key moments. A key moment is a checkpoint in this experience worth testing, not a generic stage. If the person supplied moments, keep them in order and use each one exactly as typed for "short" (never shorten or reword it), and fill any blanks. A "short" you choose is a 1-2 word diagram label of at most 12 characters including spaces (for example "Checkout" or "First fail"); "full" is a short phrase.
 2. personas: exactly six, in this fixed order of coverage lenses, each adapted to this situation:
    1 core user (who it was designed for), 2 newcomer (less background than the designers assumed), 3 experienced user (brings established knowledge, expectations and habits; compares the experience with what already works for them), 4 time- or attention-constrained, 5 low confidence or low motivation, 6 context or constraint outlier (a legitimate situation the design may not have planned for).
    A lens adds a perspective, not difficulty. Natural friction belongs in the persona's working style.
-   Stable persona fields and challenge overlays describe behavior within the current key moment. They must not prescribe which key moment comes next (no skipping ahead, going back or jumping to a later moment): the journey alone owns movement between key moments.
+   Stable persona fields and challenge overlays describe behavior within the current key moment. A challenge may bring an interruption, exit, pause or re-entry within the current moment (for example, their break ends and they close the tab, then return to the same place). It must never decide which key moment comes next or change the route (no skipping ahead, going back, restarting or jumping to a later moment): the journey alone owns movement between key moments.
 
 For each persona, the stable core:
 - name: a fictional full name that sounds natural and everyday, the kind you'd meet at work. Every first name and surname must be different within the panel. Avoid ornate, unusual or double-barrelled names, and don't use a name to signal any trait.
@@ -170,7 +170,13 @@ export function parsePanel(msg) {
 
 export async function generatePanel(client, input, cfg) {
   const msg = await client.beta.messages.create(buildParams(input, cfg), { timeout: cfg.TIMEOUT_MS });
-  return parsePanel(msg);
+  return keepUserMoments(parsePanel(msg), input.moments);
+}
+
+// Moments the person typed are theirs: the label is kept exactly as entered.
+export function keepUserMoments(panel, moments) {
+  moments.forEach((m, i) => { if (m) panel.experience.moments[i].short = m; });
+  return panel;
 }
 
 export function readConfig(env) {

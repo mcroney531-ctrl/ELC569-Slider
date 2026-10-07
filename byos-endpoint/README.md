@@ -107,6 +107,10 @@ The bakeoff flags invented assistive tech, overlays that add it, and the all-six
 
 "Inconsistent" must visibly conflict with something the same persona said, selected, answered or did earlier in the same test pass, and must name both sides. A mistake, a navigation change, or random back-and-forth isn't enough.
 
+A challenge may bring an interruption, exit, pause or re-entry within the current moment (a break ends, they close the tab and come back to the same place). It never decides which moment comes next or changes the route: the journey owns movement.
+
+Key moments the person types are kept exactly as entered (whitespace normalized). The model only writes a label for a blank one.
+
 ## Test
 
 `npm test` runs the handler against a fake model client. It needs no network or key.
