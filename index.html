@@ -708,8 +708,9 @@ function validatePanel(raw) {
       if (!p || !Array.isArray(p.overlays) || p.overlays.length !== 3) throw new Error("need 3 overlays");
       const out = {};
       CORE_FIELDS.forEach(f => { out[f] = cleanText(p[f], f === "name" ? 60 : 260); });
-      // The page adds its own quote marks, so drop any the model wrapped around the question.
-      out.judgesBy = out.judgesBy.replace(/^["“”]+|["“”]+$/g, "").trim() || out.judgesBy;
+      // The page adds its own quote marks, so drop one pair wrapped around the whole question.
+      const q = out.judgesBy.match(/^(?:"([^"“”]+)"|“([^"“”]+)”)$/);
+      if (q) out.judgesBy = (q[1] || q[2]).trim();
       out.overlays = p.overlays.map(o => {
         const c = {};
         OVERLAY_FIELDS.forEach(f => { c[f] = cleanText(o && o[f], 260); });
@@ -765,13 +766,15 @@ function buildBrief(panel, s) {
   const out = ["# Test Panel Brief", "", v.code, "",
     `**Testing:** ${ex.summary}`];
   if (ex.audience) out.push(`**For:** ${ex.audience}`);
-  out.push(`**Key moments:** ${ex.moments.map(x => x.full).join(" -> ")}`,
+  out.push("", "**Key moments:**", ...ex.moments.map((x, i) => `${i + 1}. ${x.short}: ${x.full}`), "",
     `**Challenge level:** ${v.level.label}. ${v.level.sentence}`,
-    `**Journey:** ${v.pattern.label}. ${v.journeyText.behavior}`, "",
-    "Each persona is a script for one test pass. Become that person, follow their route through your build, and note where your experience helps them, breaks, or lets them slip through.", "",
+    `**Shared journey:** ${v.pattern.label}. ${v.journeyText.behavior}`,
+    `**Shared route:** ${routeSentence(v.pattern.seq, ex.moments.map(x => x.short))}`,
+    `**Shared journey check:** ${v.journeyText.risk}`, "",
+    "Each persona is a script for one test pass. Become that person, follow the shared route through your build, and note where your experience helps them, breaks, or lets them slip through.", "",
     "_Simulated users help you find problems early. They don't replace testing with real people._");
   v.seated.forEach(x => {
-    const p = x.p, watch = [p.coreRisk, x.levelRisk, v.journeyText.risk].filter(Boolean);
+    const p = x.p, watch = [p.coreRisk, x.levelRisk].filter(Boolean);
     out.push("", `## ${p.name} (${x.lens})`, "",
       `- **Who they are:** ${p.whoTheyAre}`,
       `- **Goal:** ${p.goal}`,
@@ -780,13 +783,12 @@ function buildBrief(panel, s) {
       `- **Judges it by:** "${p.judgesBy}"`,
       `- **Current test behavior:** ${x.behavior}`,
       `- **Says / does:** ${x.saysOrDoes}`,
-      `- **Journey behavior:** ${v.journeyText.behavior}`,
-      `- **Route:** ${x.route}`,
+      `- **Journey:** Follow the shared route (${v.pattern.label}).`,
       `- **Watch for:**`, ...watch.map(w => `  - ${w}`),
       `- **Run this test:**`,
       `  1. Set up: open your build fresh, as ${firstName(p)}. Starting point: ${p.startingPoint}`,
-      `  2. Play: follow the route above. At each moment, behave as described under Current test behavior.`,
-      `  3. Watch for: the points above.`,
+      `  2. Play: follow the shared route. At each moment, behave as described under Current test behavior.`,
+      `  3. Watch for: the points above, plus the shared journey check.`,
       `  4. Log: where it helped, where it broke, where it let ${firstName(p)} through when it shouldn't have, and where ${firstName(p)} would give up.`);
   });
   return out.join("\n") + "\n";
@@ -822,6 +824,20 @@ const NEEDLE = '<svg viewBox="0 0 44 44"><path d="M22 3 L26.5 13 L23.6 13 L23.6 
 const PIP = '<svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="13" fill="#1b2a4a" stroke="#fff" stroke-width="3"/><path d="M16 24.5 C16 17, 28 17, 28 24.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M25.5 22.5 L28 25 L30.5 22.5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const NODE_X = [40, 120, 200, 280], RAIL_Y = 80;
 
+// Display-only: wraps a moment name onto at most two short lines so neighbours
+// never overlap. The exact name stays in state, the track's title and the export.
+function labelLines(text, max = 13) {
+  const fit = w => w.length > max ? w.slice(0, max - 1) + "…" : w;
+  const lines = [];
+  for (const w of text.split(" ")) {
+    const last = lines.length - 1;
+    if (last >= 0 && (lines[last] + " " + w).length <= max) lines[last] += " " + w;
+    else lines.push(w);
+  }
+  if (lines.length > 2) lines[1] = lines.slice(1).join(" ").slice(0, max - 1) + "…";
+  return lines.slice(0, 2).map(fit);
+}
+
 function trackMarkup(seq, shorts) {
   const spanCount = {};
   let moves = "";
@@ -845,7 +861,8 @@ function trackMarkup(seq, shorts) {
       const bx = x + (j - (visits.length - 1) / 2) * 26;
       nodes += `<g class="badge" style="--i:${v - 1}"><circle cx="${bx}" cy="${RAIL_Y + 32}" r="11.5"/><text x="${bx}" y="${RAIL_Y + 32}" text-anchor="middle" dominant-baseline="central">${v}</text></g>`;
     });
-    nodes += `<text class="moment" x="${x}" y="${RAIL_Y + 60}" text-anchor="middle">${esc(shorts[idx])}</text>`;
+    nodes += `<text class="moment" x="${x}" y="${RAIL_Y + 60}" text-anchor="middle">` +
+      labelLines(shorts[idx]).map((l, i) => `<tspan x="${x}" dy="${i ? 13 : 0}">${esc(l)}</tspan>`).join("") + `</text>`;
   });
   return {moves, nodes};
 }
@@ -996,6 +1013,8 @@ function render() {
     const t = trackMarkup(v.pattern.seq, shorts);
     $("moves").innerHTML = t.moves;
     $("nodes").innerHTML = t.nodes;
+    // Make room below the rail when any label wraps to a second line.
+    $("track").setAttribute("viewBox", `0 -6 320 ${shorts.some(m => labelLines(m).length > 1) ? 166 : 152}`);
     if (lastTrackKey !== null && !reduceMotion.matches) replay($("track"), "draw");
     $("track-caption").textContent = v.pattern.label;
     $("track-desc").textContent = `Route through four key moments: ${shorts.join(", ")}. ${v.pattern.aria}.`;
@@ -1146,9 +1165,10 @@ $("byos-form").addEventListener("submit", async e => {
   $("build").textContent = "Building your panel…";
   announce("Building your panel. This can take up to a minute.");
   try {
-    const panel = await requestPanel({
-      testing, audience: $("f-audience").value.trim(),
-      moments: ["f-m1", "f-m2", "f-m3", "f-m4"].map(id => $(id).value.trim())});
+    const moments = ["f-m1", "f-m2", "f-m3", "f-m4"].map(id => $(id).value.replace(/[<>]/g, "").replace(/\s+/g, " ").trim());
+    const panel = await requestPanel({testing, audience: $("f-audience").value.trim(), moments});
+    // Moments the person typed are theirs: keep each label exactly as entered.
+    moments.forEach((m, i) => { if (m) panel.experience.moments[i].short = m; });
     panel.id = makePanelId();
     current = panel;
     if (locked) showSliders();
