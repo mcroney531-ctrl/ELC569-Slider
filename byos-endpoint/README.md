@@ -50,7 +50,7 @@ Opus at medium is the reference for what "good" looks like, not the default.
 Total spend across the three rounds: $3.72.
 
 - **Fallbacks are off** because the model was chosen for consistent behavior against the generation rules. A refused request returns an error instead of being answered by an unvalidated model. Revisit after staging.
-- **Cost:** about $0.074 per panel, so the `DAILY_LIMIT` of 100 caps model spend at about $7.40 a day. The workspace spend limit remains the hard stop.
+- **Cost:** about $0.074 per panel. With `BYOS_KV` bound, the `DAILY_LIMIT` of 100 caps model spend at about $7.40 a day. Without KV that ceiling isn't enforced, and the workspace spend limit is the only hard stop.
 
 ## Deploy
 
@@ -85,7 +85,7 @@ The endpoint is public and credentialless. It doesn't use Origin checks, because
 | Input caps | 2,000-byte body; situation 300 chars, audience 120, moments 24 each |
 | Per-IP throttle | `PER_IP_PER_HOUR` (default 5) |
 | Concurrency | `MAX_CONCURRENT` (default 3) |
-| Daily ceiling | `DAILY_LIMIT` (default 200), only when `BYOS_KV` is bound |
+| Daily ceiling | `DAILY_LIMIT` (100 production, 50 staging). Enforced only when the `BYOS_KV` namespace is bound; without it the setting does nothing. |
 | Output cap | `MAX_TOKENS` (default 8,000; tighten from the bakeoff) |
 | Refusal fallbacks | `FALLBACKS` (`"default"` or `"off"`); decide for production after the bakeoff |
 | Timeout | `TIMEOUT_MS` (default 80,000); the page gives up at 90 seconds |
