@@ -37,11 +37,26 @@ In a Claude Code cloud environment, add the key as `BYOS_BAKEOFF_KEY`, because `
 
 Opus at medium is the reference for what "good" looks like, not the default.
 
+## Model (decided by the bakeoff)
+
+**Production: `claude-opus-5-5` at `low` effort, `MAX_TOKENS` 5,500, fallbacks off.**
+
+| Round | Calls | Result |
+|---|---|---|
+| Round 1 | 40 | Haiku failed validation on 4 of 10 panels and was eliminated. Opus at medium was best but only marginally ahead of Opus at low, so it stayed the reference. |
+| Round 2 playoff | 18 | Sonnet-low and Opus-low were equally reliable. Each broke a different part of the accessibility rule, which was then tightened. |
+| Confirmation, revised prompt | 12 | Sonnet-low gave a screen reader to 6, then 1, then 1 of six personas despite "some" users. Opus-low gave it to 3 of 6 in every run. |
+
+Total spend across the three rounds: $3.72.
+
+- **Fallbacks are off** because the model was chosen for consistent behavior against the generation rules. A refused request returns an error instead of being answered by an unvalidated model. Revisit after staging.
+- **Cost:** about $0.074 per panel, so the `DAILY_LIMIT` of 100 caps model spend at about $7.40 a day. The workspace spend limit remains the hard stop.
+
 ## Deploy
 
 1. `npx wrangler login`
 2. `npx wrangler secret put ANTHROPIC_API_KEY` (add `--env staging` for staging). The key lives only in the Worker, never in the page.
-3. Edit `wrangler.toml`: `MODEL`, `EFFORT`, `MAX_TOKENS`, and `SPEND_LIMIT_CONFIRMED = "yes"`.
+3. In `wrangler.toml`, the model settings are already set from the bakeoff. Set `SPEND_LIMIT_CONFIRMED = "yes"` once the workspace spend limit exists.
 4. Optional extra daily ceiling: `npx wrangler kv namespace create BYOS_KV`, then paste the id into `wrangler.toml`.
 5. `npx wrangler deploy --env staging` (or `npx wrangler deploy` for production).
 6. Put the Worker URL in `index.html`:
