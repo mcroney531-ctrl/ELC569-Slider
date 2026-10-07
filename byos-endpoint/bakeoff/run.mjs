@@ -46,7 +46,7 @@ const DRY = process.env.BAKEOFF_DRY === "1";
 if (!DRY && !process.env.ANTHROPIC_API_KEY) { console.error("Set ANTHROPIC_API_KEY first."); process.exit(1); }
 const fakePanel = () => ({
   experience: { summary: "Dry run.", audience: "", moments: ["Start", "Middle", "Review", "Finish"].map((m) => ({ short: m, full: m + " step" })) },
-  personas: LENSES.map((l, i) => ({ name: `Dry Person${i}`, whoTheyAre: l, goal: "g", startingPoint: i < 2 ? "uses a screen reader" : "s", workingStyle: "reads things",
+  personas: LENSES.map((l, i) => ({ name: `Dry Person${i}`, whoTheyAre: `${l} | with a pipe`, goal: "g", startingPoint: i < 2 ? "uses a screen reader" : "s", workingStyle: "reads things",
     baselineSaysOrDoes: `baseline ${i}`, judgesBy: "j?", coreRisk: "r", overlays: [1, 2, 3].map((k) => ({ behavior: `b${k}`, saysOrDoes: `s${i}.${k}`, risk: `r${k}?` })) })),
 });
 const client = DRY
@@ -126,10 +126,12 @@ for (const sit of situations) {
     lines.push(`### ${name}${repeats > 1 ? ` · run ${rep}` : ""}`, "");
     if (!r || !r.panel) { lines.push(`**Failed:** ${r ? r.error : "missing"}`, ""); continue; }
     const p = r.panel;
-    lines.push(`Moments: ${p.experience.moments.map((m) => `${m.short} (${m.full})`).join(" → ")}`, "");
+    lines.push(`Moments: ${p.experience.moments.map((m) => `${m.short} (${m.full})`).join(" → ")}`.replace(/\s*\n\s*/g, " "), "");
     if (r.flags.length) lines.push("Flags: " + r.flags.join("; "), "");
     lines.push("| Lens | Person | Working style | Typical (baseline) | Rushed | Inconsistent | Edge case |", "|---|---|---|---|---|---|---|");
-    p.personas.forEach((x, i) => lines.push(`| ${LENSES[i]} | **${x.name}**: ${x.whoTheyAre} *Starts:* ${x.startingPoint} | ${x.workingStyle} | ${x.baselineSaysOrDoes} | ${x.overlays[0].saysOrDoes} | ${x.overlays[1].saysOrDoes} | ${x.overlays[2].saysOrDoes} |`.replace(/\n/g, " ")));
+    // Model text is escaped so a "|" or line break can't break the table.
+    const cell = (t) => String(t).replace(/\\/g, "\\\\").replace(/\|/g, "\\|").replace(/\s*\n\s*/g, " ");
+    p.personas.forEach((x, i) => lines.push(`| ${LENSES[i]} | **${cell(x.name)}**: ${cell(x.whoTheyAre)} *Starts:* ${cell(x.startingPoint)} | ${cell(x.workingStyle)} | ${cell(x.baselineSaysOrDoes)} | ${cell(x.overlays[0].saysOrDoes)} | ${cell(x.overlays[1].saysOrDoes)} | ${cell(x.overlays[2].saysOrDoes)} |`));
     lines.push("");
   }
 }
