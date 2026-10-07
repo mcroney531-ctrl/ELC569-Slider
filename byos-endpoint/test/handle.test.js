@@ -44,7 +44,11 @@ test("valid request returns a validated panel and one model call", async () => {
   assert.equal(p.fallbacks, "default");
   assert.equal(p.max_tokens, 8000);
   assert.match(p.system, /Never invent protected characteristics/);
-  assert.match(p.system, /screen-reader use, keep it/);
+  assert.match(p.system, /Do not invent accessibility needs or assistive technologies/);
+  assert.match(p.system, /sensible subset of personas/);
+  assert.match(p.system, /never introduce a new accessibility need or assistive technology/);
+  assert.match(p.system, /visibly conflicts with something they said, selected, answered or did earlier/);
+  assert.match(p.system, /Every first name and surname must be different/);
   assert.match(p.messages[0].content, /1: Cart; 2: \(choose\)/);
 });
 

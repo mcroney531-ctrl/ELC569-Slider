@@ -8,6 +8,7 @@
 //     node bakeoff/run.mjs haiku sonnet-low          just these configs
 //   Round 2, consistency playoff (top two configs, hardest situations x3, 18 calls):
 //     node bakeoff/run.mjs --playoff sonnet-low opus-low
+//     node bakeoff/run.mjs --playoff sonnet-low opus-low --situations accessibility,game
 //
 // BAKEOFF_DRY=1 swaps in a fake model to check the harness at no cost.
 import Anthropic from "@anthropic-ai/sdk";
@@ -35,11 +36,14 @@ const PRICE = { "claude-haiku-4-5": [1, 5], "claude-sonnet-5-5": [2, 10], "claud
 // ---------- Arguments ----------
 const args = process.argv.slice(2);
 const playoff = args.includes("--playoff");
-const picked = args.filter((a) => !a.startsWith("--"));
+const sitArg = args.indexOf("--situations");
+const sitIds = sitArg >= 0 ? (args[sitArg + 1] || "").split(",").filter(Boolean) : null;
+const picked = args.filter((a, i) => !a.startsWith("--") && !(sitArg >= 0 && i === sitArg + 1));
+if (sitIds) for (const id of sitIds) if (!SITUATIONS.some((s) => s.id === id)) { console.error(`Unknown situation "${id}". Choose from: ${SITUATIONS.map((s) => s.id).join(", ")}`); process.exit(1); }
 for (const name of picked) if (!CONFIGS[name]) { console.error(`Unknown config "${name}". Choose from: ${Object.keys(CONFIGS).join(", ")}`); process.exit(1); }
 if (playoff && picked.length !== 2) { console.error("The playoff takes exactly two configs, e.g. --playoff sonnet-low opus-low"); process.exit(1); }
 const configs = Object.entries(CONFIGS).filter(([k]) => !picked.length || picked.includes(k));
-const situations = playoff ? SITUATIONS.filter((s) => PLAYOFF_SITUATIONS.includes(s.id)) : SITUATIONS;
+const situations = SITUATIONS.filter((s) => (sitIds || (playoff ? PLAYOFF_SITUATIONS : SITUATIONS.map((x) => x.id))).includes(s.id));
 const repeats = playoff ? PLAYOFF_REPEATS : 1;
 
 const DRY = process.env.BAKEOFF_DRY === "1";

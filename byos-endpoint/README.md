@@ -24,7 +24,7 @@ In a Claude Code cloud environment, add the key as `BYOS_BAKEOFF_KEY`, because `
 
 **Round 1 (breadth, 40 calls)** runs the 10 situations in `bakeoff/situations.json` against four configs: `haiku`, `sonnet-low`, `opus-low`, and `opus-medium` as the quality reference. The situations are a learning module, a form, a checkout with supplied moments, a game, a chatbot, an onboarding flow, a vague one-liner, an accessibility-specific course, an AI workflow, and one with instructions embedded in the input. Use it to eliminate the obvious losers.
 
-**Round 2 (consistency playoff, 18 calls)** runs your top two configs on the three hardest situations (vague, accessibility, game), three times each. Pick the config whose *worst* run is still usable, not the one with the best single draw.
+**Round 2 (consistency playoff, 18 calls)** runs your top two configs on the three hardest situations (vague, accessibility, game), three times each. Pick the config whose *worst* run is still usable, not the one with the best single draw. Use `--situations accessibility,game` to choose which situations the playoff runs.
 
 - **Pinned models:** every bakeoff request has server-side fallbacks turned off (`FALLBACKS = "off"`), so each row is the named model's own work. The model that served each response is recorded, and any run served by a different model is discarded. Production fallback behavior is a separate decision, made after the winner is chosen.
 - **Prompt and checks:** it uses the endpoint's own prompt, schema and validation, so what passes here is what the page would get.
@@ -80,7 +80,16 @@ The throttle and concurrency counters are held in memory per Worker instance, an
 
 ## Prompt policy on personal characteristics
 
-The model never invents protected characteristics to create variety, and never uses them as challenge behavior. If the person's description names relevant audience context, such as screen-reader users, it is kept neutrally in the stable core of the personas it applies to. The `accessibility` bakeoff situation checks this.
+- The model never invents protected characteristics to create variety, and never uses them as challenge behavior.
+- It doesn't invent accessibility needs or assistive technologies, including for the context outlier, unless the situation or audience makes accessibility relevant.
+- When accessibility is supplied, it goes in the stable core of a sensible subset of personas. "Some users" means not all six.
+- Overlays may show consequences of a persona's existing accessibility context, but never add new context.
+
+The bakeoff flags invented assistive tech, overlays that add it, and the all-six case. Negated mentions such as "does not use a screen reader" don't count.
+
+## Challenge overlays
+
+"Inconsistent" must visibly conflict with something the same persona said, selected, answered or did earlier in the same test pass, and must name both sides. A mistake, a navigation change, or random back-and-forth isn't enough.
 
 ## Test
 

@@ -23,6 +23,21 @@ test("context kept by no stable persona is flagged", () => {
 test("context given to all six is flagged as flattening", () => {
   assert.ok(has(checks(SIT, panel(6)), /all six/));
 });
-test("context used in any overlay field is flagged", () => {
-  for (const k of [0, 1, 2]) assert.ok(has(checks(SIT, panel(2, { 3: k })), /used in 1 challenge overlay/), `overlay field ${k}`);
+test("overlays may use a persona's existing screen-reader context", () => {
+  // Persona 0 already uses a screen reader in its stable core.
+  for (const k of [0, 1, 2]) assert.equal(has(checks(SIT, panel(2, { 0: k })), /overlay introduces/), false, `overlay field ${k}`);
+});
+test("an overlay that adds assistive tech to a persona without it is flagged, in any field", () => {
+  // Persona 3 has no screen reader in its stable core.
+  for (const k of [0, 1, 2]) assert.ok(has(checks(SIT, panel(2, { 3: k })), /Time-constrained: overlay introduces new assistive tech/), `overlay field ${k}`);
+});
+test("negated mentions don't count as keeping the context", () => {
+  const p = panel(6);
+  p.personas[5].startingPoint = "Does not use a screen reader.";
+  assert.equal(has(checks(SIT, p), /all six/), false);
+});
+test("assistive tech invented for an input that never mentions accessibility is flagged", () => {
+  const GAME = { testing: "A browser puzzle game.", audience: "" };
+  assert.ok(has(checks(GAME, panel(1)), /Core user: invented assistive tech/));
+  assert.equal(has(checks(GAME, panel(0)), /invented/), false);
 });
