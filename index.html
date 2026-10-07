@@ -484,7 +484,7 @@
           <div><label for="f-m4">Moment 4</label><input type="text" id="f-m4" maxlength="24"></div>
         </div>
       </fieldset>
-      <p class="privacy">Sent once to generate your panel. Don't include confidential details.</p>
+      <p class="privacy">Sent when you build or rebuild your panel. Don't include confidential details.</p>
       <div class="actions">
         <button type="submit" class="primary" id="build">Build my panel</button>
         <button type="button" id="cancel">Cancel</button>
@@ -642,12 +642,12 @@ const SAMPLE_PANEL = {
     {name:"Priya Raman", whoTheyAre:"Senior engineer who moved into management a year ago.",
      goal:"Confirm she's already doing it right, quickly.",
      startingPoint:"Gives lots of informal feedback; suspects documentation is box-ticking.",
-     workingStyle:"Skims explanations, goes straight to the practice and the check.",
-     baselineSaysOrDoes:"Writes: “Missed two deadlines in March (3/8, 3/22). Discussed 3/23.” and moves straight to the check.",
+     workingStyle:"Skims explanations and leans on what she already knows.",
+     baselineSaysOrDoes:"Writes: “Missed two deadlines in March (3/8, 3/22). Discussed 3/23.” without rereading the model example.",
      judgesBy:"Does this tell me anything I don't already know?",
      coreRisk:"Gets a perfect score without changing how she'd actually document.",
      overlays:[
-       {behavior:"Skips further than her normal: skips the model entirely and answers the check from experience.", saysOrDoes:"Jumps from “Why it matters” straight to the check and answers all five in under a minute.", risk:"Can she pass without engaging with the content at all?"},
+       {behavior:"Skims even less than her normal and answers from experience instead of the module.", saysOrDoes:"Answers all five check questions in under a minute without reading the options closely.", risk:"Can she pass without engaging with the content at all?"},
        {behavior:"Her note and her check answers follow different rules.", saysOrDoes:"Writes a dated, factual note, then picks “document only after the third incident” on the check.", risk:"Does feedback challenge a correct note paired with a wrong rule?"},
        {behavior:"Brings a case from her own practice the module doesn't address.", saysOrDoes:"“My report is remote and three time zones away. Does a missed stand-up count as an incident?”", risk:"Does the module handle remote or async work, or fall silent?"}]},
     {name:"Marcus Bell", whoTheyAre:"Night-shift warehouse supervisor.",

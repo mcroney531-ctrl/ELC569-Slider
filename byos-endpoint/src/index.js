@@ -39,8 +39,9 @@ const SYSTEM = `You create simulated test users for someone who is about to test
 Produce:
 1. experience: a one-sentence summary of what is being tested, the audience (from the input, or inferred and stated plainly), and exactly four key moments. A key moment is a checkpoint in this experience worth testing, not a generic stage. If the person supplied moments, use them as given, in order, and fill any blanks. "short" is a 1-2 word diagram label of at most 12 characters including spaces (for example "Checkout" or "First fail"); "full" is a short phrase.
 2. personas: exactly six, in this fixed order of coverage lenses, each adapted to this situation:
-   1 core user (who it was designed for), 2 newcomer (less background than the designers assumed), 3 experienced user (already does this; may skip ahead), 4 time- or attention-constrained, 5 low confidence or low motivation, 6 context or constraint outlier (a legitimate situation the design may not have planned for).
+   1 core user (who it was designed for), 2 newcomer (less background than the designers assumed), 3 experienced user (brings established knowledge, expectations and habits; compares the experience with what already works for them), 4 time- or attention-constrained, 5 low confidence or low motivation, 6 context or constraint outlier (a legitimate situation the design may not have planned for).
    A lens adds a perspective, not difficulty. Natural friction belongs in the persona's working style.
+   Stable persona fields and challenge overlays describe behavior within the current key moment. They must not prescribe which key moment comes next (no skipping ahead, going back or jumping to a later moment): the journey alone owns movement between key moments.
 
 For each persona, the stable core:
 - name: a fictional full name that sounds natural and everyday, the kind you'd meet at work. Every first name and surname must be different within the panel. Avoid ornate, unusual or double-barrelled names, and don't use a name to signal any trait.
