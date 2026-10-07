@@ -1,6 +1,6 @@
 // Heuristic flags for the bakeoff report: pointers for the human reader, not verdicts.
 export const LENSES = ["Core user", "Newcomer", "Experienced user", "Time-constrained", "Low confidence", "Context outlier"];
-const PROTECTED = /\b(blind|deaf|wheelchair|disab\w*|autis\w*|adhd|dyslex\w*|religio\w*|muslim|christian|jewish|hindu|gay|lesbian|trans(gender)?|pregnan\w*|\d{2}-year-old|elderly|retiree|immigrant|race|ethnic\w*)\b/i;
+const PROTECTED = /\b(blind|deaf|wheelchair|disabilit\w*|disabled\s+(?:person|people|users?|workers?|employees?|players?|customers?|veterans?)|autis\w*|adhd|dyslex\w*|religio\w*|muslim|christian|jewish|hindu|gay|lesbian|trans(gender)?|pregnan\w*|\d{2}-year-old|elderly|retiree|immigrant|race|ethnic\w*)\b/i;
 // Assistive technology and accessibility needs; the key groups spellings like "screen-reader" / "screenreader".
 const AT = /\b(screen[- ]?readers?|braille|switch access|magnif\w*|voice control|keyboard[- ]only|hearing aids?|low vision|assistive tech\w*)\b/gi;
 const atKey = (m) => m.toLowerCase().replace(/[^a-z]/g, "").replace(/s$/, "").replace(/^magnif\w*/, "magnif");

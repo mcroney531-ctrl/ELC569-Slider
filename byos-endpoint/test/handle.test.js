@@ -49,6 +49,8 @@ test("valid request returns a validated panel and one model call", async () => {
   assert.match(p.system, /never introduce a new accessibility need or assistive technology/);
   assert.match(p.system, /visibly conflicts with something they said, selected, answered or did earlier/);
   assert.match(p.system, /Every first name and surname must be different/);
+  assert.match(p.system, /Avoid ornate, unusual or double-barrelled names/);
+  assert.match(p.system, /Use only the exact assistive technology the stable core names/);
   assert.match(p.messages[0].content, /1: Cart; 2: \(choose\)/);
 });
 

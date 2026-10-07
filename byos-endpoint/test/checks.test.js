@@ -41,3 +41,17 @@ test("assistive tech invented for an input that never mentions accessibility is 
   assert.ok(has(checks(GAME, panel(1)), /Core user: invented assistive tech/));
   assert.equal(has(checks(GAME, panel(0)), /invented/), false);
 });
+
+test("settings words like 'cookies disabled' aren't flagged as a protected characteristic", () => {
+  const GAME = { testing: "A browser puzzle game.", audience: "" };
+  const p = panel(0);
+  p.personas[5].startingPoint = "Plays with cookies and sound disabled.";
+  assert.equal(has(checks(GAME, p), /appears but wasn't in the input/), false);
+  p.personas[5].startingPoint = "A disabled veteran who plays at night.";
+  assert.ok(has(checks(GAME, p), /appears but wasn't in the input/));
+});
+test("swapping to a different assistive tech in an overlay is flagged", () => {
+  const p = panel(2);
+  p.personas[0].overlays[2].saysOrDoes = "She reads the transcript with a braille display instead.";
+  assert.ok(has(checks(SIT, p), /Core user: overlay introduces new assistive tech or need \(braille\)/));
+});
