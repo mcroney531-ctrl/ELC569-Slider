@@ -609,7 +609,7 @@ const PATTERNS = [
 // Journey sentences and risks are rules over the four moment names (m = short names).
 const JOURNEY_TEXT = [
   m => ({behavior: "Visits each key moment once, in order.", risk: "Does each moment make sense on a single pass, in order?"}),
-  m => ({behavior: `Goes back to “${m[1]}” once before finishing.`, risk: `When they return to “${m[1]}”, is their earlier work still there?`}),
+  m => ({behavior: `Goes back to “${m[1]}” once before finishing.`, risk: `When they return to “${m[1]}”, is what they saw or did there before still there?`}),
   m => ({behavior: `Takes two detours: back to “${m[0]}”, then back to “${m[1]}”.`, risk: "After jumping back twice, can they find their way forward without losing progress?"}),
   m => ({behavior: `Repeats “${m[0]}” through “${m[2]}” before going on to “${m[3]}”.`, risk: `After repeating “${m[0]}” to “${m[2]}”, does progress or completion still show correctly?`}),
   m => ({behavior: `Loops “${m[0]}” through “${m[2]}” twice, then returns to “${m[0]}” before “${m[3]}”.`, risk: `After restarting at “${m[0]}” again and again, does anything reset, duplicate or get stuck before “${m[3]}”?`})];
@@ -822,16 +822,16 @@ function buildPrompt(panel, s, only = null) {
     `Journey: ${v.pattern.label}. ${v.journeyText.behavior}`,
     `Route, the same for every persona: ${route}`, "",
     "## Rules while you play a persona", "",
-    "1. Act as the persona, not as a UX reviewer. Include the mistakes, uncertainty, shortcuts and misunderstandings that follow from who they are.",
+    "1. Act as the persona, not as a UX reviewer. Speak in the first person as them, with brief actions in square brackets, for example [rereads the label]. Include the mistakes, uncertainty, shortcuts and misunderstandings that follow from who they are, and don't comment on what they are \"really\" doing or feeling.",
     "2. Don't infer what I intended, and don't help the persona succeed.",
     "3. The persona knows only their starting point, their stable traits, and what they have actually encountered in this test. Don't use anything from later moments or material I haven't shown yet.",
-    "4. Don't invent buttons, text, feedback, navigation, system behavior or outcomes. If the material doesn't show what happens next, ask me.",
+    "4. Don't invent buttons, text, feedback, navigation, system behavior or outcomes, including that nothing happens. If the material doesn't show the result of an action (a click, a hover, a wait), ask me.",
     "5. Follow the route exactly. The challenge level can change how the persona behaves within a moment, including an interruption, pause, exit or re-entry, but it never chooses the next moment.",
     "6. Keep each persona exactly as capable, motivated, experienced and confident as their profile says.",
     "7. Stay at the stated challenge level. Don't escalate difficulty to find more problems.",
     "8. On a repeat visit, the persona remembers what they plausibly learned before. Don't assume my product kept or reset anything unless I show you.",
-    "9. Don't add accessibility needs, assistive technology or personal characteristics that the profile doesn't state.",
-    "10. While in character, speak and act only as the persona. Step out of character only for the log.", "",
+    "9. Don't add accessibility needs, assistive technology, personal characteristics, possessions, tools or circumstances that the profile doesn't state.",
+    "10. Stay in character. When you need something from me (the next moment, or the result of an action), put it on its own line starting \"Question for you:\". That line doesn't break character. Step fully out of character only for the log.", "",
     only === null ? "## Personas" : "## Persona");
   seated.forEach(x => {
     const p = x.p;
@@ -851,13 +851,14 @@ function buildPrompt(panel, s, only = null) {
       ? "1. Do not summarize this prompt. First ask only which persona I want to run. After I choose, ask me for the first moment on the route."
       : `1. Do not summarize this prompt. You are running ${seated[0].p.name}. First ask me only for the first moment on the route: “${first}”.`,
     "2. For each moment I share, respond in character: what they notice, try, say, misunderstand or skip. Then ask me for the next moment on the route, by name.",
-    "3. When the route is complete, step out of character and log:",
+    "3. The route can visit a moment more than once. Each visit is its own step, and I'll share the material for that visit.",
+    "4. When the route is complete, step out of character and log:",
     "   - Helped: where the experience worked for them",
     "   - Broke: where it failed them",
     "   - Slipped through: where it let them pass when it shouldn't have",
     "   - Gave up: where they would quit, if anywhere",
     `   - Journey check: ${v.journeyText.risk}`);
-  if (only === null) out.push("4. Then offer to run the next persona.");
+  if (only === null) out.push("5. Then offer to run the next persona.");
   out.push("", "Test personas help you find problems early. They don't replace testing with real people.");
   return out.join("\n") + "\n";
 }
