@@ -257,6 +257,10 @@
   .privacy { color: var(--muted); font-size: .8125rem; margin-top: 12px; }
   .byos-error { color: #8a1c1c; font-weight: 600; font-size: .9375rem; }
   .byos-error:empty { display: none; }
+  .build-status { margin: 0 0 14px; padding: 10px 12px; border: 1px solid var(--line-strong, var(--line)); border-left: 4px solid var(--navy); border-radius: var(--radius); background: #f4f6fb; color: var(--ink); font-weight: 600; font-size: .9375rem; }
+  .build-status[hidden] { display: none; }
+  .is-building .panel-bar, .is-building .layout { opacity: .75; }
+  .is-building .panel-id { font-style: italic; }
   .code { color: var(--muted); font-size: .875rem; font-weight: 600; margin-top: 2px; }
 
   /* ---------- Card fields added for BYOS ---------- */
@@ -463,6 +467,8 @@
     </div>
     <button type="button" class="primary" id="own" aria-expanded="false" aria-controls="byos">Try it with your own project</button>
   </section>
+
+  <p class="build-status" id="build-status" hidden aria-hidden="true"></p>
 
   <section class="byos" id="byos" hidden aria-labelledby="byos-h">
     <h2 id="byos-h">Your project</h2>
@@ -950,7 +956,7 @@ const inputs = {panel: $("panel"), challenge: $("challenge"), journey: $("journe
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const state = {panel: 3, challenge: 1, journey: 1};
 let current = SAMPLE_PANEL;            // the one coherent source panel the sliders work on
-let lastTrackKey = null, cardEls = [], locked = false, briefEdited = false;
+let lastTrackKey = null, cardEls = [], locked = false, briefEdited = false, buildTimer = null;
 
 function setupStatic() {
   ["panel", "journey"].forEach(id => {
@@ -1253,6 +1259,14 @@ $("byos-form").addEventListener("submit", async e => {
   $("byos-error").textContent = "";
   $("byos-form").setAttribute("aria-busy", "true");
   $("build").textContent = "Building your panel…";
+  // Building takes about 40 seconds. Make that unmistakable, and say the panel on screen is not the result.
+  const wasSample = current.id === "SAMPLE", started = Date.now();
+  const tick = () => {
+    $("build-status").textContent = `Building your panel… ${Math.round((Date.now() - started) / 1000)}s. This usually takes about 40 seconds. The panel below is still ${wasSample ? "the sample" : "your previous panel"}, not the result.`;
+  };
+  tick(); $("build-status").hidden = false;
+  buildTimer = setInterval(tick, 1000);
+  $("tool").classList.add("is-building");
   announce("Building your panel. This can take up to a minute.");
   try {
     const moments = ["f-m1", "f-m2", "f-m3", "f-m4"].map(id => $(id).value.replace(/[<>]/g, "").replace(/\s+/g, " ").trim());
@@ -1274,6 +1288,9 @@ $("byos-form").addEventListener("submit", async e => {
     byosFail(`Couldn't build your panel. ${msg} Try rephrasing, or keep exploring this one.`);
   } finally {
     building = false;
+    clearInterval(buildTimer);
+    $("build-status").hidden = true;
+    $("tool").classList.remove("is-building");
     $("byos-form").removeAttribute("aria-busy");
     $("build").textContent = "Build my panel";
   }
