@@ -257,6 +257,13 @@
   .privacy { color: var(--muted); font-size: .8125rem; margin-top: 12px; }
   .byos-error { color: #8a1c1c; font-weight: 600; font-size: .9375rem; }
   .byos-error:empty { display: none; }
+  .nudge { margin: 6px 0 0; padding-left: 10px; border-left: 3px solid var(--navy); color: var(--ink); font-size: .9375rem; }
+  .nudge[hidden] { display: none; }
+  .persona-copy { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .persona-copy-label { font-weight: 700; margin-bottom: 8px; }
+  .persona-copy-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .persona-copy-row button { font-weight: 600; }
+  .persona-fallback { display: block; width: 100%; min-height: 9em; margin-top: 10px; font: .8125rem/1.4 ui-monospace, Consolas, monospace; }
   .build-status { margin: 0 0 14px; padding: 10px 12px; border: 1px solid var(--line-strong, var(--line)); border-left: 4px solid var(--navy); border-radius: var(--radius); background: #f4f6fb; color: var(--ink); font-weight: 600; font-size: .9375rem; }
   .build-status[hidden] { display: none; }
   .is-building .panel-bar, .is-building .layout { opacity: .75; }
@@ -476,8 +483,14 @@
     <form id="byos-form" novalidate>
       <div class="field">
         <label for="f-testing">What are you testing?</label>
-        <p class="help" id="f-testing-help">One or two sentences, e.g. "A checkout form for a small online bakery."</p>
-        <textarea id="f-testing" maxlength="300" aria-describedby="f-testing-help byos-error"></textarea>
+        <p class="help" id="f-testing-help">For example: A 20-minute Storyline course for new hires.</p>
+        <input type="text" id="f-testing" maxlength="98" aria-describedby="f-testing-help byos-error">
+      </div>
+      <div class="field">
+        <label for="f-goal">What do people need to do or accomplish in it? <span class="opt">(optional)</span></label>
+        <p class="help" id="f-goal-help">For example: Learn how to report a safety hazard, make a choice in a branching scenario, and pass a graded quiz.</p>
+        <textarea id="f-goal" maxlength="198" aria-describedby="f-goal-help f-nudge"></textarea>
+        <p class="nudge" id="f-nudge" hidden>A little more detail will produce more specific test personas.</p>
       </div>
       <div class="field">
         <label for="f-audience">Who is it for? <span class="opt">(optional)</span></label>
@@ -485,12 +498,12 @@
       </div>
       <fieldset>
         <legend>Four key moments <span class="opt">(optional)</span></legend>
-        <p class="help">Leave blank and we'll pick four worth testing.</p>
+        <p class="help">Choose four checkpoints in order, from the beginning of the experience to the end. Leave blank and we'll pick four worth testing.</p>
         <div class="moments">
-          <div><label for="f-m1">Moment 1</label><input type="text" id="f-m1" maxlength="24"></div>
+          <div><label for="f-m1">Start</label><input type="text" id="f-m1" maxlength="24"></div>
           <div><label for="f-m2">Moment 2</label><input type="text" id="f-m2" maxlength="24"></div>
           <div><label for="f-m3">Moment 3</label><input type="text" id="f-m3" maxlength="24"></div>
-          <div><label for="f-m4">Moment 4</label><input type="text" id="f-m4" maxlength="24"></div>
+          <div><label for="f-m4">Finish</label><input type="text" id="f-m4" maxlength="24"></div>
         </div>
       </fieldset>
       <p class="privacy">Sent when you build or rebuild your panel. Don't include confidential details.</p>
@@ -588,6 +601,10 @@
       <button type="button" class="primary" id="copy">Copy brief</button>
       <button type="button" id="download">Download .md</button>
       <span class="hint" id="export-msg"></span>
+    </div>
+    <div class="persona-copy">
+      <p class="persona-copy-label" id="persona-copy-label">Or copy one persona as its own prompt</p>
+      <div class="persona-copy-row" id="persona-copy-row" role="group" aria-labelledby="persona-copy-label"></div>
     </div>
     <p class="note honesty">Simulated users help you find problems early. They don't replace testing with real people.</p>
   </section>
@@ -1139,8 +1156,47 @@ function showFormat(f) {
 }
 document.querySelectorAll('input[name="format"]').forEach(r => r.addEventListener("change", () => { if (r.checked) showFormat(r.value); }));
 
+// One button per seated persona, for a prompt that covers only that person.
+function fillPersonaCopy() {
+  const row = $("persona-copy-row");
+  row.innerHTML = "";
+  deriveView(current, state).seated.forEach((x, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = firstName(x.p);
+    b.setAttribute("aria-label", `Copy the prompt for ${x.p.name}, ${x.lens}`);
+    b.addEventListener("click", () => copyPersona(i));
+    row.appendChild(b);
+  });
+}
+async function copyPersona(i) {
+  const text = buildPrompt(current, state, i), name = current.personas[i].name;
+  try {
+    if (!navigator.clipboard || !window.isSecureContext) throw new Error("no clipboard");
+    await navigator.clipboard.writeText(text);
+    const msg = `Prompt for ${name} copied.`;
+    $("export-msg").textContent = msg;
+    announce(msg);
+  } catch (err) {
+    let ta = $("persona-fallback");
+    if (!ta) {
+      ta = document.createElement("textarea");
+      ta.id = "persona-fallback"; ta.readOnly = true; ta.spellcheck = false;
+      ta.style.cssText = "display:block;width:100%;min-height:9em;margin-top:10px;font:.8125rem/1.4 ui-monospace,Consolas,monospace";
+      $("persona-copy-row").after(ta);
+    }
+    ta.setAttribute("aria-label", `Test prompt for ${name}`);
+    ta.value = text; ta.focus(); ta.select();
+    const msg = `Copy isn't available here. The prompt for ${name} is selected. Use your device or browser's Copy command.`;
+    $("export-msg").textContent = msg;
+    announce(msg);
+  }
+}
+
 function lock() {
   locked = true;
+  fillPersonaCopy();
+  const old = $("persona-fallback"); if (old) old.remove();
   drafts = {brief: buildBrief(current, state), prompt: buildPrompt(current, state)};
   $("brief").value = drafts[format];
   showFormat(format);
@@ -1208,6 +1264,19 @@ $("download").addEventListener("click", () => {
 const ENDPOINT = window.BYOS_ENDPOINT || (document.querySelector('meta[name="byos-endpoint"]') || {}).content || "";
 let building = false;
 
+// The two description boxes become the one description the endpoint takes.
+function joinedDescription() {
+  const what = $("f-testing").value.replace(/\s+/g, " ").trim().replace(/[.!?\s]+$/, "");
+  const goal = $("f-goal").value.replace(/\s+/g, " ").trim();
+  return what && goal ? `${what}. ${goal}` : what || goal;
+}
+function updateNudge() {
+  // A soft hint only: it never blocks a build.
+  $("f-nudge").hidden = !($("f-testing").value.trim() && joinedDescription().length < 80);
+}
+$("f-testing").addEventListener("input", updateNudge);
+$("f-goal").addEventListener("input", updateNudge);
+
 function openByos() {
   $("byos").hidden = false;
   $("own").setAttribute("aria-expanded", "true");
@@ -1243,8 +1312,8 @@ async function requestPanel(body) {
 $("byos-form").addEventListener("submit", async e => {
   e.preventDefault();
   if (building) return;
-  const testing = $("f-testing").value.trim();
-  if (!testing) {
+  const testing = joinedDescription();
+  if (!$("f-testing").value.trim()) {
     byosFail("Describe what you're testing first.");
     $("f-testing").setAttribute("aria-invalid", "true");
     $("f-testing").focus();
