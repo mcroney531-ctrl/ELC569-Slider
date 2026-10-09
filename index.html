@@ -124,15 +124,6 @@
     left: calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--t));
   }
   .range-wrap .tick.on { border-color: var(--navy-2); background: var(--navy-2); }
-  .range-wrap .tick.shape { width: 18px; height: 18px; margin: -9px 0 0 -9px; border: 0; background: #fff; border-radius: 0; }
-  .range-wrap .tick.shape svg { display: block; width: 100%; height: 100%; }
-  .range-wrap .trace {
-    position: absolute; left: calc(var(--thumb) / 2); top: 6px;
-    height: 40px; width: calc(100% - var(--thumb));
-  }
-  .range-wrap .trace polyline { fill: none; stroke: var(--line-strong); stroke-width: 2; stroke-linejoin: round; }
-  .range-wrap .trace.lit { clip-path: inset(0 calc((1 - var(--f, 0)) * 100%) 0 0); }
-  .range-wrap .trace.lit polyline { stroke: var(--navy-2); stroke-width: 2.5; }
   input[type=range] {
     -webkit-appearance: none; appearance: none;
     position: absolute; inset: 0; width: 100%; height: 100%; margin: 0;
@@ -351,12 +342,72 @@
   .intro-top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; }
   .refresher { font-size: .9375rem; min-height: 44px; }
 
+  /* ---------- Slider module: dark shell, one stable accent per row ----------
+     Presentation only. The native range inputs, their order and their spoken values are unchanged. */
+  .controls { --pqa-bg: #071827; --pqa-surface: #0B2132; --pqa-surface-2: #0F2B3E; --pqa-border: rgba(150, 190, 215, .24);
+    --pqa-text: #F5FAFD; --pqa-muted: #AFC2D0; --pqa-track: #29475B; --pqa-pill-bg: #102F43; --pqa-focus: #5EE7F5;
+    container-type: inline-size; container-name: pqa;
+    background: var(--pqa-surface); color: var(--pqa-text); border: 1px solid #1d3a50; border-top: 4px solid #2DD4BF; box-shadow: 0 10px 28px rgba(7, 24, 39, .28); }
+  .controls > h2 { color: var(--pqa-text); }
+  .controls .hint-line, .controls .note, .controls .code { color: var(--pqa-muted); }
+  .controls .summary { color: var(--pqa-text); }
+  .controls .next-cue { background: var(--pqa-surface-2); border-color: var(--pqa-border); border-left-color: #2DD4BF; color: var(--pqa-text); }
+  .controls .s-panel { --acc: #2DD4BF; }
+  .controls .s-challenge { --acc: #A78BFA; }
+  .controls .s-journey { --acc: #38BDF8; }
+  .controls .slider { position: relative; isolation: isolate; overflow: hidden; display: grid; grid-template-columns: 40px minmax(0, 1fr) auto;
+    grid-template-areas: "icon label pill" "icon help help" "range range range" "ends ends ends" "state state state";
+    column-gap: 10px; align-items: center; background: var(--pqa-surface-2); border: 1px solid var(--pqa-border); border-radius: 16px; padding: 12px 14px 8px; }
+  .controls .slider + .slider { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--pqa-border); }
+  .controls .slider:hover, .controls .slider:focus-within { border-color: color-mix(in srgb, var(--acc) 75%, transparent); background: #12324a; }
+  .controls .slider-head { display: contents; }
+  .controls .row-icon { grid-area: icon; align-self: start; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; color: var(--acc); background: color-mix(in srgb, var(--acc) 16%, var(--pqa-surface)); }
+  .controls .row-icon svg { width: 24px; height: 24px; }
+  .controls .row-icon svg, .controls .end-icon { fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+  .controls .slider-head label { grid-area: label; color: var(--pqa-text); font-size: 1.0625rem; }
+  .controls .slider-val { grid-area: pill; justify-self: end; text-align: center; box-sizing: border-box; background: var(--pqa-pill-bg); color: var(--pqa-text); border: 1px solid color-mix(in srgb, var(--acc) 70%, transparent); padding: 4px 12px; font-size: .8125rem; }
+  .controls .slider-help { grid-area: help; margin: 2px 0 0; color: var(--pqa-muted); }
+  .controls .range-wrap { grid-area: range; margin-top: 4px; }
+  .controls .range-wrap .rail { background: var(--pqa-track); }
+  .controls .range-wrap .fill { background: var(--acc); }
+  .controls .range-wrap .tick { width: 8px; height: 8px; margin: -4px 0 0 -4px; background: var(--pqa-surface-2); border: 2px solid var(--pqa-track); }
+  .controls .range-wrap .tick.on { background: var(--acc); border-color: var(--acc); }
+  .controls .thumb { filter: none; }
+  .controls .thumb::before { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: color-mix(in srgb, var(--acc) 34%, transparent); opacity: 0; transform: scale(.8); }
+  .controls .thumb::after { content: ""; position: absolute; inset: 11px; border-radius: 50%; background: var(--pqa-text); border: 4px solid var(--acc); box-shadow: 0 2px 6px rgba(0, 0, 0, .35); }
+  .controls .slider:focus-within .thumb::before, .controls input[type=range]:active ~ .thumb::before { opacity: 1; transform: scale(1); }
+  .controls input[type=range]:focus-visible ~ .thumb { box-shadow: 0 0 0 2px var(--pqa-surface-2), 0 0 0 5px var(--pqa-focus); }
+  .controls .ends { grid-area: ends; color: var(--pqa-muted); }
+  .controls .ends span { display: inline-flex; align-items: center; gap: 6px; }
+  .controls .end-icon { width: 16px; height: 16px; flex: none; color: var(--acc); }
+  .controls .state-help { grid-area: state; margin: 4px 0 2px; min-height: 2.7em; color: var(--pqa-text); font-size: .875rem; line-height: 1.35; }
+  .controls .motif { position: absolute; z-index: -1; right: 10px; bottom: 6px; width: min(32%, 200px); height: 44px; color: var(--acc); opacity: .16; pointer-events: none; }
+  /* A narrow module (the desktop side column, or a phone): the pill drops under the title and the motif takes the free corner. */
+  @container pqa (max-width: 440px) {
+    .controls .slider { grid-template-columns: 40px minmax(0, 1fr); grid-template-areas: "icon label" "icon pill" "icon help" "range range" "ends ends" "state state"; }
+    .controls .slider-val { justify-self: start; margin: 4px 0 0; }
+    .controls .motif { top: 8px; bottom: auto; right: 8px; width: 40%; height: 40px; opacity: .2; }
+  }
+  .controls .motif .occ circle { fill: currentColor; opacity: .3; transform-box: fill-box; transform-origin: center; }
+  .controls .motif .occ circle.on { opacity: 1; }
+  .controls .motif .wave { transform-box: fill-box; transform-origin: center; }
+  .controls .motif path { fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: round; }
+  .controls .motif .route-line { stroke-dasharray: 1; }
+  .controls .motif .nodes circle { fill: currentColor; }
+  .controls .primary { background: var(--pqa-text); color: var(--pqa-bg); border-color: var(--pqa-text); }
+  .controls .primary:hover { background: #dff6fb; }
+  .controls :focus-visible { outline-color: var(--pqa-focus); }
+  @media (prefers-reduced-motion: no-preference) {
+    .controls .slider { transition: border-color .18s ease-out, background-color .18s ease-out, transform .18s ease-out; }
+    .controls .slider:hover, .controls .slider:focus-within { transform: translateY(-1px); }
+    .controls .thumb::before { transition: opacity .16s ease-out, transform .16s ease-out; }
+  }
+
   /* ---------- Motion, only when the learner allows it ---------- */
   @media (prefers-reduced-motion: no-preference) {
     .seat .token, .seat .outline { transition: transform .3s cubic-bezier(.3, 1.4, .5, 1), opacity .2s; }
     .thumb { transition: left .14s ease-out; }
     .range-wrap .fill { transition: width .14s ease-out; }
-    .range-wrap .trace.lit { transition: clip-path .14s ease-out; }
     .card.enter { animation: card-in .3s ease-out; }
     .bubble.swap p, .route.swap { animation: swap-in .25s ease-out; }
     .zone.changed { animation: zone-flash .7s ease-out; }
@@ -374,6 +425,15 @@
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-panel" viewBox="0 0 24 24"><circle cx="7" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><path d="M2 20c0-3 2.2-5 5-5s5 2 5 5M12 20c0-3 2.2-5 5-5s5 2 5 5"/></symbol>
   <symbol id="i-stress" viewBox="0 0 24 24"><path d="M2 12h4l2-3 2 7 3-12 3 14 2-6h4"/></symbol>
+  <symbol id="r-panel" viewBox="0 0 64 64"><circle cx="32" cy="21" r="8"/><path d="M18 50c1-10 6-15 14-15s13 5 14 15"/><circle cx="13" cy="25" r="5"/><path d="M4 47c.7-7 4-11 9-11"/><circle cx="51" cy="25" r="5"/><path d="M60 47c-.7-7-4-11-9-11"/></symbol>
+  <symbol id="r-challenge" viewBox="0 0 64 64"><path d="M4 34h10l6-18 9 34 8-25 7 18 6-12h10"/></symbol>
+  <symbol id="r-journey" viewBox="0 0 64 64"><circle cx="10" cy="45" r="5"/><circle cx="28" cy="20" r="5"/><circle cx="51" cy="43" r="5"/><path d="M15 42c6-3 7-14 9-18m9-1c10 2 10 15 13 17"/><path d="M47 19h8v8"/><path d="M55 19c-4-5-11-8-18-7"/></symbol>
+  <symbol id="e-one" viewBox="0 0 64 64"><circle cx="32" cy="22" r="8"/><path d="M18 50c1-10 6-15 14-15s13 5 14 15"/></symbol>
+  <symbol id="e-all" viewBox="0 0 64 64"><circle cx="32" cy="20" r="7"/><path d="M19 49c1-9 5-14 13-14s12 5 13 14"/><circle cx="12" cy="25" r="5"/><path d="M3 48c1-7 4-11 9-11"/><circle cx="52" cy="25" r="5"/><path d="M61 48c-1-7-4-11-9-11"/></symbol>
+  <symbol id="e-typical" viewBox="0 0 64 64"><circle cx="32" cy="32" r="22"/><path d="M32 19v14l9 6"/></symbol>
+  <symbol id="e-edge" viewBox="0 0 64 64"><path d="M36 6 14 36h16l-4 22 24-32H34Z"/></symbol>
+  <symbol id="e-straight" viewBox="0 0 64 64"><circle cx="10" cy="32" r="5"/><circle cx="54" cy="32" r="5"/><path d="M15 32h34"/></symbol>
+  <symbol id="e-restarts" viewBox="0 0 64 64"><circle cx="8" cy="44" r="5"/><circle cx="56" cy="44" r="5"/><path d="M13 44h8c10 0 14-26 4-26-9 0-6 26 6 26h20"/></symbol>
   <symbol id="i-journey" viewBox="0 0 24 24"><circle cx="4" cy="18" r="2"/><circle cx="20" cy="18" r="2"/><path d="M6 18h12M15 16c0-6-8-6-8 0"/><path d="M5 14l2 2 2-2"/></symbol>
 </svg>
 <main>
@@ -603,36 +663,41 @@
       <p class="next-cue" id="next-cue" hidden>Your panel is ready. Adjust who's included, the challenge, and their journey. Then review and export your test.</p>
       <p class="hint-line" id="controls-hint">Drag a marker, or use the arrow keys.</p>
       <div id="sliders">
-        <div class="slider">
-          <div class="slider-head"><svg class="icon" aria-hidden="true"><use href="#i-panel"/></svg><label for="panel">Panel size</label><span class="slider-val" id="panel-val" aria-hidden="true"></span></div>
+        <div class="slider s-panel">
+          <svg class="motif" id="panel-motif" viewBox="0 0 320 80" preserveAspectRatio="xMaxYMid meet" aria-hidden="true" focusable="false"><g class="occ"><circle cx="45" cy="40" r="12"/><circle cx="91" cy="40" r="12"/><circle cx="137" cy="40" r="12"/><circle cx="183" cy="40" r="12"/><circle cx="229" cy="40" r="12"/><circle cx="275" cy="40" r="12"/></g></svg>
+          <div class="slider-head"><span class="row-icon" aria-hidden="true"><svg><use href="#r-panel"/></svg></span><label for="panel">Panel size</label><span class="slider-val" id="panel-val" aria-hidden="true"></span></div>
           <p class="slider-help">Add more perspectives to your test.</p>
           <div class="range-wrap" id="panel-wrap">
             <div class="rail"><span class="fill"></span></div>
             <input type="range" id="panel" min="1" max="6" step="1" value="3">
             <span class="thumb" id="panel-thumb" aria-hidden="true"></span>
           </div>
-          <div class="ends"><span>Core user</span><span>Full coverage</span></div>
+          <div class="ends"><span><svg class="end-icon" aria-hidden="true"><use href="#e-one"/></svg>Core user</span><span><svg class="end-icon" aria-hidden="true"><use href="#e-all"/></svg>Full coverage</span></div>
+          <p class="state-help" id="panel-state"></p>
         </div>
-        <div class="slider">
-          <div class="slider-head"><svg class="icon" aria-hidden="true"><use href="#i-stress"/></svg><label for="challenge">Challenge level</label><span class="slider-val" id="challenge-val" aria-hidden="true"></span></div>
+        <div class="slider s-challenge">
+          <svg class="motif" id="challenge-motif" viewBox="0 0 320 80" preserveAspectRatio="xMaxYMid meet" aria-hidden="true" focusable="false"><g class="wave"><path d="M0 40 C20 40 20 40 40 40 S60 28 80 40 S100 52 120 40 S140 18 160 40 S180 62 200 40 S220 12 240 40 S260 68 280 40 S300 20 320 40"/></g></svg>
+          <div class="slider-head"><span class="row-icon" aria-hidden="true"><svg><use href="#r-challenge"/></svg></span><label for="challenge">Challenge level</label><span class="slider-val" id="challenge-val" aria-hidden="true"></span></div>
           <p class="slider-help">Change how demanding the test conditions are.</p>
           <div class="range-wrap" id="challenge-wrap">
-            <svg class="trace" viewBox="0 0 300 40" preserveAspectRatio="none" aria-hidden="true"><polyline class="trace-line" vector-effect="non-scaling-stroke"/></svg>
-            <svg class="trace lit" viewBox="0 0 300 40" preserveAspectRatio="none" aria-hidden="true"><polyline class="trace-line" vector-effect="non-scaling-stroke"/></svg>
+            <div class="rail"><span class="fill"></span></div>
             <input type="range" id="challenge" min="1" max="4" step="1" value="1">
             <span class="thumb" id="challenge-thumb" aria-hidden="true"></span>
           </div>
-          <div class="ends"><span>Typical</span><span>Edge case</span></div>
+          <div class="ends"><span><svg class="end-icon" aria-hidden="true"><use href="#e-typical"/></svg>Typical</span><span><svg class="end-icon" aria-hidden="true"><use href="#e-edge"/></svg>Edge case</span></div>
+          <p class="state-help" id="challenge-state"></p>
         </div>
-        <div class="slider">
-          <div class="slider-head"><svg class="icon" aria-hidden="true"><use href="#i-journey"/></svg><label for="journey">Journey</label><span class="slider-val" id="journey-val" aria-hidden="true"></span></div>
+        <div class="slider s-journey">
+          <svg class="motif" id="journey-motif" viewBox="0 0 320 80" preserveAspectRatio="xMaxYMid meet" aria-hidden="true" focusable="false"><path class="route-line" pathLength="1"/><g class="nodes"><circle r="4"/><circle r="4"/><circle r="4"/><circle r="4"/><circle r="4"/></g></svg>
+          <div class="slider-head"><span class="row-icon" aria-hidden="true"><svg><use href="#r-journey"/></svg></span><label for="journey">Journey</label><span class="slider-val" id="journey-val" aria-hidden="true"></span></div>
           <p class="slider-help">Change how directly the persona moves through your experience.</p>
           <div class="range-wrap" id="journey-wrap">
             <div class="rail"><span class="fill"></span></div>
             <input type="range" id="journey" min="1" max="5" step="1" value="1">
             <span class="thumb" id="journey-thumb" aria-hidden="true"></span>
           </div>
-          <div class="ends"><span>Straight through</span><span>Restarts often</span></div>
+          <div class="ends"><span><svg class="end-icon" aria-hidden="true"><use href="#e-straight"/></svg>Straight through</span><span><svg class="end-icon" aria-hidden="true"><use href="#e-restarts"/></svg>Restarts often</span></div>
+          <p class="state-help" id="journey-state"></p>
         </div>
         <div class="actions"><button type="button" class="primary" id="lock" aria-describedby="lock-note">Review &amp; export</button><span class="note" id="lock-note"></span></div>
       </div>
@@ -969,8 +1034,6 @@ function outlineSVG(i, withNumber) {
   return `<svg class="outline" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><g fill="#fff" stroke="#7b8794" stroke-width="2" stroke-dasharray="${withNumber ? "3 3" : "0"}">${SHAPES[LOOKS[i].shape]}</g>` +
     (withNumber ? `<text x="20" y="${textY(i)}" text-anchor="middle" dominant-baseline="central" fill="#52606d" font-size="12" font-family="Segoe UI, system-ui, sans-serif">${i + 1}</text>` : "") + `</svg>`;
 }
-const NEEDLE = '<svg viewBox="0 0 44 44"><path d="M22 3 L26.5 13 L23.6 13 L23.6 33 L20.4 33 L20.4 13 L17.5 13 Z" fill="#1b2a4a"/><circle cx="22" cy="35" r="6.5" fill="#1b2a4a" stroke="#fff" stroke-width="2.5"/></svg>';
-const PIP = '<svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="13" fill="#1b2a4a" stroke="#fff" stroke-width="3"/><path d="M16 24.5 C16 17, 28 17, 28 24.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M25.5 22.5 L28 25 L30.5 22.5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const NODE_X = [40, 120, 200, 280], RAIL_Y = 80;
 
 // Display-only: wraps a moment name onto at most two short lines so neighbours
@@ -1015,13 +1078,70 @@ function trackMarkup(seq, shorts) {
   });
   return {moves, nodes};
 }
-function tracePoints() { // flat on the left, jagged on the right
-  const pts = [];
-  for (let x = 0, k = 0; x <= 300; x += 6, k++) {
-    const amp = 0.5 + 15 * Math.pow(x / 300, 1.6);
-    pts.push(`${x},${(20 + (k % 2 ? amp : -amp)).toFixed(1)}`);
+// ---------- Slider module: state lines, motifs and motion ----------
+// One short line per value, under each slider. Plain text, not announced.
+const STATE_HELP = {
+  panel: ["A single perspective.", "Focused coverage.", "Balanced perspectives.", "Broader coverage.", "Full coverage.", "Full coverage."],
+  challenge: ["No added test complication.", "The same person is under time pressure.",
+    "The same person may contradict earlier choices.", "A real situation the experience may not cover well."],
+  journey: ["A direct route from start to finish.", "One earlier moment is revisited.", "The route includes a few alternate paths.",
+    "Several earlier moments are revisited.", "The route repeatedly returns to earlier moments."]};
+// Decorative motifs, one per row: occupancy (panel), wave energy (challenge), route shape (journey).
+// Their resting state is set from the slider state on every render; motion only plays on a change.
+const WAVE_SCALE = [.35, .6, .8, 1];
+const ROUTE_X = [10, 85, 160, 235, 310];
+const ROUTE_Y = [[40, 40, 40, 40, 40], [44, 40, 26, 44, 40], [48, 24, 54, 28, 44], [52, 18, 62, 20, 46], [56, 12, 66, 14, 50]];
+function routePath(ys) {
+  let d = `M${ROUTE_X[0]} ${ys[0]}`;
+  for (let i = 1; i < ROUTE_X.length; i++) {
+    const x0 = ROUTE_X[i - 1], x1 = ROUTE_X[i], m = (x1 - x0) / 2;
+    d += ` C${x0 + m} ${ys[i - 1]} ${x1 - m} ${ys[i]} ${x1} ${ys[i]}`;
   }
-  return pts.join(" ");
+  return d;
+}
+// Each value pill keeps the width of its longest value, so changing a value never reflows the row.
+function reservePillWidths() {
+  if ($("tool").hidden) return;           // measured once the tool is on screen
+  const labels = {
+    panel: [1, 2, 3, 4, 5, 6].map(n => `${n} persona${n === 1 ? "" : "s"}`),
+    challenge: LEVELS.map(l => l.label),
+    journey: PATTERNS.map(pt => pt.label)};
+  for (const id in labels) {
+    const el = $(id + "-val"), keep = el.textContent;
+    el.style.minWidth = "";
+    let w = 0;
+    for (const t of labels[id]) { el.textContent = t; w = Math.max(w, el.getBoundingClientRect().width); }
+    el.textContent = keep;
+    el.style.minWidth = Math.ceil(w) + "px";
+  }
+}
+function setMotifs() {
+  document.querySelectorAll("#panel-motif .occ circle").forEach((c, i) => c.classList.toggle("on", i < state.panel));
+  document.querySelector("#challenge-motif .wave").style.transform = `scaleY(${WAVE_SCALE[state.challenge - 1]})`;
+  const ys = ROUTE_Y[state.journey - 1];
+  document.querySelector("#journey-motif .route-line").setAttribute("d", routePath(ys));
+  document.querySelectorAll("#journey-motif .nodes circle").forEach((c, i) => { c.setAttribute("cx", ROUTE_X[i]); c.setAttribute("cy", ys[i]); });
+}
+// Feedback on a value change, from pointer, touch or keyboard alike. Never delays the state or its announcement,
+// never runs at rest, and is skipped entirely when reduced motion is requested.
+const EASE_OUT2 = "cubic-bezier(.25, .46, .45, .94)", EASE_OUT3 = "cubic-bezier(.215, .61, .355, 1)";
+function animateRow(id, prev, next) {
+  if (reduceMotion.matches || prev === next || !Element.prototype.animate) return;
+  $(id + "-val").animate([{transform: "scale(1)"}, {transform: "scale(1.06)"}, {transform: "scale(1)"}], {duration: 320, easing: EASE_OUT3});
+  if (id === "panel") {
+    document.querySelectorAll("#panel-motif .occ circle").forEach((c, i) => {
+      const was = i < prev, now = i < next;
+      if (was !== now) c.animate(now
+        ? [{opacity: .3, transform: "scale(.6)"}, {opacity: 1, transform: "scale(1)"}]
+        : [{opacity: 1, transform: "scale(1)"}, {opacity: .3, transform: "scale(.85)"}], {duration: 220, easing: EASE_OUT2});
+    });
+  } else if (id === "challenge") {
+    const from = WAVE_SCALE[prev - 1], to = WAVE_SCALE[next - 1];
+    document.querySelector("#challenge-motif .wave").animate(
+      [{transform: `scaleY(${from})`}, {transform: `scaleY(${to * 1.18})`, offset: .55}, {transform: `scaleY(${to})`}], {duration: 320, easing: EASE_OUT3});
+  } else {
+    document.querySelector("#journey-motif .route-line").animate([{strokeDashoffset: 1}, {strokeDashoffset: 0}], {duration: 400, easing: EASE_OUT2});
+  }
 }
 
 // ---------- DOM ----------
@@ -1033,20 +1153,15 @@ let current = SAMPLE_PANEL;            // the one coherent source panel the slid
 let lastTrackKey = null, cardEls = [], locked = false, briefEdited = false, buildTimer = null;
 
 function setupStatic() {
-  ["panel", "journey"].forEach(id => {
+  ["panel", "challenge", "journey"].forEach(id => {
     const inp = inputs[id], max = +inp.max, min = +inp.min, wrap = $(id + "-wrap");
     for (let v = min; v <= max; v++) {
       const t = document.createElement("span");
-      t.className = id === "panel" ? "tick shape" : "tick";
+      t.className = "tick";
       t.style.setProperty("--t", (v - min) / (max - min));
-      // Panel ticks preview each persona's seat shape.
-      if (id === "panel") t.dataset.i = v - 1;
       wrap.insertBefore(t, inp);
     }
   });
-  document.querySelectorAll(".trace-line").forEach(l => l.setAttribute("points", tracePoints()));
-  $("challenge-thumb").innerHTML = NEEDLE;
-  $("journey-thumb").innerHTML = PIP;
 }
 
 // Seats and cards are rebuilt only when the source panel changes.
@@ -1099,12 +1214,12 @@ function render() {
   $("panel-val").textContent = `${v.panel} persona${v.panel === 1 ? "" : "s"}`;
   $("challenge-val").textContent = v.level.label;
   $("journey-val").textContent = v.pattern.label;
-  $("panel-thumb").innerHTML = tokenSVG(v.panel - 1);
-  $("panel-wrap").querySelectorAll(".tick").forEach(t => {
-    const i = +t.dataset.i;
-    t.innerHTML = i < v.panel - 1 ? tokenSVG(i) : outlineSVG(i, false);
-  });
-  $("journey-wrap").querySelectorAll(".tick").forEach((t, i) => t.classList.toggle("on", i < v.journey - 1));
+  for (const id of ["panel", "challenge", "journey"])
+    $(id + "-wrap").querySelectorAll(".tick").forEach((t, i) => t.classList.toggle("on", i < state[id] - 1));
+  $("panel-state").textContent = STATE_HELP.panel[v.panel - 1];
+  $("challenge-state").textContent = STATE_HELP.challenge[v.challenge - 1];
+  $("journey-state").textContent = STATE_HELP.journey[v.journey - 1];
+  setMotifs();
 
   // Panel owns WHO: seats and cards
   $("seats-caption").textContent = `Panel of ${v.panel}`;
@@ -1190,8 +1305,10 @@ function announce(text) {
 
 for (const id of ["panel", "challenge", "journey"]) {
   inputs[id].addEventListener("input", e => {
+    const prev = state[id];
     state[id] = +e.target.value;
     render();
+    animateRow(id, prev, state[id]);
     if (!reduceMotion.matches) ZONES[id].forEach(z => replay($(z), "changed"));
   });
 }
@@ -1472,6 +1589,7 @@ function showStep(n) {
 function enterTool() {
   $("onboard").hidden = true;
   $("tool").hidden = false;
+  reservePillWidths();
   window.scrollTo(0, 0);
   // Back from a refresher: return to the button that opened it.
   (obReturnFocus || $("tool-h")).focus();
@@ -1491,7 +1609,8 @@ setupStatic();
 mountPanel();
 render();
 // "#tool" opens the tool directly (useful for embeds and repeat visits).
-if (location.hash === "#tool") { $("onboard").hidden = true; $("tool").hidden = false; }
+if (location.hash === "#tool") { $("onboard").hidden = true; $("tool").hidden = false; reservePillWidths(); }
+if (document.fonts) document.fonts.ready.then(reservePillWidths);
 else obScreens.forEach(s => { s.hidden = +s.dataset.step !== 0; });
 </script>
 </body>
