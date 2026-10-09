@@ -373,10 +373,12 @@
   .controls .range-wrap .tick { width: 8px; height: 8px; margin: -4px 0 0 -4px; background: var(--pqa-surface-2); border: 2px solid var(--pqa-track); }
   .controls .range-wrap .tick.on { background: var(--acc); border-color: var(--acc); }
   .controls .thumb { filter: none; }
-  .controls .thumb::before { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: color-mix(in srgb, var(--acc) 34%, transparent); opacity: 0; transform: scale(.8); }
+  .controls .thumb::before { content: ""; position: absolute; inset: 7px; border-radius: 50%; background: color-mix(in srgb, var(--acc) 26%, transparent); opacity: 0; transform: scale(.8); }
   .controls .thumb::after { content: ""; position: absolute; inset: 11px; border-radius: 50%; background: var(--pqa-text); border: 4px solid var(--acc); box-shadow: 0 2px 6px rgba(0, 0, 0, .35); }
   .controls .slider:focus-within .thumb::before, .controls input[type=range]:active ~ .thumb::before { opacity: 1; transform: scale(1); }
-  .controls input[type=range]:focus-visible ~ .thumb { box-shadow: 0 0 0 2px var(--pqa-surface-2), 0 0 0 5px var(--pqa-focus); }
+  /* Keyboard focus: one clear ring hugging the knob, instead of a ring around the whole 44px hit area. */
+  .controls input[type=range]:focus-visible ~ .thumb { box-shadow: none; }
+  .controls input[type=range]:focus-visible ~ .thumb::before { inset: 5px; background: transparent; box-shadow: 0 0 0 3px var(--pqa-focus); opacity: 1; transform: none; }
   .controls .ends { grid-area: ends; color: var(--pqa-muted); }
   .controls .ends span { display: inline-flex; align-items: center; gap: 6px; }
   .controls .end-icon { width: 16px; height: 16px; flex: none; color: var(--acc); }
@@ -386,6 +388,10 @@
   @container pqa (max-width: 440px) {
     .controls .slider { grid-template-columns: 40px minmax(0, 1fr); grid-template-areas: "icon label" "icon pill" "icon help" "range range" "ends ends" "state state"; }
     .controls .slider-val { justify-self: start; margin: 4px 0 0; }
+    .controls .slider { padding-bottom: 6px; }
+    .controls .slider-help { line-height: 1.3; }
+    .controls .range-wrap { margin-top: -2px; }
+    .controls .state-help { margin-top: 2px; }
     .controls .motif { top: 8px; bottom: auto; right: 8px; width: 40%; height: 40px; opacity: .2; }
   }
   .controls .motif .occ circle { fill: currentColor; opacity: .3; transform-box: fill-box; transform-origin: center; }
@@ -1081,7 +1087,7 @@ function trackMarkup(seq, shorts) {
 // ---------- Slider module: state lines, motifs and motion ----------
 // One short line per value, under each slider. Plain text, not announced.
 const STATE_HELP = {
-  panel: ["A single perspective.", "Focused coverage.", "Balanced perspectives.", "Broader coverage.", "Full coverage.", "Full coverage."],
+  panel: ["A single perspective.", "Focused coverage.", "Balanced perspectives.", "Broader coverage.", "Near-full coverage.", "Full coverage."],
   challenge: ["No added test complication.", "The same person is under time pressure.",
     "The same person may contradict earlier choices.", "A real situation the experience may not cover well."],
   journey: ["A direct route from start to finish.", "One earlier moment is revisited.", "The route includes a few alternate paths.",
