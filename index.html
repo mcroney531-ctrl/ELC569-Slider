@@ -257,6 +257,9 @@
   .privacy { color: var(--muted); font-size: .8125rem; margin-top: 12px; }
   .byos-error { color: #8a1c1c; font-weight: 600; font-size: .9375rem; }
   .byos-error:empty { display: none; }
+  .slider-help { margin: 2px 0 6px 0; color: var(--muted); font-size: .875rem; }
+  .next-cue { margin: 0 0 12px; padding: 10px 12px; border: 1px solid var(--line); border-left: 4px solid var(--navy); border-radius: 8px; background: #f4f6fb; font-size: .9375rem; }
+  .next-cue[hidden] { display: none; }
   .nudge { margin: 6px 0 0; padding-left: 10px; border-left: 3px solid var(--navy); color: var(--ink); font-size: .9375rem; }
   .nudge[hidden] { display: none; }
   .persona-copy { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
@@ -473,6 +476,7 @@
       <p class="for" id="panel-for"></p>
     </div>
     <button type="button" class="primary" id="own" aria-expanded="false" aria-controls="byos">Try it with your own project</button>
+    <button type="button" id="fresh" aria-expanded="false" aria-controls="byos" hidden>Build a new panel</button>
   </section>
 
   <p class="build-status" id="build-status" hidden aria-hidden="true"></p>
@@ -547,10 +551,12 @@
 
     <section class="controls" aria-labelledby="controls-h">
       <h2 id="controls-h">Shape your panel</h2>
+      <p class="next-cue" id="next-cue" hidden>Your panel is ready. Adjust who's included, the challenge, and their journey. Then review and export your test.</p>
       <p class="hint-line" id="controls-hint">Drag a marker, or use the arrow keys.</p>
       <div id="sliders">
         <div class="slider">
           <div class="slider-head"><svg class="icon" aria-hidden="true"><use href="#i-panel"/></svg><label for="panel">Panel size</label><span class="slider-val" id="panel-val" aria-hidden="true"></span></div>
+          <p class="slider-help">Add more perspectives to your test.</p>
           <div class="range-wrap" id="panel-wrap">
             <div class="rail"><span class="fill"></span></div>
             <input type="range" id="panel" min="1" max="6" step="1" value="3">
@@ -560,6 +566,7 @@
         </div>
         <div class="slider">
           <div class="slider-head"><svg class="icon" aria-hidden="true"><use href="#i-stress"/></svg><label for="challenge">Challenge level</label><span class="slider-val" id="challenge-val" aria-hidden="true"></span></div>
+          <p class="slider-help">Change how demanding the test conditions are.</p>
           <div class="range-wrap" id="challenge-wrap">
             <svg class="trace" viewBox="0 0 300 40" preserveAspectRatio="none" aria-hidden="true"><polyline class="trace-line" vector-effect="non-scaling-stroke"/></svg>
             <svg class="trace lit" viewBox="0 0 300 40" preserveAspectRatio="none" aria-hidden="true"><polyline class="trace-line" vector-effect="non-scaling-stroke"/></svg>
@@ -570,6 +577,7 @@
         </div>
         <div class="slider">
           <div class="slider-head"><svg class="icon" aria-hidden="true"><use href="#i-journey"/></svg><label for="journey">Journey</label><span class="slider-val" id="journey-val" aria-hidden="true"></span></div>
+          <p class="slider-help">Change how directly the persona moves through your experience.</p>
           <div class="range-wrap" id="journey-wrap">
             <div class="rail"><span class="fill"></span></div>
             <input type="range" id="journey" min="1" max="5" step="1" value="1">
@@ -577,18 +585,18 @@
           </div>
           <div class="ends"><span>Straight through</span><span>Restarts often</span></div>
         </div>
-        <div class="actions"><button type="button" class="primary" id="lock" aria-describedby="lock-note">Lock panel</button><span class="note" id="lock-note"></span></div>
+        <div class="actions"><button type="button" class="primary" id="lock" aria-describedby="lock-note">Review &amp; export</button><span class="note" id="lock-note"></span></div>
       </div>
       <div id="locked-row" hidden>
         <p class="summary" id="summary"></p>
         <p class="code" id="code"></p>
-        <div class="actions"><button type="button" id="edit">Edit panel</button></div>
+        <div class="actions"><button type="button" id="edit">Adjust panel</button></div>
       </div>
     </section>
   </div>
 
   <section class="review" id="review" hidden aria-labelledby="brief-h">
-    <h2 id="brief-h" tabindex="-1">Your test panel brief</h2>
+    <h2 id="brief-h" tabindex="-1">Review and export</h2>
     <fieldset class="format">
       <legend>Export as</legend>
       <label><input type="radio" name="format" value="brief" checked> Walkthrough brief</label>
@@ -1004,7 +1012,9 @@ function mountPanel() {
   $("panel-id").textContent = sample ? "Sample panel" : `Panel ${current.id}`;
   $("panel-h").textContent = (sample ? "You're looking at a sample panel for: " : "Your panel for: ") + current.experience.summary;
   $("panel-for").textContent = current.experience.audience ? `For: ${current.experience.audience}` : "";
-  $("own").textContent = sample ? "Try it with your own project" : "Change project or rebuild";
+  $("own").textContent = sample ? "Try it with your own project" : "Edit project details";
+  $("fresh").hidden = sample;
+  updateCue();
 }
 
 function makeCard(i) {
@@ -1193,8 +1203,13 @@ async function copyPersona(i) {
   }
 }
 
+function updateCue() {
+  // The cue points a new panel's owner at the next step; it is not shown on the sample or once locked.
+  $("next-cue").hidden = current.id === "SAMPLE" || locked;
+}
 function lock() {
   locked = true;
+  updateCue();
   fillPersonaCopy();
   const old = $("persona-fallback"); if (old) old.remove();
   drafts = {brief: buildBrief(current, state), prompt: buildPrompt(current, state)};
@@ -1207,15 +1222,16 @@ function lock() {
   $("locked-row").hidden = false;
   $("review").hidden = false;
   $("brief-h").focus();
-  announce("Panel locked. " + deriveView(current, state).summary);
+  announce("Ready to review and export. " + deriveView(current, state).summary);
 }
 function showSliders() {
   locked = false;
+  updateCue();
   $("sliders").hidden = false;
   $("locked-row").hidden = true;
   $("review").hidden = true;
   // Warn before the edits are lost, not after.
-  $("lock-note").textContent = briefEdited ? "Locking again will regenerate the export and replace your edits." : "";
+  $("lock-note").textContent = briefEdited ? "Choosing Review and export again will regenerate the export and replace your edits." : "";
 }
 function unlock() {
   showSliders();
@@ -1277,19 +1293,45 @@ function updateNudge() {
 $("f-testing").addEventListener("input", updateNudge);
 $("f-goal").addEventListener("input", updateNudge);
 
-function openByos() {
+// Two ways into the same form. "Edit project details" keeps what was typed. "Build a new panel"
+// starts blank, and puts the old text back if the form is cancelled.
+const FIELD_IDS = ["f-testing", "f-goal", "f-audience", "f-m1", "f-m2", "f-m3", "f-m4"];
+let byosOpener = null, byosStash = null;
+function setExpanded(open) { ["own", "fresh"].forEach(id => $(id).setAttribute("aria-expanded", String(open))); }
+function restoreStash() {
+  if (!byosStash) return;
+  FIELD_IDS.forEach((id, i) => { $(id).value = byosStash[i]; });
+  byosStash = null; updateNudge();
+}
+function openByos(opener, fresh) {
+  byosOpener = opener || $("own");
+  if (fresh && !byosStash) {
+    byosStash = FIELD_IDS.map(id => $(id).value);
+    FIELD_IDS.forEach(id => { $(id).value = ""; });
+    updateNudge();
+  }
   $("byos").hidden = false;
-  $("own").setAttribute("aria-expanded", "true");
+  setExpanded(true);
   $("byos-error").textContent = "";
   $("f-testing").focus();
 }
-function closeByos(returnFocus) {
+function closeByos(returnFocus, restore) {
+  if (restore) restoreStash(); else byosStash = null;
   $("byos").hidden = true;
-  $("own").setAttribute("aria-expanded", "false");
-  if (returnFocus) $("own").focus();
+  setExpanded(false);
+  if (returnFocus) (byosOpener || $("own")).focus();
 }
-$("own").addEventListener("click", () => $("byos").hidden ? openByos() : closeByos(true));
-$("cancel").addEventListener("click", () => closeByos(true));
+$("own").addEventListener("click", () => {
+  if ($("byos").hidden) { openByos($("own"), false); return; }
+  if (byosStash) { restoreStash(); byosOpener = $("own"); $("f-testing").focus(); return; }   // switch from new back to edit
+  closeByos(true);
+});
+$("fresh").addEventListener("click", () => {
+  if ($("byos").hidden) { openByos($("fresh"), true); return; }
+  if (byosStash) { closeByos(true, true); return; }                                          // toggle closed, text restored
+  byosOpener = $("fresh"); openByos($("fresh"), true);                                       // switch from edit to new
+});
+$("cancel").addEventListener("click", () => closeByos(true, true));
 
 function byosFail(msg) {
   $("byos-error").textContent = msg;
