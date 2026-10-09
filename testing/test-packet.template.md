@@ -10,9 +10,7 @@ Persona: <name> (assigned. Do not ask which persona.)
 Prompt version: <v> · Panel <ID> · <P-C-J code>
 Packet generated: <date and time> · Tool commit: <sha>
 
-# Persona test prompt
-
-<the exact exported AI test prompt, unchanged>
+<the exact exported AI test prompt, unchanged. It starts with its own "# Persona test prompt" heading>
 
 # Relay protocol
 
