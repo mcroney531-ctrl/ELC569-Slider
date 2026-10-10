@@ -28,7 +28,7 @@
     color: var(--ink);
     font: 16px/1.5 "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
   }
-  main { max-width: 1080px; margin: 0 auto; padding: 20px 16px 32px; }
+  main { max-width: 1180px; margin: 0 auto; padding: 20px 16px 32px; }
   h1 { color: var(--navy); font-size: clamp(1.625rem, 4.5vw, 2.125rem); font-weight: 800; line-height: 1.15; letter-spacing: -.01em; margin: 0 0 6px; }
   h2 { color: var(--navy); font-size: 1.0625rem; font-weight: 700; margin: 0; }
   h3 { font-size: 1.0625rem; margin: 0; line-height: 1.25; }
@@ -41,39 +41,22 @@
   [hidden] { display: none !important; }
   .icon { width: 20px; height: 20px; flex: none; fill: none; stroke: var(--navy); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-  /* ---------- Layout: phone order is seats, route, controls, personas ---------- */
-  .layout { display: grid; gap: 14px; grid-template-areas: "seats" "track" "controls" "cards"; }
-  .stage { display: contents; }
+  /* ---------- Layout: a dark instrument deck on top, light reading surfaces below ----------
+     DOM order = visual order = focus order: intro, readout, panel bar, form, controls, stage, review. */
+  #tool { --deck: #0A1F2E; --deck-line: rgba(150, 190, 215, .22); --deck-text: #F5FAFD; --deck-muted: #AFC2D0; --teal: #2DD4BF; }
+  body:has(#tool:not([hidden])) { background: #EEF2F6; }
+  .stage { display: grid; gap: 14px; margin-top: 18px; grid-template-areas: "seats" "track" "cards"; }
   .zone-seats { grid-area: seats; }
   .zone-track { grid-area: track; }
   .zone-cards { grid-area: cards; }
-  .controls { grid-area: controls; }
-  .zone { background: var(--stage); border-radius: var(--radius); padding: 14px; }
-  /* Phone: one tinted stage with the control console set into it, packed so
-     each slider and the zone it changes fit on one screen together. Visual
-     order still matches focus order. */
-  @media (max-width: 839.98px) {
-    .layout { background: var(--stage); border-radius: 18px; padding: 0 12px 12px; gap: 0; }
-    .zone { background: none; border-radius: 12px; padding: 12px 2px; }
-    .zone-head { margin-bottom: 8px; }
-    .zone-track { padding-bottom: 14px; }
-    .legend { font-size: .75rem; margin-top: 2px; }
-    .zone-track .caption { display: none; } /* same value sits in the Journey pill */
-    .controls { padding: 14px; box-shadow: 0 4px 14px rgba(27, 42, 74, .10); }
-    .hint-line { margin-bottom: 8px; }
-    .slider + .slider { margin-top: 10px; padding-top: 8px; }
-    .range-wrap { margin-top: 2px; }
-    .actions { margin-top: 12px; }
-    .tier-line { margin-bottom: 10px; }
-    .card { padding: 12px; }
-    .bubble { margin-top: 12px; }
-  }
+  .zone { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; box-shadow: 0 1px 3px rgba(27, 42, 74, .06); }
+  .zone-cards { background: none; border: 0; box-shadow: none; padding: 4px 0 0; }
   @media (min-width: 840px) {
-    .layout { grid-template-columns: 330px minmax(0, 1fr); grid-template-areas: "controls stage"; align-items: start; gap: 24px; }
-    .controls { position: sticky; top: 16px; }
-    .stage { display: block; grid-area: stage; background: var(--stage); border-radius: 18px; padding: 6px 20px 20px; }
-    .stage .zone { background: none; border-radius: 0; padding: 16px 0; }
-    .stage .zone + .zone { border-top: 1px solid var(--line); }
+    .stage { grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); grid-template-areas: "seats track" "cards cards"; gap: 18px; }
+    .zone { padding: 18px 20px; }
+    .zone-cards { padding: 8px 0 0; }
+    .zone-track { display: flex; flex-direction: column; }
+    .zone-track .track-svg { margin: auto; }
   }
   .zone-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
   .zone-head .caption { margin-left: auto; }
@@ -264,7 +247,7 @@
   .persona-fallback { display: block; width: 100%; min-height: 9em; margin-top: 10px; font: .8125rem/1.4 ui-monospace, Consolas, monospace; }
   .build-status { margin: 0 0 14px; padding: 10px 12px; border: 1px solid var(--line-strong, var(--line)); border-left: 4px solid var(--navy); border-radius: var(--radius); background: #f4f6fb; color: var(--ink); font-weight: 600; font-size: .9375rem; }
   .build-status[hidden] { display: none; }
-  .is-building .panel-bar, .is-building .layout { opacity: .75; }
+  .is-building .stage, .is-building #sliders { opacity: .6; }
   .is-building .panel-id { font-style: italic; }
   .code { color: var(--muted); font-size: .875rem; font-weight: 600; margin-top: 2px; }
 
@@ -411,6 +394,106 @@
     .controls .slider { transition: border-color .18s ease-out, background-color .18s ease-out, transform .18s ease-out; }
     .controls .slider:hover, .controls .slider:focus-within { transform: translateY(-1px); }
     .controls .thumb::before { transition: opacity .16s ease-out, transform .16s ease-out; }
+  }
+
+  /* ---------- Instrument deck (dark): intro, readout, panel bar, form, controls ---------- */
+  html { scroll-padding-top: 96px; } /* keep focused controls clear of the sticky read-out */
+  .dk { background: var(--deck); color: var(--deck-text); padding-left: 22px; padding-right: 22px; }
+  .dk :focus-visible { outline-color: #5EE7F5; }
+  .intro.dk { margin: 0; padding-top: 20px; padding-bottom: 16px; border-radius: 22px 22px 0 0;
+    background: radial-gradient(circle at 94% 0%, rgba(45, 212, 191, .24), transparent 40%), radial-gradient(circle at 0% 100%, rgba(56, 189, 248, .10), transparent 40%), var(--deck); }
+  .intro.dk h1 { color: #fff; }
+  .intro.dk .lead { color: var(--deck-muted); margin-bottom: 14px; }
+  .intro.dk .steps li { color: var(--deck-muted); }
+  .intro.dk .steps strong { color: #fff; }
+  .intro.dk .steps li::before { background: transparent; border: 1.5px solid var(--teal); color: var(--teal); }
+  .intro.dk .refresher { color: #fff; }
+  .intro.dk .refresher:hover { background: rgba(255, 255, 255, .1); }
+
+  .readout-bar { position: sticky; top: 0; z-index: 5; padding-top: 4px; padding-bottom: 12px; }
+  .readout { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; align-items: center; background: #06131D; border: 1px solid var(--deck-line); border-radius: 14px; padding: 10px 4px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04); }
+  .readout .s-panel { --acc: #2DD4BF; }
+  .readout .s-challenge { --acc: #A78BFA; }
+  .readout .s-journey { --acc: #38BDF8; }
+  .ro { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "d k" "d v"; column-gap: 12px; padding: 0 16px; border-left: 1px solid var(--deck-line); }
+  .ro:first-child { border-left: 0; }
+  .ro-d { grid-area: d; align-self: center; font: 700 1.875rem/1 ui-monospace, "Cascadia Mono", Consolas, monospace; color: #fff; }
+  .ro-d::first-letter { color: var(--acc); }
+  .ro-k { grid-area: k; font-size: .6875rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--deck-muted); }
+  .ro-v { grid-area: v; font-size: .9375rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ro-id { padding: 0 16px; font: 600 .75rem ui-monospace, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--deck-muted); white-space: nowrap; }
+
+  .panel-bar.dk { margin: 0; border: 0; border-radius: 0; padding-top: 2px; padding-bottom: 18px; }
+  .panel-bar.dk .panel-id { background: rgba(45, 212, 191, .14); color: #5EE7F5; }
+  .panel-bar.dk h2 { color: #fff; font-size: 1.0625rem; }
+  .panel-bar.dk .for, .panel-bar.dk .sugg { color: var(--deck-muted); }
+  .panel-bar.dk button, .controls.dk button { background: transparent; color: #fff; border-color: rgba(245, 250, 253, .55); }
+  .panel-bar.dk button:hover, .controls.dk button:hover { background: rgba(255, 255, 255, .1); }
+  .panel-bar.dk button.primary, .controls.dk button.primary { background: linear-gradient(90deg, #23D4C4, #2EE6C1); color: #062C35; border-color: transparent; }
+  .panel-bar.dk button.primary:hover, .controls.dk button.primary:hover { background: linear-gradient(90deg, #3ADCCD, #4AEDCB); }
+  .build-status.dk { margin: 0; border: 0; border-radius: 0; background: var(--deck); color: #fff; padding-top: 0; padding-bottom: 16px; }
+  .build-status.dk::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 8px; border-radius: 50%; background: var(--teal); vertical-align: 1px; }
+  .byos.dk { margin: 0; border: 0; border-radius: 0; box-shadow: none; padding-top: 0; padding-bottom: 18px; color: var(--ink); }
+  .byos .sheet { background: #fff; border-radius: 16px; border-top: 4px solid var(--teal); padding: 18px; }
+
+  .controls.dk { position: static; margin: 0; border: 0; border-top: 1px solid var(--deck-line); border-radius: 0 0 22px 22px; box-shadow: 0 14px 34px rgba(7, 24, 39, .22); background: var(--deck); padding-top: 16px; padding-bottom: 20px; }
+  .controls-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; margin-bottom: 12px; }
+  .controls h2 { color: var(--pqa-text); font-size: 1.125rem; }
+  .controls-head .hint-line { margin: 0; }
+  @media (min-width: 1000px) {
+    #sliders { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .controls .slider + .slider { margin-top: 0; }
+    #sliders > .actions { grid-column: 1 / -1; margin-top: 2px; justify-content: flex-end; }
+    #lock { width: auto; min-width: 260px; }
+    /* Each instrument is a narrow column here: same arrangement as the narrow module. */
+    .controls .slider { grid-template-columns: 40px minmax(0, 1fr); grid-template-areas: "icon label" "icon pill" "icon help" "range range" "ends ends" "state state"; padding-bottom: 6px; }
+    .controls .slider-val { justify-self: start; margin: 4px 0 0; }
+    .controls .slider-help { line-height: 1.3; }
+    .controls .range-wrap { margin-top: -2px; }
+    .controls .state-help { margin-top: 2px; }
+    .controls .motif { top: 8px; bottom: auto; right: 8px; width: 40%; height: 40px; opacity: .2; }
+  }
+
+  .seat-text { display: block; text-align: center; }
+  .seat-lens { display: none; }
+  /* Desktop: the seats read as a roster, one row per seat, with the lens it adds. */
+  @media (min-width: 840px) {
+    .seats { grid-template-columns: 1fr; gap: 0; padding: 0; background: none; }
+    .seat { grid-template-columns: 40px minmax(0, 1fr); align-items: center; justify-items: start; gap: 12px; padding: 6px 0; border-top: 1px solid var(--line); }
+    .seat:first-child { border-top: 0; }
+    .seat-shape { width: 40px; }
+    .seat-text { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+    .seat-name { font-size: .9375rem; text-align: left; }
+    .seat-lens { display: inline; color: var(--muted); font-size: .8125rem; }
+    .seat:not(.filled) .seat-name { font-weight: 400; }
+    .cards { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+  }
+  .controls-head .next-cue { order: 3; flex: 1 1 100%; margin: 6px 0 0; }
+
+  /* Persona cards: the result, on light surfaces */
+  .card { border-radius: 14px; padding: 16px; box-shadow: 0 4px 14px rgba(27, 42, 74, .08); }
+  .zone-cards .zone-head h2 { font-size: 1.25rem; }
+
+  @media (max-width: 839.98px) {
+    main { padding: 12px 10px 28px; }
+    .dk { padding-left: 14px; padding-right: 14px; }
+    .intro.dk { padding-top: 14px; border-radius: 18px 18px 0 0; }
+    .intro.dk .lead { font-size: .9375rem; }
+    .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+    .steps li { flex-direction: column; gap: 4px; font-size: .8125rem; line-height: 1.25; }
+    .step-more { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .readout { grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 8px 0; border-radius: 12px; }
+    .ro { grid-template-columns: minmax(0, 1fr); grid-template-areas: "k" "d" "v"; justify-items: center; text-align: center; row-gap: 2px; padding: 0 6px; }
+    .ro-d { font-size: 1.375rem; }
+    .ro-k { font-size: .625rem; letter-spacing: .06em; }
+    .ro-v { font-size: .75rem; max-width: 100%; white-space: normal; line-height: 1.2; }
+    .zone-track .caption { display: none; } /* same value sits in the read-out and the Journey pill */
+    .ro-id { display: none; }
+    html { scroll-padding-top: 104px; }
+    .panel-bar.dk button { flex: 1 1 100%; }
+    .controls.dk { border-radius: 0 0 18px 18px; padding-top: 14px; }
+    .byos .sheet { padding: 14px; }
+    .stage { margin-top: 14px; }
   }
 
   /* ---------- Motion, only when the learner allows it ---------- */
@@ -575,20 +658,29 @@
   </div>
 
   <div id="tool" hidden>
-  <div class="intro">
+  <div class="intro dk">
     <div class="intro-top">
       <h1 id="tool-h" tabindex="-1">Build a test panel for your project</h1>
       <button type="button" class="refresher" id="refresher">Need a refresher?</button>
     </div>
     <p class="lead">Describe what you're testing. Build a panel of simulated users. Use them to stress-test your experience before real users do.</p>
     <ol class="steps">
-      <li><span><strong>Describe it.</strong> One sentence about what you're building and who it's for.</span></li>
-      <li><span><strong>Shape the panel.</strong> How many people, how hard they test it, and how they move through it.</span></li>
-      <li><span><strong>Take it to your build.</strong> Export a persona for each test pass, with what to watch for.</span></li>
+      <li><span><strong>Describe it.</strong> <span class="step-more">One sentence about what you're building and who it's for.</span></span></li>
+      <li><span><strong>Shape the panel.</strong> <span class="step-more">How many people, how hard they test it, and how they move through it.</span></span></li>
+      <li><span><strong>Take it to your build.</strong> <span class="step-more">Export a persona for each test pass, with what to watch for.</span></span></li>
     </ol>
   </div>
 
-  <section class="panel-bar" aria-labelledby="panel-h">
+  <div class="readout-bar dk" aria-hidden="true">
+    <div class="readout">
+      <div class="ro s-panel"><span class="ro-k">Panel</span><span class="ro-d" id="ro-panel">P3</span><span class="ro-v" id="ro-panel-v"></span></div>
+      <div class="ro s-challenge"><span class="ro-k">Challenge</span><span class="ro-d" id="ro-challenge">C1</span><span class="ro-v" id="ro-challenge-v"></span></div>
+      <div class="ro s-journey"><span class="ro-k">Journey</span><span class="ro-d" id="ro-journey">J1</span><span class="ro-v" id="ro-journey-v"></span></div>
+      <span class="ro-id" id="ro-id"></span>
+    </div>
+  </div>
+
+  <section class="panel-bar dk" aria-labelledby="panel-h">
     <div class="what">
       <span class="panel-id" id="panel-id"></span>
       <h2 id="panel-h" tabindex="-1"></h2>
@@ -598,9 +690,10 @@
     <button type="button" id="fresh" aria-expanded="false" aria-controls="byos" hidden>Build a new panel</button>
   </section>
 
-  <p class="build-status" id="build-status" hidden aria-hidden="true"></p>
+  <p class="build-status dk" id="build-status" hidden aria-hidden="true"></p>
 
-  <section class="byos" id="byos" hidden aria-labelledby="byos-h">
+  <section class="byos dk" id="byos" hidden aria-labelledby="byos-h">
+    <div class="sheet">
     <h2 id="byos-h">Your project</h2>
     <p class="help">We'll create six test personas. Your panel starts with 3; use Panel size to add more perspectives. The sliders shape the panel without building it again.</p>
     <form id="byos-form" novalidate>
@@ -636,87 +729,86 @@
         <p class="byos-error" id="byos-error"></p>
       </div>
     </form>
+    </div>
   </section>
 
-  <div class="layout">
-    <div class="stage">
-      <section class="zone zone-seats" id="zone-seats" aria-labelledby="seats-h">
-        <div class="zone-head"><svg class="icon" aria-hidden="true"><use href="#i-panel"/></svg><h2 id="seats-h">Seats</h2><p class="caption" id="seats-caption"></p></div>
-        <ul class="seats" id="seats"></ul>
-      </section>
-
-      <section class="zone zone-track" id="zone-track" aria-labelledby="track-h">
-        <div class="zone-head"><svg class="icon" aria-hidden="true"><use href="#i-journey"/></svg><h2 id="track-h">Journey through your key moments</h2><p class="caption" id="track-caption"></p></div>
-        <svg class="track-svg" id="track" viewBox="0 -6 320 152" role="img" aria-labelledby="track-desc">
-          <title id="track-desc"></title>
-          <defs>
-            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-              <path d="M0 0 L10 5 L0 10 z" fill="#2c4a85"/>
-            </marker>
-          </defs>
-          <line class="rail" x1="40" y1="80" x2="280" y2="80"/>
-          <g id="moves"></g>
-          <g id="nodes"></g>
-        </svg>
-        <p class="legend" aria-hidden="true">Badges: visit order · Dashed chips: repeat visits</p>
-        <p class="suggested-note" id="moments-note" hidden></p>
-      </section>
-
-      <section class="zone zone-cards" id="zone-cards" aria-labelledby="cards-h">
-        <div class="zone-head"><svg class="icon" aria-hidden="true"><use href="#i-stress"/></svg><h2 id="cards-h">Personas</h2></div>
-        <p class="tier-line" id="tier-caption"></p>
-        <ul class="cards" id="cards"></ul>
-      </section>
+  <section class="controls dk" aria-labelledby="controls-h">
+    <div class="controls-head"><h2 id="controls-h">Shape your panel</h2>
+    <p class="next-cue" id="next-cue" hidden>Your panel is ready. Adjust who's included, the challenge, and their journey. Then review and export your test.</p>
+    <p class="hint-line" id="controls-hint">Drag a marker, or use the arrow keys.</p></div>
+    <div id="sliders">
+      <div class="slider s-panel">
+        <svg class="motif" id="panel-motif" viewBox="0 0 320 80" preserveAspectRatio="xMaxYMid meet" aria-hidden="true" focusable="false"><g class="occ"><circle cx="45" cy="40" r="12"/><circle cx="91" cy="40" r="12"/><circle cx="137" cy="40" r="12"/><circle cx="183" cy="40" r="12"/><circle cx="229" cy="40" r="12"/><circle cx="275" cy="40" r="12"/></g></svg>
+        <div class="slider-head"><span class="row-icon" aria-hidden="true"><svg><use href="#r-panel"/></svg></span><label for="panel">Panel size</label><span class="slider-val" id="panel-val" aria-hidden="true"></span></div>
+        <p class="slider-help">Add more perspectives to your test.</p>
+        <div class="range-wrap" id="panel-wrap">
+          <div class="rail"><span class="fill"></span></div>
+          <input type="range" id="panel" min="1" max="6" step="1" value="3">
+          <span class="thumb" id="panel-thumb" aria-hidden="true"></span>
+        </div>
+        <div class="ends"><span><svg class="end-icon" aria-hidden="true"><use href="#e-one"/></svg>Core user</span><span><svg class="end-icon" aria-hidden="true"><use href="#e-all"/></svg>Full coverage</span></div>
+        <p class="state-help" id="panel-state"></p>
+      </div>
+      <div class="slider s-challenge">
+        <svg class="motif" id="challenge-motif" viewBox="0 0 320 80" preserveAspectRatio="xMaxYMid meet" aria-hidden="true" focusable="false"><g class="wave"><path d="M0 40 C20 40 20 40 40 40 S60 28 80 40 S100 52 120 40 S140 18 160 40 S180 62 200 40 S220 12 240 40 S260 68 280 40 S300 20 320 40"/></g></svg>
+        <div class="slider-head"><span class="row-icon" aria-hidden="true"><svg><use href="#r-challenge"/></svg></span><label for="challenge">Challenge level</label><span class="slider-val" id="challenge-val" aria-hidden="true"></span></div>
+        <p class="slider-help">Change how demanding the test conditions are.</p>
+        <div class="range-wrap" id="challenge-wrap">
+          <div class="rail"><span class="fill"></span></div>
+          <input type="range" id="challenge" min="1" max="4" step="1" value="1">
+          <span class="thumb" id="challenge-thumb" aria-hidden="true"></span>
+        </div>
+        <div class="ends"><span><svg class="end-icon" aria-hidden="true"><use href="#e-typical"/></svg>Typical</span><span><svg class="end-icon" aria-hidden="true"><use href="#e-edge"/></svg>Edge case</span></div>
+        <p class="state-help" id="challenge-state"></p>
+      </div>
+      <div class="slider s-journey">
+        <svg class="motif" id="journey-motif" viewBox="0 0 320 80" preserveAspectRatio="xMaxYMid meet" aria-hidden="true" focusable="false"><path class="route-line" pathLength="1"/><g class="nodes"><circle r="4"/><circle r="4"/><circle r="4"/><circle r="4"/><circle r="4"/></g></svg>
+        <div class="slider-head"><span class="row-icon" aria-hidden="true"><svg><use href="#r-journey"/></svg></span><label for="journey">Journey</label><span class="slider-val" id="journey-val" aria-hidden="true"></span></div>
+        <p class="slider-help">Change how directly the persona moves through your experience.</p>
+        <div class="range-wrap" id="journey-wrap">
+          <div class="rail"><span class="fill"></span></div>
+          <input type="range" id="journey" min="1" max="5" step="1" value="1">
+          <span class="thumb" id="journey-thumb" aria-hidden="true"></span>
+        </div>
+        <div class="ends"><span><svg class="end-icon" aria-hidden="true"><use href="#e-straight"/></svg>Straight through</span><span><svg class="end-icon" aria-hidden="true"><use href="#e-restarts"/></svg>Restarts often</span></div>
+        <p class="state-help" id="journey-state"></p>
+      </div>
+      <div class="actions"><button type="button" class="primary" id="lock" aria-describedby="lock-note">Review &amp; export</button><span class="note" id="lock-note"></span></div>
     </div>
+    <div id="locked-row" hidden>
+      <p class="summary" id="summary"></p>
+      <p class="code" id="code"></p>
+      <div class="actions"><button type="button" id="edit">Adjust panel</button></div>
+    </div>
+  </section>
 
-    <section class="controls" aria-labelledby="controls-h">
-      <h2 id="controls-h">Shape your panel</h2>
-      <p class="next-cue" id="next-cue" hidden>Your panel is ready. Adjust who's included, the challenge, and their journey. Then review and export your test.</p>
-      <p class="hint-line" id="controls-hint">Drag a marker, or use the arrow keys.</p>
-      <div id="sliders">
-        <div class="slider s-panel">
-          <svg class="motif" id="panel-motif" viewBox="0 0 320 80" preserveAspectRatio="xMaxYMid meet" aria-hidden="true" focusable="false"><g class="occ"><circle cx="45" cy="40" r="12"/><circle cx="91" cy="40" r="12"/><circle cx="137" cy="40" r="12"/><circle cx="183" cy="40" r="12"/><circle cx="229" cy="40" r="12"/><circle cx="275" cy="40" r="12"/></g></svg>
-          <div class="slider-head"><span class="row-icon" aria-hidden="true"><svg><use href="#r-panel"/></svg></span><label for="panel">Panel size</label><span class="slider-val" id="panel-val" aria-hidden="true"></span></div>
-          <p class="slider-help">Add more perspectives to your test.</p>
-          <div class="range-wrap" id="panel-wrap">
-            <div class="rail"><span class="fill"></span></div>
-            <input type="range" id="panel" min="1" max="6" step="1" value="3">
-            <span class="thumb" id="panel-thumb" aria-hidden="true"></span>
-          </div>
-          <div class="ends"><span><svg class="end-icon" aria-hidden="true"><use href="#e-one"/></svg>Core user</span><span><svg class="end-icon" aria-hidden="true"><use href="#e-all"/></svg>Full coverage</span></div>
-          <p class="state-help" id="panel-state"></p>
-        </div>
-        <div class="slider s-challenge">
-          <svg class="motif" id="challenge-motif" viewBox="0 0 320 80" preserveAspectRatio="xMaxYMid meet" aria-hidden="true" focusable="false"><g class="wave"><path d="M0 40 C20 40 20 40 40 40 S60 28 80 40 S100 52 120 40 S140 18 160 40 S180 62 200 40 S220 12 240 40 S260 68 280 40 S300 20 320 40"/></g></svg>
-          <div class="slider-head"><span class="row-icon" aria-hidden="true"><svg><use href="#r-challenge"/></svg></span><label for="challenge">Challenge level</label><span class="slider-val" id="challenge-val" aria-hidden="true"></span></div>
-          <p class="slider-help">Change how demanding the test conditions are.</p>
-          <div class="range-wrap" id="challenge-wrap">
-            <div class="rail"><span class="fill"></span></div>
-            <input type="range" id="challenge" min="1" max="4" step="1" value="1">
-            <span class="thumb" id="challenge-thumb" aria-hidden="true"></span>
-          </div>
-          <div class="ends"><span><svg class="end-icon" aria-hidden="true"><use href="#e-typical"/></svg>Typical</span><span><svg class="end-icon" aria-hidden="true"><use href="#e-edge"/></svg>Edge case</span></div>
-          <p class="state-help" id="challenge-state"></p>
-        </div>
-        <div class="slider s-journey">
-          <svg class="motif" id="journey-motif" viewBox="0 0 320 80" preserveAspectRatio="xMaxYMid meet" aria-hidden="true" focusable="false"><path class="route-line" pathLength="1"/><g class="nodes"><circle r="4"/><circle r="4"/><circle r="4"/><circle r="4"/><circle r="4"/></g></svg>
-          <div class="slider-head"><span class="row-icon" aria-hidden="true"><svg><use href="#r-journey"/></svg></span><label for="journey">Journey</label><span class="slider-val" id="journey-val" aria-hidden="true"></span></div>
-          <p class="slider-help">Change how directly the persona moves through your experience.</p>
-          <div class="range-wrap" id="journey-wrap">
-            <div class="rail"><span class="fill"></span></div>
-            <input type="range" id="journey" min="1" max="5" step="1" value="1">
-            <span class="thumb" id="journey-thumb" aria-hidden="true"></span>
-          </div>
-          <div class="ends"><span><svg class="end-icon" aria-hidden="true"><use href="#e-straight"/></svg>Straight through</span><span><svg class="end-icon" aria-hidden="true"><use href="#e-restarts"/></svg>Restarts often</span></div>
-          <p class="state-help" id="journey-state"></p>
-        </div>
-        <div class="actions"><button type="button" class="primary" id="lock" aria-describedby="lock-note">Review &amp; export</button><span class="note" id="lock-note"></span></div>
-      </div>
-      <div id="locked-row" hidden>
-        <p class="summary" id="summary"></p>
-        <p class="code" id="code"></p>
-        <div class="actions"><button type="button" id="edit">Adjust panel</button></div>
-      </div>
+  <div class="stage">
+    <section class="zone zone-seats" id="zone-seats" aria-labelledby="seats-h">
+      <div class="zone-head"><svg class="icon" aria-hidden="true"><use href="#i-panel"/></svg><h2 id="seats-h">Seats</h2><p class="caption" id="seats-caption"></p></div>
+      <ul class="seats" id="seats"></ul>
+    </section>
+
+    <section class="zone zone-track" id="zone-track" aria-labelledby="track-h">
+      <div class="zone-head"><svg class="icon" aria-hidden="true"><use href="#i-journey"/></svg><h2 id="track-h">Journey through your key moments</h2><p class="caption" id="track-caption"></p></div>
+      <svg class="track-svg" id="track" viewBox="0 -6 320 152" role="img" aria-labelledby="track-desc">
+        <title id="track-desc"></title>
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="#2c4a85"/>
+          </marker>
+        </defs>
+        <line class="rail" x1="40" y1="80" x2="280" y2="80"/>
+        <g id="moves"></g>
+        <g id="nodes"></g>
+      </svg>
+      <p class="legend" aria-hidden="true">Badges: visit order · Dashed chips: repeat visits</p>
+      <p class="suggested-note" id="moments-note" hidden></p>
+    </section>
+
+    <section class="zone zone-cards" id="zone-cards" aria-labelledby="cards-h">
+      <div class="zone-head"><svg class="icon" aria-hidden="true"><use href="#i-stress"/></svg><h2 id="cards-h">Personas</h2></div>
+      <p class="tier-line" id="tier-caption"></p>
+      <ul class="cards" id="cards"></ul>
     </section>
   </div>
 
@@ -1182,7 +1274,7 @@ function setupStatic() {
 function mountPanel() {
   $("seats").innerHTML = current.personas.map((p, i) =>
     `<li class="seat"><span class="seat-shape">${outlineSVG(i, true)}${tokenSVG(i, "token")}</span>` +
-    `<span class="seat-name" aria-hidden="true"></span><span class="sr-only"></span></li>`).join("");
+    `<span class="seat-text" aria-hidden="true"><span class="seat-name"></span><span class="seat-lens">${LENSES[i]}</span></span><span class="sr-only"></span></li>`).join("");
   cardEls.forEach(el => el.remove());
   cardEls = [];
   lastTrackKey = null;
@@ -1195,6 +1287,8 @@ function mountPanel() {
   $("moments-note").hidden = !picked.length;
   $("moments-note").innerHTML = picked.length ? `<span class="sugg">Suggested</span>${picked.length === 4 ? "The tool picked all four key moments" : `The tool picked ${esc(picked.join(", "))}`}. Use Edit project details to name your own.` : "";
   $("own").textContent = sample ? "Try it with your own project" : "Edit project details";
+  $("own").classList.toggle("primary", sample); // after a build, Review & export is the next step
+  $("ro-id").textContent = sample ? "Sample panel" : `Panel ${current.id}`;
   $("fresh").hidden = sample;
   updateCue();
 }
@@ -1232,6 +1326,11 @@ function render() {
   $("panel-val").textContent = `${v.panel} persona${v.panel === 1 ? "" : "s"}`;
   $("challenge-val").textContent = v.level.label;
   $("journey-val").textContent = v.pattern.label;
+  // Read-out: the same three values as the pills, as one instrument line (hidden from assistive tech).
+  for (const [id, n] of [["panel", "P" + v.panel], ["challenge", "C" + v.challenge], ["journey", "J" + v.journey]]) {
+    $("ro-" + id).textContent = n;
+    $("ro-" + id + "-v").textContent = $(id + "-val").textContent;
+  }
   for (const id of ["panel", "challenge", "journey"])
     $(id + "-wrap").querySelectorAll(".tick").forEach((t, i) => t.classList.toggle("on", i < state[id] - 1));
   $("panel-state").textContent = STATE_HELP.panel[v.panel - 1];
