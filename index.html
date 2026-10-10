@@ -231,6 +231,10 @@
   .panel-id { display: inline-block; font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--navy); background: var(--soft); border-radius: 6px; padding: 1px 8px; margin-bottom: 4px; }
   .panel-bar h2 { font-size: 1rem; font-weight: 600; color: var(--ink); }
   .panel-bar .for { color: var(--muted); font-size: .875rem; }
+  .sugg { display: inline-block; font-size: .6875rem; font-weight: 700; letter-spacing: .02em; color: var(--muted); border: 1px dashed currentColor; border-radius: 999px; padding: 0 7px; margin-left: 4px; vertical-align: 1px; }
+  .suggested-note { color: var(--muted); font-size: .8125rem; text-align: center; margin-top: 6px; }
+  .suggested-note .sugg { margin: 0 4px 0 0; }
+  .format-role { font-weight: 700; margin: 0 0 2px; }
   .byos { border: 1px solid var(--line); border-top: 4px solid var(--navy); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; background: #fff; box-shadow: 0 6px 20px rgba(27, 42, 74, .08); }
   .byos h2 { font-size: 1.125rem; margin-bottom: 4px; }
   .byos .field { margin-top: 14px; }
@@ -598,7 +602,7 @@
 
   <section class="byos" id="byos" hidden aria-labelledby="byos-h">
     <h2 id="byos-h">Your project</h2>
-    <p class="help">We'll build six simulated users for it. The sliders then shape the panel without building it again.</p>
+    <p class="help">We'll create six test personas. Your panel starts with 3; use Panel size to add more perspectives. The sliders shape the panel without building it again.</p>
     <form id="byos-form" novalidate>
       <div class="field">
         <label for="f-testing">What are you testing?</label>
@@ -655,6 +659,7 @@
           <g id="nodes"></g>
         </svg>
         <p class="legend" aria-hidden="true">Badges: visit order · Dashed chips: repeat visits</p>
+        <p class="suggested-note" id="moments-note" hidden></p>
       </section>
 
       <section class="zone zone-cards" id="zone-cards" aria-labelledby="cards-h">
@@ -722,6 +727,7 @@
       <label><input type="radio" name="format" value="brief" checked> Walkthrough brief</label>
       <label><input type="radio" name="format" value="prompt"> AI test prompt (trial)</label>
     </fieldset>
+    <p class="format-role" id="format-role"></p>
     <p class="help-line" id="format-help"></p>
     <label for="brief" id="brief-label">Persona brief (editable)</label>
     <textarea id="brief" spellcheck="false"></textarea>
@@ -920,12 +926,14 @@ function deriveView(panel, {panel: n, challenge, journey}) {
         route: routeSentence(pattern.seq, m.map(x => x.full))};
     })};
 }
+// Marks what the tool filled in, so it never reads as something the person said.
+const SUGG = " (suggested by the tool)";
 function buildBrief(panel, s) {
   const v = deriveView(panel, s), ex = v.experience;
   const out = ["# Test Panel Brief", "", v.code, "",
     `**Testing:** ${ex.summary}`];
-  if (ex.audience) out.push(`**For:** ${ex.audience}`);
-  out.push("", "**Key moments:**", ...ex.moments.map((x, i) => `${i + 1}. ${x.short}: ${x.full}`), "",
+  if (ex.audience) out.push(`**For:** ${ex.audience}${ex.audienceSuggested ? SUGG : ""}`);
+  out.push("", "**Key moments:**", ...ex.moments.map((x, i) => `${i + 1}. ${x.short}: ${x.full}${x.suggested ? SUGG : ""}`), "",
     `**Challenge level:** ${v.level.label}. ${v.level.sentence}`,
     `**Shared journey:** ${v.pattern.label}. ${v.journeyText.behavior}`,
     `**Shared route:** ${routeSentence(v.pattern.seq, ex.moments.map(x => x.short))}`,
@@ -964,9 +972,9 @@ function buildPrompt(panel, s, only = null) {
     "You are helping me run an exploratory walkthrough of a digital experience I built, using test personas. You will play one persona at a time and react to the real project material I share with you: screenshots, storyboards, scripts, quiz questions or descriptions.", "",
     "## Project", "",
     `Testing: ${ex.summary}`];
-  if (ex.audience) out.push(`For: ${ex.audience}`);
+  if (ex.audience) out.push(`For: ${ex.audience}${ex.audienceSuggested ? SUGG : ""}`);
   out.push("", "Key moments, in order from the beginning of the experience to the end:",
-    ...ex.moments.map((x, i) => `${i + 1}. ${x.short}: ${x.full}`), "",
+    ...ex.moments.map((x, i) => `${i + 1}. ${x.short}: ${x.full}${x.suggested ? SUGG : ""}`), "",
     "## Settings", "",
     `Panel ${panel.id} · ${configCode(s)}`,
     `Challenge level: ${v.level.label}. ${v.level.sentence}`,
@@ -1181,7 +1189,11 @@ function mountPanel() {
   const sample = current.id === "SAMPLE";
   $("panel-id").textContent = sample ? "Sample panel" : `Panel ${current.id}`;
   $("panel-h").textContent = (sample ? "You're looking at a sample panel for: " : "Your panel for: ") + current.experience.summary;
-  $("panel-for").textContent = current.experience.audience ? `For: ${current.experience.audience}` : "";
+  const ex = current.experience;
+  $("panel-for").innerHTML = ex.audience ? `For: ${esc(ex.audience)}${ex.audienceSuggested ? ' <span class="sugg">Suggested</span>' : ""}` : "";
+  const picked = ex.moments.filter(m => m.suggested).map(m => m.short);
+  $("moments-note").hidden = !picked.length;
+  $("moments-note").innerHTML = picked.length ? `<span class="sugg">Suggested</span>${picked.length === 4 ? "The tool picked all four key moments" : `The tool picked ${esc(picked.join(", "))}`}. Use Edit project details to name your own.` : "";
   $("own").textContent = sample ? "Try it with your own project" : "Edit project details";
   $("fresh").hidden = sample;
   updateCue();
@@ -1323,8 +1335,10 @@ for (const id of ["panel", "challenge", "journey"]) {
 // Two exports from the same panel and settings. Edits are kept per format until the next lock.
 const FORMATS = {
   brief: {label: "Persona brief (editable)", copy: "Copy brief", done: "Brief", file: "test-panel-brief.md",
-    help: "Each persona is a script for one test pass. Open your build, become that person, follow their route, and note where your experience helps, breaks, or lets them slip through."},
+    role: "You play each persona as you test your build.",
+    help: "Each persona is a script for one test pass. Open your build, follow their route, and note where your experience helps, breaks, or lets them slip through."},
   prompt: {label: "AI test prompt (editable)", copy: "Copy prompt", done: "Prompt", file: "test-panel-prompt.md",
+    role: "Your AI assistant plays each persona while you show it your build.",
     help: "Paste this into your AI assistant, then share your project material moment by moment. It plays each persona and logs what it finds."}};
 let format = "brief", drafts = {};
 function showFormat(f) {
@@ -1333,6 +1347,7 @@ function showFormat(f) {
   $("brief").value = drafts[f];
   $("brief-label").textContent = FORMATS[f].label;
   $("copy").textContent = FORMATS[f].copy;
+  $("format-role").textContent = FORMATS[f].role;
   $("format-help").textContent = FORMATS[f].help;
   $("export-msg").textContent = "";
 }
@@ -1553,9 +1568,12 @@ $("byos-form").addEventListener("submit", async e => {
   announce("Building your panel. This can take up to a minute.");
   try {
     const moments = ["f-m1", "f-m2", "f-m3", "f-m4"].map(id => $(id).value.replace(/[<>]/g, "").replace(/\s+/g, " ").trim());
-    const panel = await requestPanel({testing, audience: $("f-audience").value.trim(), moments});
+    const audience = $("f-audience").value.trim();
+    const panel = await requestPanel({testing, audience, moments});
     // Moments the person typed are theirs: keep each label exactly as entered.
-    moments.forEach((m, i) => { if (m) panel.experience.moments[i].short = m; });
+    moments.forEach((m, i) => { if (m) panel.experience.moments[i].short = m; else panel.experience.moments[i].suggested = true; });
+    // An audience the person left blank was filled in by the tool.
+    if (!audience) panel.experience.audienceSuggested = true;
     panel.id = makePanelId();
     current = panel;
     if (locked) showSliders();
@@ -1565,7 +1583,7 @@ $("byos-form").addEventListener("submit", async e => {
     render();
     closeByos(false);
     $("panel-h").focus();
-    announce(`Panel ${panel.id} is ready: six personas for ${panel.experience.summary}`);
+    announce(`Panel ${panel.id} is ready for ${panel.experience.summary}. Six personas, ${$("panel").value} shown; use Panel size to add more.`);
   } catch (err) {
     const msg = err && err.name === "AbortError" ? "Building took too long." : (err && err.message) || "Something went wrong.";
     byosFail(`Couldn't build your panel. ${msg} Try rephrasing, or keep exploring this one.`);
