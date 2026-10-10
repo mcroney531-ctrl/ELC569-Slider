@@ -44,7 +44,7 @@ Verdict: the persona contract holds under relay in both models. Claude plays the
 
 Safety-hazard course, text descriptions per moment, P3-C2-J2 (Rushed, One step back), persona Maria Lopez, one normal chat.
 
-- Route: partly. It never asked for the next moment by name; after each moment it asked what happened, so the operator had to steer (and once skipped the repeat visit). Fixed in the prompt: "If I say it isn't shown, don't keep asking: continue by asking me for the next moment on the route, by name."
+- Route: partly. It never asked for the next moment by name; after each moment it asked what happened, so the operator had to steer (and once skipped the repeat visit). Root cause: after each click it asked "What happens after...?", so the operator answered with the next moment's material and had to track the route alone. Fixed in the prompt: every "what happens" question also names the next moment ("If that isn't shown, please share <next moment>"), with repeats called "<moment> again".
 - No inventing: yes. It asked about every unshown outcome.
 - Stayed Rushed: yes (skipped the optional photo, short description, "finish before my shift"), no escalation.
 - Repeat visit: yes. Remembered its earlier choice and what it learned since; treated persistence as unverified.
