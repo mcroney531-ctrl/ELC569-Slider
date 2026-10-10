@@ -1,16 +1,20 @@
 # Landing page artwork
 
-Source: the landing-page visual handoff (three character cutouts). The page embeds these as
-WebP data URIs so it stays one self-contained file; these PNGs are the cleaned sources.
+Masters: transparent PNGs isolated from the GPT board, numbered as in the board spec. These are the
+sources; the page embeds optimized WebP derivatives (trimmed to the artwork, sized at about 2x the
+largest display size) as data URIs so it stays one self-contained file.
 
-Cleanup applied to the supplied `character-left`, `character-center` and `character-right` files:
-- removed a stray fragment of a neighbouring figure on the center image's left edge
-- filled see-through pixels inside the figures (the left figure's teeth)
-- trimmed the pale 1px fringe left around the silhouettes by the background removal, and smoothed the edge
-- cropped to the figures
+| # | File | Role on the landing page | Accessibility |
+|---|------|--------------------------|---------------|
+| 1 | `01-lightbulb.png` | idea bubble, top left | decorative |
+| 2 | `02-woman-laptop.png` | left figure | decorative (the group has one label) |
+| 3 | `03-thinking-man.png` | center figure | decorative |
+| 4 | `04-chat-bubble.png` | chat bubble, top center | decorative |
+| 5 | `05-bearded-man.png` | right figure | decorative |
+| 6 | `06-question-bubble.png` | question bubble, top right | decorative |
 
-The three files named `character_female`, `character_male` and `character_male_glasses` in the same
-handoff were not used: they carry caption text from the contact sheet they were cut from.
+CSS controls display size, so the masters carry transparent breathing room and no baked sizing.
+If a figure is later used to represent a specific test persona, it stops being decorative and needs alt text.
 
-The images are small (about 170 px wide). They look sharp on standard screens and slightly soft on
-high-density screens; a 2x version of the three figures would fix that.
+Replaces the earlier hand-cleaned cutouts (`character-left/center/right.png`, about 170 px wide), which
+were soft on high-density screens. Those remain in git history.
