@@ -581,6 +581,65 @@
     html { scroll-padding-top: 76px; }
   }
 
+  /* ---------- Step 3 accordion: one outer box when open, plain text inside ---------- */
+  .ob-head { position: relative; }
+  .ob-head::before { content: ""; position: absolute; top: 16px; right: 16px; width: 92px; height: 72px; pointer-events: none;
+    background: radial-gradient(rgba(255, 255, 255, .3) 1.2px, transparent 1.5px) 0 0 / 11px 11px;
+    -webkit-mask-image: linear-gradient(to bottom left, #000, transparent 85%); mask-image: linear-gradient(to bottom left, #000, transparent 85%); }
+  .ob-subhead { margin: 8px 0 0; max-width: 34ch; color: #D7E6EE; font-size: 1.0625rem; line-height: 1.35; }
+  .acc { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 10px; }
+  .acc-item { position: relative; background: #fff; border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 1px 2px rgba(27, 42, 74, .05); }
+  .acc-item.is-open { background: #F6F8FC; border-color: var(--navy); box-shadow: 0 0 0 1px var(--navy), 0 6px 18px rgba(27, 42, 74, .10); }
+  .acc-h { margin: 0; }
+  .acc-btn { display: grid; grid-template-columns: 34px 52px minmax(0, 1fr) 22px; align-items: center; column-gap: 12px; width: 100%; min-height: 72px; padding: 12px 16px 12px 14px;
+    border: 0; border-radius: 16px; background: none; color: var(--ink); font: inherit; font-weight: 400; text-align: left; cursor: pointer; }
+  .acc-btn:hover { background: none; }
+  .acc-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .acc-num { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; font-weight: 800; color: var(--navy); background: #CFF3EA; }
+  .acc-item[data-n="2"] .acc-num { background: #E0D4FB; }
+  .acc-item[data-n="3"] .acc-num { background: #BFE6FB; }
+  .acc-item[data-n="4"] .acc-num { background: #D6DDE8; }
+  .acc-ic svg { display: block; width: 46px; height: 46px; }
+  .acc-txt { display: grid; gap: 1px; min-width: 0; }
+  .acc-title { font-weight: 700; color: var(--navy); line-height: 1.25; }
+  .acc-sub { color: var(--muted); font-size: .9375rem; font-weight: 400; line-height: 1.3; }
+  .acc-item.is-open .acc-title { font-weight: 800; }
+  .acc-chev { width: 22px; height: 22px; color: var(--navy); }
+  .acc-item.is-open .acc-chev { transform: rotate(180deg); }
+  .acc-panel { overflow: hidden; }
+  .acc-body { padding: 4px 18px 18px 18px; }
+  .acc-body > p { margin: 0; color: var(--ink); }
+  .acc-dims { display: block; margin: 0; }
+  .acc-dims .dim { position: relative; display: block; padding: 6px 0 8px 18px; margin: 0; border: 0; border-radius: 0; }
+  .acc-dims .dim + .dim { margin-top: 8px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .acc-dims .dim-bar { position: absolute; left: 0; top: 10px; bottom: 10px; width: 4px; border-radius: 2px; background: #2DD4BF; transform-origin: top; }
+  .acc-dims .dim + .dim .dim-bar { top: 18px; }
+  .acc-dims .dim-challenge .dim-bar { background: #A78BFA; }
+  .acc-dims .dim-journey .dim-bar { background: #38BDF8; }
+  .acc-dims dt { font-weight: 800; color: var(--navy); font-size: 1.0625rem; }
+  .acc-dims dd { margin: 2px 0 0; color: var(--ink); }
+  .acc-dims dd strong { display: block; font-weight: 600; }
+  .acc-dims dd { color: var(--muted); }
+  .acc-dims dd strong { color: var(--ink); }
+  .acc-sum { margin: 10px 0 0 !important; padding-top: 12px; border-top: 1px solid var(--line); font-size: .9375rem; line-height: 1.55; }
+  .acc-sum strong { color: var(--navy); }
+  .acc-take { margin: 0 0 8px; color: var(--muted); font-size: .9375rem; }
+  .acc-take strong { color: var(--navy); }
+  @media (max-width: 520px) {
+    .acc-btn { grid-template-columns: 28px 34px minmax(0, 1fr) 18px; column-gap: 8px; padding: 12px 10px; min-height: 64px; }
+    .acc-num { width: 28px; height: 28px; font-size: .875rem; }
+    .acc-ic svg { width: 34px; height: 34px; }
+    .acc-chev { width: 18px; height: 18px; }
+    .acc-sub { font-size: .875rem; }
+    .acc-body { padding: 2px 14px 16px 14px; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .acc-item { transition: border-color .2s ease-out, box-shadow .2s ease-out, background-color .2s ease-out, transform .2s ease-out; }
+    .acc-item:not(.is-open):hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(27, 42, 74, .12); }
+    .acc-chev { transition: transform .26s cubic-bezier(.33, 1, .68, 1); }
+  }
+  @media (forced-colors: active) { .acc-item.is-open { border: 2px solid Highlight; box-shadow: none; } }
+
   /* ---------- Motion, only when the learner allows it ---------- */
   @media (prefers-reduced-motion: no-preference) {
     .seat .token, .seat .outline { transition: transform .3s cubic-bezier(.3, 1.4, .5, 1), opacity .2s; }
@@ -695,19 +754,68 @@
       <div class="ob-head">
         <p class="ob-count">Step 3 of 4</p>
         <h2 id="ob-h3" tabindex="-1">What this tool does</h2>
+        <p class="ob-subhead">Four steps to test your experience from different perspectives.</p>
       </div>
-      <ol class="ob-flow">
-        <li>Describe your build</li>
-        <li>Create a test panel</li>
-        <li>Shape the test</li>
-        <li>Take the persona into the experience</li>
+      <ol class="acc" id="acc">
+        <li class="acc-item" data-n="1">
+          <h3 class="acc-h"><button type="button" class="acc-btn" id="acc-b1" aria-expanded="false" aria-controls="acc-p1">
+            <span class="acc-num" aria-hidden="true">1</span>
+            <span class="acc-ic" aria-hidden="true"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="M12 5h17l9 9v27a2 2 0 0 1-2 2H12a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" fill="#fff" stroke="#1B6FE0" stroke-width="3" stroke-linejoin="round"/><path d="M29 5v9h9" fill="none" stroke="#1B6FE0" stroke-width="3" stroke-linejoin="round"/><path d="M16 22h16M16 29h10" stroke="#1B6FE0" stroke-width="3" stroke-linecap="round"/><circle cx="35" cy="37" r="7" fill="#2DD4BF"/><path d="m31.8 37 2.4 2.4 4-4.4" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span class="acc-txt"><span class="acc-title">Describe your build</span><span class="acc-sub">Tell the tool what you're testing.</span></span>
+            <svg class="acc-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button></h3>
+          <div class="acc-panel" id="acc-p1" role="region" aria-labelledby="acc-b1" hidden>
+            <div class="acc-body">
+          <p>One sentence about what you're building and who it's for.</p>
+            </div>
+          </div>
+        </li>
+        <li class="acc-item" data-n="2">
+          <h3 class="acc-h"><button type="button" class="acc-btn" id="acc-b2" aria-expanded="false" aria-controls="acc-p2">
+            <span class="acc-num" aria-hidden="true">2</span>
+            <span class="acc-ic" aria-hidden="true"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><circle cx="24" cy="16" r="7" fill="#1B6FE0"/><path d="M11 40c1-9 6-13 13-13s12 4 13 13Z" fill="#1B6FE0"/><circle cx="10" cy="20" r="5" fill="#3B8EF0"/><path d="M1 38c.8-6 4-9 9-9" fill="none" stroke="#3B8EF0" stroke-width="5" stroke-linecap="round"/><circle cx="38" cy="20" r="5" fill="#0F2E5C"/><path d="M47 38c-.8-6-4-9-9-9" fill="none" stroke="#0F2E5C" stroke-width="5" stroke-linecap="round"/></svg></span>
+            <span class="acc-txt"><span class="acc-title">Create a test panel</span><span class="acc-sub">Generate personas with different perspectives.</span></span>
+            <svg class="acc-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button></h3>
+          <div class="acc-panel" id="acc-p2" role="region" aria-labelledby="acc-b2" hidden>
+            <div class="acc-body">
+          <p>We create six test personas for your project. Your panel starts with 3; the sliders add more.</p>
+            </div>
+          </div>
+        </li>
+        <li class="acc-item" data-n="3">
+          <h3 class="acc-h"><button type="button" class="acc-btn" id="acc-b3" aria-expanded="false" aria-controls="acc-p3">
+            <span class="acc-num" aria-hidden="true">3</span>
+            <span class="acc-ic" aria-hidden="true"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><g stroke="#1B6FE0" stroke-width="3.2" stroke-linecap="round"><path d="M5 12h38M5 24h38M5 36h38"/></g><g fill="#fff" stroke="#1B6FE0" stroke-width="3.2"><circle cx="31" cy="12" r="4.6"/><circle cx="16" cy="24" r="4.6"/><circle cx="28" cy="36" r="4.6"/></g></svg></span>
+            <span class="acc-txt"><span class="acc-title">Shape the test</span><span class="acc-sub">Set the panel, challenge and journey.</span></span>
+            <svg class="acc-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button></h3>
+          <div class="acc-panel" id="acc-p3" role="region" aria-labelledby="acc-b3" hidden>
+            <div class="acc-body">
+          <dl class="acc-dims">
+            <div class="dim dim-panel"><span class="dim-bar" aria-hidden="true"></span><dt>Panel size</dt><dd><strong>Who are you testing with?</strong> Each seat adds a different perspective.</dd></div>
+            <div class="dim dim-challenge"><span class="dim-bar" aria-hidden="true"></span><dt>Challenge</dt><dd><strong>What condition are they testing under?</strong> Typical, Rushed, Inconsistent or Edge case.</dd></div>
+            <div class="dim dim-journey"><span class="dim-bar" aria-hidden="true"></span><dt>Journey</dt><dd><strong>How do they move through the experience?</strong> Straight through, backtracking, detours, loops or restarts.</dd></div>
+          </dl>
+          <p class="acc-sum"><strong>Persona</strong> = who you are testing as.<br><strong>Challenge</strong> = what happens during the test.<br><strong>Journey</strong> = where they go next.</p>
+            </div>
+          </div>
+        </li>
+        <li class="acc-item" data-n="4">
+          <h3 class="acc-h"><button type="button" class="acc-btn" id="acc-b4" aria-expanded="false" aria-controls="acc-p4">
+            <span class="acc-num" aria-hidden="true">4</span>
+            <span class="acc-ic" aria-hidden="true"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="M33 4c-6.1 0-11 4.7-11 10.6C22 22.5 33 34 33 34s11-11.500 11-19.400C44 8.700 39.100 4 33 4Z" fill="#0F2E5C"/><circle cx="33" cy="14.500" r="4" fill="#fff"/><path d="M26 34c-9 1-15 3-15 7.500 0 2.500 2 3.500 6 3.500h12" fill="none" stroke="#0F2E5C" stroke-width="3.200" stroke-linecap="round"/><circle cx="7" cy="41.500" r="4" fill="#fff" stroke="#0F2E5C" stroke-width="3.200"/></svg></span>
+            <span class="acc-txt"><span class="acc-title">Take the persona into the experience</span><span class="acc-sub">Run the test and see what you learn.</span></span>
+            <svg class="acc-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button></h3>
+          <div class="acc-panel" id="acc-p4" role="region" aria-labelledby="acc-b4" hidden>
+            <div class="acc-body">
+          <p>Export a persona for each test pass, with what to watch for.</p>
+            </div>
+          </div>
+        </li>
       </ol>
-      <dl class="ob-controls">
-        <div><dt>Panel size</dt><dd><strong>Who are you testing with?</strong> Each seat adds a coverage lens: a different perspective.</dd></div>
-        <div><dt>Challenge</dt><dd><strong>What condition are they testing under?</strong> Typical, Rushed, Inconsistent or Edge case.</dd></div>
-        <div><dt>Journey</dt><dd><strong>How do they move through the experience?</strong> Straight through, backtracking, detours, loops or restarts.</dd></div>
-      </dl>
-      <p class="ob-key">The persona tells you who you are testing as.<br>Challenge changes what happens during the test.<br>Journey changes where you go next.</p>
+      <p class="acc-take"><strong>Different people. Different paths.</strong> The tool helps you test from more than one point of view.</p>
       <div class="ob-actions">
         <button type="button" data-go="2">Back</button>
         <button type="button" class="primary" data-go="4">Next</button>
@@ -1834,6 +1942,46 @@ $("byos-form").addEventListener("submit", async e => {
     $("byos-form").removeAttribute("aria-busy");
     $("build").textContent = "Build my panel";
   }
+});
+
+// ---------- Step 3 accordion ----------
+// One panel open at a time, all closed to start. Real buttons with aria-expanded/aria-controls;
+// closed panels are `hidden`, so they leave the reading order. Opening never moves focus.
+const EASE_P2_OUT = "cubic-bezier(.33, 1, .68, 1)", EASE_P2_INOUT = "cubic-bezier(.45, 0, .55, 1)";
+function accSet(item, open) {
+  const btn = item.querySelector(".acc-btn"), panel = item.querySelector(".acc-panel");
+  if ((btn.getAttribute("aria-expanded") === "true") === open) return;
+  btn.setAttribute("aria-expanded", String(open));
+  item.classList.toggle("is-open", open);
+  (item._anims || []).forEach(a => a.cancel());
+  item._anims = [];
+  if (!motionOK()) { panel.hidden = !open; return; }
+  const run = (el, frames, opts) => { const a = el.animate(frames, opts); item._anims.push(a); return a; };
+  if (open) {
+    panel.hidden = false;
+    const h = panel.scrollHeight;
+    run(panel, [{height: "0px", opacity: 0}, {height: h + "px", opacity: 1}], {duration: 260, delay: 50, easing: EASE_P2_OUT, fill: "backwards"});
+    run(item.querySelector(".acc-num"), [{transform: "scale(1)"}, {transform: "scale(1.05)"}, {transform: "scale(1)"}], {duration: 300, easing: EASE_P2_OUT});
+    const rows = [...panel.querySelectorAll(".dim")];
+    rows.forEach((row, i) => {   // Panel size, Challenge, Journey: text rises, then its accent bar draws down
+      const at = 90 + i * 45;
+      run(row, [{opacity: 0, transform: "translateY(7px)"}, {opacity: 1, transform: "none"}], {duration: 240, delay: at, easing: EASE_P2_OUT, fill: "backwards"});
+      run(row.querySelector(".dim-bar"), [{transform: "scaleY(0)"}, {transform: "scaleY(1)"}], {duration: 260, delay: at, easing: EASE_P2_OUT, fill: "backwards"});
+    });
+    const sum = panel.querySelector(".acc-sum");
+    if (sum) run(sum, [{opacity: 0, transform: "translateY(6px)"}, {opacity: 1, transform: "none"}], {duration: 240, delay: 90 + rows.length * 45, easing: EASE_P2_OUT, fill: "backwards"});
+  } else {
+    const h = panel.offsetHeight;
+    const a = run(panel, [{height: h + "px", opacity: 1}, {height: "0px", opacity: 0}], {duration: 230, easing: EASE_P2_INOUT, fill: "forwards"});
+    a.finished.then(() => { if (btn.getAttribute("aria-expanded") !== "true") panel.hidden = true; a.cancel(); }, () => {});
+  }
+}
+$("acc").addEventListener("click", e => {
+  const btn = e.target.closest(".acc-btn");
+  if (!btn) return;
+  const item = btn.closest(".acc-item"), willOpen = btn.getAttribute("aria-expanded") !== "true";
+  if (willOpen) document.querySelectorAll(".acc-item.is-open").forEach(o => { if (o !== item) accSet(o, false); });
+  accSet(item, willOpen);
 });
 
 // ---------- Onboarding: landing → orientation → tool ----------
