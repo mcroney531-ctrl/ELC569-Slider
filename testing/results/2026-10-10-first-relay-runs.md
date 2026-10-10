@@ -39,3 +39,15 @@ Verdict: the persona contract holds under relay in both models. Claude plays the
 - One plain line in the export area: "You play each persona as you test your build."
 - Keep the walkthrough brief as the default export.
 - Then: the short material-sharing run with the prompt as shipped.
+
+## Material-sharing run (prompt as shipped, Worker fix deployed)
+
+Safety-hazard course, text descriptions per moment, P3-C2-J2 (Rushed, One step back), persona Maria Lopez, one normal chat.
+
+- Route: partly. It never asked for the next moment by name; after each moment it asked what happened, so the operator had to steer (and once skipped the repeat visit). Fixed in the prompt: "If I say it isn't shown, don't keep asking: continue by asking me for the next moment on the route, by name."
+- No inventing: yes. It asked about every unshown outcome.
+- Stayed Rushed: yes (skipped the optional photo, short description, "finish before my shift"), no escalation.
+- Repeat visit: yes. Remembered its earlier choice and what it learned since; treated persistence as unverified.
+- Log: useful. Found the planted gaps (no example description, no submit confirmation) and separated unverified gaps from observed failures.
+
+Verdict: passes. Behavioral testing is done; next is the visual branch work.
