@@ -233,7 +233,7 @@
   .slider-help { margin: 2px 0 6px 0; color: var(--muted); font-size: .875rem; }
   .next-cue { margin: 0 0 12px; padding: 10px 12px; border: 1px solid var(--line); border-left: 4px solid var(--navy); border-radius: 8px; background: #f4f6fb; font-size: .9375rem; }
   .next-cue[hidden] { display: none; }
-  .nudge { margin: 6px 0 0; padding-left: 10px; border-left: 3px solid var(--navy); color: var(--ink); font-size: .9375rem; }
+  .nudge { margin: 8px 0 0; font-size: .9375rem; }
   .nudge[hidden] { display: none; }
   .persona-copy { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
   .persona-copy-label { font-weight: 700; margin-bottom: 8px; }
@@ -269,7 +269,7 @@
   .ob-eyebrow, .ob-count { color: var(--muted); font-size: .8125rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
   .ob-sub { font-size: 1.25rem; color: var(--navy); font-weight: 600; }
   .ob-honest { color: var(--muted); font-size: .9375rem; border-left: 4px solid var(--line); padding-left: 12px; }
-  .ob-key { background: var(--stage); border-left: 4px solid var(--navy); border-radius: 0 10px 10px 0; padding: 12px 14px; font-weight: 600; color: var(--navy); }
+  .ob-key { font-weight: 600; color: var(--navy); }
   .ob-list { padding-left: 1.2em; }
   .ob-list li + li { margin-top: 4px; }
   .ob-cols { columns: 2 220px; column-gap: 24px; }
@@ -526,8 +526,7 @@
   .seg input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
   .seg label:has(input:checked) { background: linear-gradient(90deg, #23D4C4, #2EE6C1); color: #062C35; }
   .seg label:has(input:focus-visible) { outline: 3px solid #5EE7F5; outline-offset: 2px; }
-  .role-callout { display: flex; gap: 14px; align-items: flex-start; background: #F3F6FA; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 16px; }
-  .role-icon { width: 34px; height: 34px; flex: none; fill: none; stroke: var(--navy-2); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+  .role-callout { margin-bottom: 16px; }
   .review .format-role { font-size: 1.0625rem; color: var(--navy); margin: 0 0 2px; }
   .review .help-line { margin: 0; }
   .doc { border: 1px solid var(--line-strong); border-radius: 14px; overflow: hidden; background: #fff; }
@@ -560,7 +559,6 @@
   .ob-controls > div:nth-child(1) { border-left-color: #2DD4BF; }
   .ob-controls > div:nth-child(2) { border-left-color: #A78BFA; }
   .ob-controls > div:nth-child(3) { border-left-color: #38BDF8; }
-  .ob-key { background: #F3F6FA; }
   @media (max-width: 839.98px) {
     .ob-screen:not(.lp) { padding: 0 16px 18px; border-radius: 18px; }
     .ob-head { margin: 0 -16px 16px; padding: 16px; }
@@ -568,7 +566,6 @@
     .review-head { padding: 16px 14px; margin: 0 0 14px; }
     .review .seg { width: 100%; }
     .review .seg label { flex: 1 1 0; justify-content: center; text-align: center; padding: 6px 8px; font-size: .875rem; line-height: 1.2; }
-    .role-icon { display: none; }
     .doc textarea { min-height: 280px; }
     .doc .actions button { flex: 1 1 0; padding-left: 10px; padding-right: 10px; }
     /* Read-out: one line per instrument, so it stays small while pinned */
@@ -639,6 +636,32 @@
     .acc-chev { transition: transform .26s cubic-bezier(.33, 1, .68, 1); }
   }
   @media (forced-colors: active) { .acc-item.is-open { border: 2px solid Highlight; box-shadow: none; } }
+
+  /* ---------- Callouts: soft glass panel, accent bar, and an empty circle reserved for an icon ----------
+     Applies to .ob-key, .role-callout and .nudge. To add an icon later, set --callout-icon on the callout:
+     .some-callout { --callout-icon: url("data:..."); } */
+  .ob-key, .role-callout, .nudge { position: relative; box-sizing: border-box; padding: 16px 18px 16px 84px; min-height: 64px; display: flex; align-items: center; border-radius: 20px; color: var(--ink);
+    background:
+      radial-gradient(120% 150% at 0% 0%, rgba(205, 248, 236, .85), rgba(205, 248, 236, 0) 48%),
+      radial-gradient(90% 130% at 100% 100%, rgba(208, 218, 255, .9), rgba(208, 218, 255, 0) 52%),
+      linear-gradient(135deg, #F0FAFE 0%, #F5F9FF 55%, #EAF2FF 100%);
+    border: 1px solid rgba(255, 255, 255, .95);
+    box-shadow: 0 0 0 1px rgba(120, 170, 230, .26), 0 10px 22px rgba(80, 140, 230, .20), 0 2px 6px rgba(80, 140, 230, .12), inset 0 1px 0 #fff; }
+  .ob-key::before, .role-callout::before, .nudge::before { content: ""; position: absolute; left: 14px; top: 14px; bottom: 14px; width: 5px; border-radius: 3px; background: linear-gradient(180deg, #00B3A6, #0A68A8); }
+  .ob-key::after, .role-callout::after, .nudge::after { content: ""; position: absolute; left: 32px; top: 50%; width: 38px; height: 38px; margin-top: -19px; border-radius: 50%; box-sizing: border-box;
+    border: 1.5px solid rgba(255, 255, 255, .95);
+    background: var(--callout-icon, none) center / 62% no-repeat, radial-gradient(circle at 34% 28%, rgba(255, 255, 255, .75), rgba(184, 238, 242, .55) 70%);
+    box-shadow: inset 0 0 0 1px rgba(100, 200, 220, .32), 0 2px 6px rgba(80, 160, 200, .15); }
+  .role-callout > div { min-width: 0; }
+  .nudge { min-height: 0; padding: 10px 14px 10px 62px; border-radius: 16px; }
+  .nudge::before { left: 12px; top: 10px; bottom: 10px; }
+  .nudge::after { left: 24px; width: 26px; height: 26px; margin-top: -13px; }
+  @media (max-width: 520px) {
+    .ob-key, .role-callout { padding: 14px 14px 14px 62px; }
+    .ob-key::before, .role-callout::before { left: 11px; top: 12px; bottom: 12px; }
+    .ob-key::after, .role-callout::after { left: 23px; width: 30px; height: 30px; margin-top: -15px; }
+  }
+  @media (forced-colors: active) { .ob-key, .role-callout, .nudge { border: 1px solid CanvasText; box-shadow: none; } .ob-key::after, .role-callout::after, .nudge::after { border-color: CanvasText; } }
 
   /* ---------- Motion, only when the learner allows it ---------- */
   @media (prefers-reduced-motion: no-preference) {
@@ -1025,7 +1048,6 @@
       </fieldset>
     </div>
     <div class="role-callout">
-      <svg class="role-icon" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#r-panel"/></svg>
       <div><p class="format-role" id="format-role"></p>
       <p class="help-line" id="format-help"></p></div>
     </div>
