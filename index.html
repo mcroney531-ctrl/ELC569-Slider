@@ -24,7 +24,7 @@
   html { -webkit-text-size-adjust: 100%; }
   body {
     margin: 0;
-    background: #fff;
+    background: #EEF2F6;
     color: var(--ink);
     font: 16px/1.5 "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
   }
@@ -179,14 +179,9 @@
   /* Tier 3: dashed bubble plus "Conflicting answer" tag */
   .card.tier-3 .bubble { border-style: dashed; border-width: 2px; border-color: var(--line-strong); }
   .card.tier-3 .tag { display: inline-flex; }
-  /* Tier 4: ragged notched edge plus tag */
-  .card.tier-4 { border-top-color: transparent; border-bottom-color: transparent; border-radius: 0; border-left-style: dotted; border-right-style: dotted; }
-  .card.tier-4::before, .card.tier-4::after {
-    content: ""; position: absolute; left: -2px; right: -2px; height: 10px;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='10'%3E%3Cpath d='M0 9 L7 1 L14 9' fill='none' stroke='%237b8794' stroke-width='2'/%3E%3C/svg%3E") repeat-x;
-  }
-  .card.tier-4::before { top: -8px; }
-  .card.tier-4::after { bottom: -8px; transform: scaleY(-1); }
+  /* Tier 4: an irregular top rule in the challenge colour, plus the tag */
+  .card.tier-4::before { content: ""; position: absolute; left: 16px; top: -2px; width: 76px; height: 4px; border-radius: 0 0 3px 3px;
+    background: repeating-linear-gradient(90deg, #7c5cd6 0 12px, transparent 12px 16px, #7c5cd6 16px 20px, transparent 20px 25px); }
   .card.tier-4 .tag { display: inline-flex; }
 
   /* ---------- Review ---------- */
@@ -496,6 +491,75 @@
     .stage { margin-top: 14px; }
   }
 
+  /* ---------- Review and export: same system as the rest of the tool ---------- */
+  .review { border: 1px solid var(--line); border-top: 0; border-radius: 22px; padding: 0 0 20px; overflow: hidden; box-shadow: 0 6px 22px rgba(27, 42, 74, .08); }
+  .review > * { margin-left: 22px; margin-right: 22px; }
+  .review-head { margin: 0 0 16px; padding: 18px 22px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px;
+    background: radial-gradient(circle at 96% 0%, rgba(45, 212, 191, .22), transparent 45%), var(--deck); color: #fff; }
+  .review-head h2 { color: #fff; margin: 0; font-size: 1.25rem; }
+  .review-head :focus-visible { outline-color: #5EE7F5; }
+  .review .format { margin: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .review .format legend { float: left; margin: 0; font-size: .8125rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--deck-muted); }
+  .seg { display: inline-flex; background: rgba(255, 255, 255, .08); border: 1px solid var(--deck-line); border-radius: 999px; padding: 4px; gap: 4px; }
+  .review .seg label { position: relative; display: inline-flex; align-items: center; min-height: 40px; margin: 0; padding: 6px 16px; border-radius: 999px; color: #fff; font-weight: 600; cursor: pointer; }
+  .seg input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+  .seg label:has(input:checked) { background: linear-gradient(90deg, #23D4C4, #2EE6C1); color: #062C35; }
+  .seg label:has(input:focus-visible) { outline: 3px solid #5EE7F5; outline-offset: 2px; }
+  .role-callout { display: flex; gap: 14px; align-items: flex-start; background: #F3F6FA; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 16px; }
+  .role-icon { width: 34px; height: 34px; flex: none; fill: none; stroke: var(--navy-2); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+  .review .format-role { font-size: 1.0625rem; color: var(--navy); margin: 0 0 2px; }
+  .review .help-line { margin: 0; }
+  .doc { border: 1px solid var(--line-strong); border-radius: 14px; overflow: hidden; background: #fff; }
+  .review .doc > label { margin: 0; padding: 10px 14px; background: #F3F6FA; border-bottom: 1px solid var(--line); font-size: .875rem; color: var(--navy); }
+  .doc textarea { display: block; border: 0; border-radius: 0; background: #fff; min-height: 340px; padding: 14px; }
+  .doc textarea:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
+  .doc .actions { margin: 0; padding: 12px 14px; background: #F3F6FA; border-top: 1px solid var(--line); }
+  .persona-copy { border-top: 0; padding-top: 0; margin-top: 18px; }
+  .persona-copy-label { font-size: .9375rem; color: var(--navy); }
+  .persona-copy-row button { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px 6px 6px; border: 1.5px solid var(--line-strong); border-radius: 999px; color: var(--ink); font-weight: 600; }
+  .persona-copy-row button:hover { border-color: var(--navy); background: #F3F6FA; }
+  .pc-token { width: 28px; height: 28px; flex: none; }
+  .review .honesty { margin-top: 16px; }
+
+  /* ---------- Onboarding steps 1-4: dark header band, light reading body ---------- */
+  .ob-screen:not(.lp) { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 0 24px 24px; margin-top: 8px; overflow: hidden; box-shadow: 0 6px 22px rgba(27, 42, 74, .08); }
+  .ob-head { margin: 0 -24px 20px; padding: 20px 24px 18px; color: #fff;
+    background: radial-gradient(circle at 96% 0%, rgba(45, 212, 191, .24), transparent 45%), #0A1F2E; }
+  .ob-head .ob-count { margin: 0 0 6px; color: #AFC2D0; }
+  .ob-head h2 { color: #fff; margin: 0; }
+  .ob-head :focus-visible { outline-color: #5EE7F5; }
+  .ob-head::after { content: ""; display: block; height: 4px; margin-top: 16px; border-radius: 2px;
+    background: linear-gradient(90deg, #2DD4BF calc(var(--n) * 25%), rgba(255, 255, 255, .18) 0);
+    -webkit-mask: repeating-linear-gradient(90deg, #000 0 calc(25% - 5px), transparent 0 25%); mask: repeating-linear-gradient(90deg, #000 0 calc(25% - 5px), transparent 0 25%); }
+  .ob-screen[data-step="1"] { --n: 1; } .ob-screen[data-step="2"] { --n: 2; } .ob-screen[data-step="3"] { --n: 3; } .ob-screen[data-step="4"] { --n: 4; }
+  .ob-screen:not(.lp) .ob-actions button.primary { background: linear-gradient(90deg, #23D4C4, #2EE6C1); color: #062C35; border-color: transparent; }
+  .ob-screen:not(.lp) .ob-actions button.primary:hover { background: linear-gradient(90deg, #3ADCCD, #4AEDCB); }
+  .ob-flow li::before { background: transparent; border: 1.5px solid var(--navy); color: var(--navy); }
+  .ob-controls > div { border-left-width: 4px; }
+  .ob-controls > div:nth-child(1) { border-left-color: #2DD4BF; }
+  .ob-controls > div:nth-child(2) { border-left-color: #A78BFA; }
+  .ob-controls > div:nth-child(3) { border-left-color: #38BDF8; }
+  .ob-key { background: #F3F6FA; }
+  @media (max-width: 839.98px) {
+    .ob-screen:not(.lp) { padding: 0 16px 18px; border-radius: 18px; }
+    .ob-head { margin: 0 -16px 16px; padding: 16px; }
+    .review > * { margin-left: 14px; margin-right: 14px; }
+    .review-head { padding: 16px 14px; margin: 0 0 14px; }
+    .review .seg { width: 100%; }
+    .review .seg label { flex: 1 1 0; justify-content: center; text-align: center; padding: 6px 8px; font-size: .875rem; line-height: 1.2; }
+    .role-icon { display: none; }
+    .doc textarea { min-height: 280px; }
+    .doc .actions button { flex: 1 1 0; padding-left: 10px; padding-right: 10px; }
+    /* Read-out: one line per instrument, so it stays small while pinned */
+    .readout-bar { padding-top: 0; padding-bottom: 8px; }
+    .readout { padding: 6px 0; }
+    .ro { grid-template-areas: "d v"; grid-template-columns: auto minmax(0, 1fr); justify-items: start; text-align: left; align-items: center; column-gap: 6px; padding: 0 8px; }
+    .ro-k { display: none; }
+    .ro-d { font-size: 1.0625rem; }
+    .ro-v { font-size: .6875rem; }
+    html { scroll-padding-top: 76px; }
+  }
+
   /* ---------- Motion, only when the learner allows it ---------- */
   @media (prefers-reduced-motion: no-preference) {
     .seat .token, .seat .outline { transition: transform .3s cubic-bezier(.3, 1.4, .5, 1), opacity .2s; }
@@ -560,8 +624,10 @@
 
     <!-- 1. Why persona testing -->
     <section class="ob-screen" data-step="1" aria-labelledby="ob-h1" hidden>
-      <p class="ob-count">Step 1 of 4</p>
-      <h2 id="ob-h1" tabindex="-1">Why persona testing?</h2>
+      <div class="ob-head">
+        <p class="ob-count">Step 1 of 4</p>
+        <h2 id="ob-h1" tabindex="-1">Why persona testing?</h2>
+      </div>
       <p>It's easy to test a build the way you expect someone to use it. Persona testing gives you a reason to approach the same experience differently.</p>
       <p>Instead of only asking <strong>"Does this work?"</strong>, you can also ask:</p>
       <ul class="ob-list">
@@ -580,8 +646,10 @@
 
     <!-- 2. Why AI can help -->
     <section class="ob-screen" data-step="2" aria-labelledby="ob-h2" hidden>
-      <p class="ob-count">Step 2 of 4</p>
-      <h2 id="ob-h2" tabindex="-1">Why AI can help</h2>
+      <div class="ob-head">
+        <p class="ob-count">Step 2 of 4</p>
+        <h2 id="ob-h2" tabindex="-1">Why AI can help</h2>
+      </div>
       <p>AI helps you test more kinds of situations and perspectives without inventing every persona yourself. Useful dimensions include:</p>
       <ul class="ob-list ob-cols">
         <li>Experience with the task</li>
@@ -603,8 +671,10 @@
 
     <!-- 3. What this tool does -->
     <section class="ob-screen" data-step="3" aria-labelledby="ob-h3" hidden>
-      <p class="ob-count">Step 3 of 4</p>
-      <h2 id="ob-h3" tabindex="-1">What this tool does</h2>
+      <div class="ob-head">
+        <p class="ob-count">Step 3 of 4</p>
+        <h2 id="ob-h3" tabindex="-1">What this tool does</h2>
+      </div>
       <ol class="ob-flow">
         <li>Describe your build</li>
         <li>Create a test panel</li>
@@ -626,10 +696,12 @@
 
     <!-- 4. Key terms + worked example -->
     <section class="ob-screen" data-step="4" aria-labelledby="ob-h4" hidden>
-      <p class="ob-count">Step 4 of 4</p>
-      <h2 id="ob-h4" tabindex="-1">Key terms</h2>
+      <div class="ob-head">
+        <p class="ob-count">Step 4 of 4</p>
+        <h2 id="ob-h4" tabindex="-1">Key terms</h2>
+      </div>
       <dl class="ob-terms">
-        <div><dt>Persona</dt><dd>A simulated user you temporarily adopt while testing. Each persona has a stable goal, starting point, working style and perspective.</dd></div>
+        <div><dt>Persona</dt><dd>A fictional user you temporarily adopt while testing. Each persona has a stable goal, starting point, working style and perspective.</dd></div>
         <div><dt>Test panel</dt><dd>The group of personas you're currently testing with.</dd></div>
         <div><dt>Coverage lens</dt><dd>The reason a persona is included. A newcomer tests assumptions about prior knowledge; a time-constrained user tests what happens when attention is limited.</dd></div>
         <div><dt>Typical</dt><dd>No added challenge. The persona behaves according to their normal working style.</dd></div>
@@ -663,7 +735,7 @@
       <h1 id="tool-h" tabindex="-1">Build a test panel for your project</h1>
       <button type="button" class="refresher" id="refresher">Need a refresher?</button>
     </div>
-    <p class="lead">Describe what you're testing. Build a panel of simulated users. Use them to stress-test your experience before real users do.</p>
+    <p class="lead">Describe what you're testing. Build a panel of test personas. Use them to stress-test your experience before real users do.</p>
     <ol class="steps">
       <li><span><strong>Describe it.</strong> <span class="step-more">One sentence about what you're building and who it's for.</span></span></li>
       <li><span><strong>Shape the panel.</strong> <span class="step-more">How many people, how hard they test it, and how they move through it.</span></span></li>
@@ -813,26 +885,35 @@
   </div>
 
   <section class="review" id="review" hidden aria-labelledby="brief-h">
-    <h2 id="brief-h" tabindex="-1">Review and export</h2>
-    <fieldset class="format">
-      <legend>Export as</legend>
-      <label><input type="radio" name="format" value="brief" checked> Walkthrough brief</label>
-      <label><input type="radio" name="format" value="prompt"> AI test prompt (trial)</label>
-    </fieldset>
-    <p class="format-role" id="format-role"></p>
-    <p class="help-line" id="format-help"></p>
-    <label for="brief" id="brief-label">Persona brief (editable)</label>
-    <textarea id="brief" spellcheck="false"></textarea>
-    <div class="actions">
-      <button type="button" class="primary" id="copy">Copy brief</button>
-      <button type="button" id="download">Download .md</button>
-      <span class="hint" id="export-msg"></span>
+    <div class="review-head">
+      <h2 id="brief-h" tabindex="-1">Review and export</h2>
+      <fieldset class="format">
+        <legend>Export as</legend>
+        <div class="seg">
+          <label><input type="radio" name="format" value="brief" checked> Walkthrough brief</label>
+          <label><input type="radio" name="format" value="prompt"> AI test prompt (trial)</label>
+        </div>
+      </fieldset>
+    </div>
+    <div class="role-callout">
+      <svg class="role-icon" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#r-panel"/></svg>
+      <div><p class="format-role" id="format-role"></p>
+      <p class="help-line" id="format-help"></p></div>
+    </div>
+    <div class="doc">
+      <label for="brief" id="brief-label">Persona brief (editable)</label>
+      <textarea id="brief" spellcheck="false"></textarea>
+      <div class="actions">
+        <button type="button" class="primary" id="copy">Copy brief</button>
+        <button type="button" id="download">Download .md</button>
+        <span class="hint" id="export-msg"></span>
+      </div>
     </div>
     <div class="persona-copy">
       <p class="persona-copy-label" id="persona-copy-label">Or copy one persona as its own prompt</p>
       <div class="persona-copy-row" id="persona-copy-row" role="group" aria-labelledby="persona-copy-label"></div>
     </div>
-    <p class="note honesty">Simulated users help you find problems early. They don't replace testing with real people.</p>
+    <p class="note honesty">Test personas can help you find problems early. They don't replace testing or research with real people.</p>
   </section>
   </div>
 
@@ -1031,7 +1112,7 @@ function buildBrief(panel, s) {
     `**Shared route:** ${routeSentence(v.pattern.seq, ex.moments.map(x => x.short))}`,
     `**Shared journey check:** ${v.journeyText.risk}`, "",
     "Each persona is a script for one test pass. Become that person, follow the shared route through your build, and note where your experience helps them, breaks, or lets them slip through.", "",
-    "_Simulated users help you find problems early. They don't replace testing with real people._");
+    "_Test personas can help you find problems early. They don't replace testing or research with real people._");
   v.seated.forEach(x => {
     const p = x.p, watch = [p.coreRisk, x.levelRisk].filter(Boolean);
     out.push("", `## ${p.name} (${x.lens})`, "",
@@ -1110,7 +1191,7 @@ function buildPrompt(panel, s, only = null) {
     "   - Gave up: where they would quit, if anywhere",
     `   - Journey check: ${v.journeyText.risk}`);
   if (only === null) out.push("5. Then offer to run the next persona.");
-  out.push("", "Test personas help you find problems early. They don't replace testing with real people.");
+  out.push("", "Test personas can help you find problems early. They don't replace testing or research with real people.");
   return out.join("\n") + "\n";
 }
 
@@ -1459,7 +1540,7 @@ function fillPersonaCopy() {
   deriveView(current, state).seated.forEach((x, i) => {
     const b = document.createElement("button");
     b.type = "button";
-    b.textContent = firstName(x.p);
+    b.innerHTML = tokenSVG(current.personas.indexOf(x.p), "pc-token") + `<span>${esc(firstName(x.p))}</span>`;
     b.setAttribute("aria-label", `Copy the prompt for ${x.p.name}, ${x.lens}`);
     b.addEventListener("click", () => copyPersona(i));
     row.appendChild(b);
