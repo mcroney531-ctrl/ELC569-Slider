@@ -654,8 +654,8 @@
   .jr-link { position: relative; padding: 2px 0; min-height: 0; border: 0; border-radius: 4px; background: none; color: var(--navy); font: inherit; font-size: .875rem; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
   .jr-link::after { content: ""; position: absolute; inset: -9px -8px; } /* a comfortable hit area without changing the layout */
   .jr-link:hover { background: none; color: var(--navy-2); }
-  .jr-dialog { padding: 0; border: 0; border-radius: 22px; width: min(560px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow: hidden; background: #fff; color: var(--ink); box-shadow: 0 28px 70px rgba(7, 24, 39, .45); }
-  .jr-dialog::backdrop { background: rgba(7, 24, 39, .58); }
+  .jr-dialog { padding: 0; border: 0; border-radius: 22px; width: min(560px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow: hidden; background: #fff; color: var(--ink); box-shadow: 0 22px 54px rgba(7, 24, 39, .32); }
+  .jr-dialog::backdrop { background: rgba(7, 24, 39, .46); }
   .jr-win { display: flex; flex-direction: column; max-height: calc(100dvh - 32px); }
   .jr-banner { position: relative; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 18px 16px 18px 22px; color: #fff; flex: none;
     background: radial-gradient(circle at 94% 0%, rgba(45, 212, 191, .26), transparent 48%), radial-gradient(circle at 0% 100%, rgba(56, 189, 248, .10), transparent 40%), #0A1F2E; }
@@ -670,24 +670,27 @@
   .jr-close svg { width: 22px; height: 22px; }
   .jr-dialog :focus-visible { outline: 3px solid #5EE7F5; outline-offset: 2px; }
   .jr-content { padding: 18px 22px 22px; overflow: auto; }
-  .jr-what { margin: 0 0 14px; color: var(--ink); }
-  .jr-strip { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 4px; }
+  .jr-what { margin: 0 0 14px; color: var(--muted); font-size: .875rem; line-height: 1.45; }
+  .jr-strip { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 4px; }
   .jr-strip li { display: inline-flex; align-items: center; }
-  .jr-strip li:not(:last-child)::after { content: "\2192" / ""; margin: 0 2px 0 6px; color: var(--line-strong); font-weight: 700; }
-  .jr-chip { display: inline-block; padding: 5px 13px; border-radius: 999px; background: #EEF3FA; border: 1.5px solid #C5D2E6; color: var(--navy); font-weight: 700; font-size: .9375rem; line-height: 1.3; }
-  .jr-chip.again { background: #fff; border-style: dashed; border-color: var(--line-strong); }
-  .jr-content .suggested-note { margin: 12px 0 0; text-align: left; }
-  .jr-rule { border: 0; border-top: 2px solid #D5E0F2; margin: 18px 0 14px; }
-  .jr-key { border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 14px 12px; max-width: 100%; }
-  .jr-key-h { margin: 0 0 6px; font-weight: 800; color: var(--navy); font-size: .9375rem; letter-spacing: .02em; }
-  .jr-key ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-  .jr-key li { display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 10px; align-items: center; font-size: .9375rem; color: var(--muted); }
-  .jr-key .jr-chip { font-size: .8125rem; padding: 2px 10px; justify-self: start; }
-  .jr-arrow { justify-self: center; color: var(--line-strong); font-weight: 800; }
-  .jr-key .sugg { justify-self: start; margin: 0; }
+  .jr-strip li:not(:last-child)::after { content: "\2192" / ""; margin: 0 3px 0 7px; color: #7B8FB0; font-weight: 800; font-size: 1.125rem; }
+  .jr-chip { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; padding: 8px 17px; border-radius: 999px; background: #E8F0FC; border: 2px solid #8FA9D6; color: var(--navy); font-weight: 800; font-size: 1.0625rem; line-height: 1.25; }
+  .jr-chip.again { background: #fff; border-style: dashed; border-color: #8FA9D6; }
+  .jr-chip.pick::before { content: ""; flex: none; width: 9px; height: 9px; border-radius: 50%; background: #14B8A6; box-shadow: 0 0 0 3px rgba(20, 184, 166, .2); margin-right: 1px; }
+  .jr-dot { display: inline-block; flex: none; width: 9px; height: 9px; margin-right: 8px; border-radius: 50%; background: #14B8A6; box-shadow: 0 0 0 3px rgba(20, 184, 166, .2); vertical-align: 1px; }
+  .jr-content .suggested-note { margin: 12px 0 0; text-align: left; font-size: .875rem; color: var(--muted); }
+  .jr-content .suggested-note strong { color: var(--navy); font-weight: 700; }
+  .jr-rule { border: 0; border-top: 1px solid var(--line); margin: 16px 0 12px; }
+  .jr-key { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; color: var(--muted); font-size: .8125rem; }
+  .jr-key-h { margin: 0; font-weight: 800; color: var(--navy); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; }
+  .jr-key ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+  .jr-key li { display: inline-flex; align-items: center; gap: 7px; }
+  .jr-key .jr-chip { font-size: .75rem; padding: 1px 9px; border-width: 1.5px; font-weight: 700; }
+  .jr-key .jr-dot { margin-right: 0; }
+  .jr-arrow { color: #7B8FB0; font-weight: 800; }
   @media (prefers-reduced-motion: no-preference) { .jr-dialog[open]::backdrop { animation: jr-fade .22s ease-out; } }
   @keyframes jr-fade { from { opacity: 0; } to { opacity: 1; } }
-  @media (max-width: 520px) { .jr-banner { padding: 16px 12px 16px 18px; } .jr-content { padding: 16px 18px 20px; } .jr-key li { grid-template-columns: 74px minmax(0, 1fr); } }
+  @media (max-width: 520px) { .jr-banner { padding: 16px 12px 16px 18px; } .jr-content { padding: 16px 18px 20px; } .jr-strip { gap: 8px 2px; } .jr-chip { padding: 6px 12px; font-size: .9375rem; gap: 6px; } .jr-strip li:not(:last-child)::after { margin: 0 1px 0 4px; font-size: 1rem; } }
   @media (forced-colors: active) { .jr-dialog { border: 2px solid CanvasText; } }
 
   /* ---------- Motion, only when the learner allows it ---------- */
@@ -1076,8 +1079,9 @@
   </section>
   </div>
 
-  <dialog class="jr-dialog" id="jr-dialog" aria-labelledby="jr-title">
+  <dialog class="jr-dialog" id="jr-dialog" aria-labelledby="jr-title" aria-describedby="jr-sr">
     <div class="jr-win">
+      <p class="sr-only" id="jr-sr"></p>
       <div class="jr-banner">
         <div class="jr-banner-t">
           <h2 id="jr-title">Journey</h2>
@@ -1087,15 +1091,15 @@
       </div>
       <div class="jr-content">
         <p class="jr-what">The route each persona takes through your key moments. Journey changes where they go next.</p>
-        <ol class="jr-strip" id="jr-strip" aria-label="Route"></ol>
+        <ol class="jr-strip" id="jr-strip" aria-hidden="true"></ol>
         <p class="suggested-note" id="moments-note" hidden></p>
         <hr class="jr-rule">
         <div class="jr-key">
           <p class="jr-key-h">Key</p>
           <ul>
-            <li><span class="jr-chip again" aria-hidden="true">again &#8634;</span><span>"again" marks a return to a moment they have already visited.</span></li>
-            <li><span class="jr-arrow" aria-hidden="true">&rarr;</span><span>The next stop on the route.</span></li>
-            <li id="jr-key-sugg" hidden><span class="sugg" aria-hidden="true">Suggested</span><span>A moment the tool picked, not one you typed.</span></li>
+            <li><span class="jr-chip again" aria-hidden="true">again &#8634;</span><span>a return to a moment already visited</span></li>
+            <li><span class="jr-arrow" aria-hidden="true">&rarr;</span><span>the next stop</span></li>
+            <li id="jr-key-sugg" hidden><span class="jr-dot" aria-hidden="true"></span><span>a moment the tool picked</span></li>
           </ul>
         </div>
       </div>
@@ -1540,7 +1544,7 @@ function mountPanel() {
   const picked = ex.moments.filter(m => m.suggested).map(m => m.short);
   $("moments-note").hidden = !picked.length;
   $("jr-key-sugg").hidden = !picked.length;
-  $("moments-note").innerHTML = picked.length ? `<span class="sugg">Suggested</span>${picked.length === 4 ? "The tool picked all four key moments" : `The tool picked ${esc(picked.join(", "))}`}. Use Edit project details to name your own.` : "";
+  $("moments-note").innerHTML = picked.length ? `<span class="jr-dot" aria-hidden="true"></span><strong>Suggested by the tool:</strong> ${picked.length === 4 ? "all four key moments" : esc(picked.join(", "))}. Use Edit project details to name your own.` : "";
   $("own").textContent = sample ? "Try it with your own project" : "Edit project details";
   $("own").classList.toggle("primary", sample); // after a build, Review & export is the next step
   $("ro-id").textContent = sample ? "Sample panel" : `Panel ${current.id}`;
@@ -1648,11 +1652,13 @@ function render() {
   const jrKey = current.id + ":" + v.journey + ":" + current.experience.moments.map(m => m.short).join("|");
   if (lastJrKey !== jrKey) {
     lastJrKey = jrKey;
-    const shorts = current.experience.moments.map(m => m.short), seen = new Set();
+    const ms = current.experience.moments, shorts = ms.map(m => m.short), seen = new Set(), spoken = [];
     $("jr-strip").innerHTML = v.pattern.seq.map(n => {
       const again = seen.has(n); seen.add(n);
-      return `<li><span class="jr-chip${again ? " again" : ""}">${esc(shorts[n - 1])}${again ? ' again<span aria-hidden="true"> \u21BA</span>' : ""}</span></li>`;
+      spoken.push(shorts[n - 1] + (again ? " again" : ""));
+      return `<li><span class="jr-chip${again ? " again" : ""}${ms[n - 1].suggested ? " pick" : ""}">${esc(shorts[n - 1])}${again ? ' again<span aria-hidden="true"> \u21BA</span>' : ""}</span></li>`;
     }).join("");
+    $("jr-sr").textContent = `Journey: ${v.pattern.label}. ${spoken.join(", ")}.`;
     $("jr-pattern").textContent = v.pattern.label;
   }
 
