@@ -326,8 +326,20 @@
   /* The eye alone carries an ambient halo (soft, not neon) and a broad soft shadow; both drop away in forced-colors. */
   .lp-ic.ic-eye img { width: calc(var(--ic) * 1.42); filter: drop-shadow(0 0 calc(var(--ic) * .22) rgba(56, 189, 248, .34)) drop-shadow(0 3px calc(var(--ic) * .16) rgba(2, 18, 46, .55)); }
   @media (forced-colors: active) { .lp-ic img { filter: none !important; } }
-  .lp-cta { display: block; width: 100%; min-height: 56px; border: 0; border-radius: 999px; background: linear-gradient(90deg, #23D4C4, #2EE6C1); color: #062C35; font: inherit; font-size: 1.15rem; font-weight: 800; cursor: pointer; }
-  .lp-cta:hover { filter: brightness(1.06); }
+  /* Royal-blue glossy CTA, recreated in CSS from the chosen button art: a cyan-lit top rim, a royal-blue body and a deep bottom lip.
+     Real text, so it stays crisp at every size and keeps its accessible name. */
+  .lp-cta { --cta-bg: linear-gradient(180deg, #24D2FB 0%, #0A96FC 9%, #0384FC 24%, #0072FD 50%, #0067FC 76%, #0063FC 88%, #003BFB 100%);
+    position: relative; display: block; width: 100%; min-height: 58px; padding: 0 20px; border: 1px solid #0044E0; border-radius: 15px; overflow: hidden;
+    background: var(--cta-bg);
+    color: #fff; font: inherit; font-size: 1.2rem; font-weight: 800; letter-spacing: .005em; text-shadow: 0 1px 2px rgba(0, 40, 150, .45); cursor: pointer;
+    box-shadow: inset 0 2px 0 rgba(150, 236, 255, .6), inset 0 -4px 0 rgba(0, 38, 200, .55), 0 6px 16px rgba(0, 25, 120, .5), 0 1px 0 rgba(255, 255, 255, .08); }
+  .lp-cta::before { content: ""; position: absolute; inset: 2px 2px 52% 2px; border-radius: 13px 13px 40% 40% / 13px 13px 12px 12px; pointer-events: none;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .28), rgba(255, 255, 255, 0)); }
+  .lp-cta:hover, .lp-cta:active { background: var(--cta-bg); } /* the global button:hover background must not win */
+  .lp-cta:hover { filter: brightness(1.07); box-shadow: inset 0 2px 0 rgba(150, 236, 255, .7), inset 0 -4px 0 rgba(0, 38, 200, .55), 0 9px 22px rgba(0, 25, 120, .55), 0 1px 0 rgba(255, 255, 255, .08); }
+  .lp-cta:active { filter: brightness(.97); transform: translateY(1px); box-shadow: inset 0 2px 0 rgba(150, 236, 255, .45), inset 0 -2px 0 rgba(0, 38, 200, .55), 0 3px 8px rgba(0, 25, 120, .5); }
+  @media (prefers-reduced-motion: no-preference) { .lp-cta { transition: filter .18s ease-out, transform .12s ease-out, box-shadow .18s ease-out; } .lp-cta:hover { transform: translateY(-1px); } .lp-cta:active { transform: translateY(1px); } }
+  @media (forced-colors: active) { .lp-cta { border: 2px solid ButtonText; } }
   .lp-open { display: block; margin: 8px auto 0; }
   .ob-screen.lp :focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
   .intro-top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; }
