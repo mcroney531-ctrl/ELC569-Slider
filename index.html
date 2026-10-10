@@ -260,6 +260,7 @@
 
   /* ---------- Onboarding (in front of the tool) ---------- */
   #onboard { max-width: 720px; margin: 0 auto; }
+  main { overflow-x: clip; } /* sideways page slides never widen the page */
   .ob-screen { padding: 8px 0 24px; }
   .ob-screen p, .ob-screen ul, .ob-screen ol, .ob-screen dl { margin: 0 0 14px; }
   .ob-screen h1 { margin-bottom: 8px; }
@@ -1335,6 +1336,38 @@ function animateRow(id, prev, next) {
 const $ = id => document.getElementById(id);
 const inputs = {panel: $("panel"), challenge: $("challenge"), journey: $("journey")};
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+// ---------- Page transitions ----------
+// Same motion language as the ELC564 style guide (decelerating reveals, standard ease out,
+// no overshoot), built on the Web Animations API so there is no library to load.
+// The DOM swap and focus move happen at once; only the visuals are animated, and nothing
+// animates when the learner asks for reduced motion.
+const EASE_STD = "cubic-bezier(.65, 0, .35, 1)", EASE_REVEAL = "cubic-bezier(.16, 1, .3, 1)";
+const motionOK = () => !reduceMotion.matches && !!Element.prototype.animate;
+// The outgoing view: a short-lived, inert copy that recedes where the original was.
+function ghostOut(el, dx = 0, dy = 0) {
+  if (!motionOK() || !el || el.hidden) return;
+  const r = el.getBoundingClientRect();
+  if (!r.width || !r.height) return;
+  const g = el.cloneNode(true);
+  g.removeAttribute("id");
+  g.querySelectorAll("[id]").forEach(n => n.removeAttribute("id"));
+  g.querySelectorAll("[name]").forEach(n => n.removeAttribute("name")); // never join the real radio group
+  g.classList.add("ghost");
+  g.setAttribute("aria-hidden", "true");
+  g.inert = true;
+  Object.assign(g.style, {position: "fixed", top: r.top + "px", left: r.left + "px", width: r.width + "px", margin: "0", zIndex: "60", pointerEvents: "none"});
+  document.body.appendChild(g);
+  g.animate([{opacity: 1, transform: "none"}, {opacity: 0, transform: `translate(${dx}px, ${dy}px) scale(.98)`}],
+    {duration: 280, easing: EASE_STD, fill: "forwards"}).finished.then(() => g.remove(), () => g.remove());
+}
+// The incoming view: rises or slides into place, optionally one part after another.
+function revealIn(els, {dx = 0, dy = 16, delay = 90, stagger = 0, duration = 560} = {}) {
+  if (!motionOK()) return;
+  els.filter(e => e && !e.hidden).forEach((e, i) => e.animate(
+    [{opacity: 0, transform: `translate(${dx}px, ${dy}px)`}, {opacity: 1, transform: "none"}],
+    {duration, delay: delay + i * stagger, easing: EASE_REVEAL, fill: "backwards"}));
+}
 const state = {panel: 3, challenge: 1, journey: 1};
 let current = SAMPLE_PANEL;            // the one coherent source panel the sliders work on
 let lastTrackKey = null, cardEls = [], locked = false, briefEdited = false, buildTimer = null;
@@ -1589,14 +1622,18 @@ function lock() {
   $("locked-row").hidden = false;
   $("review").hidden = false;
   $("brief-h").focus();
+  revealIn([$("locked-row")], {dy: 8, delay: 0, duration: 400});
+  revealIn([$("review")], {dy: 28, delay: 60});
   announce("Ready to review and export. " + deriveView(current, state).summary);
 }
 function showSliders() {
   locked = false;
   updateCue();
+  ghostOut($("review"), 0, 24);
   $("sliders").hidden = false;
   $("locked-row").hidden = true;
   $("review").hidden = true;
+  revealIn([$("sliders")], {dy: 10, delay: 0, duration: 420});
   // Warn before the edits are lost, not after.
   $("lock-note").textContent = briefEdited ? "Choosing Review and export again will regenerate the export and replace your edits." : "";
 }
@@ -1678,12 +1715,14 @@ function openByos(opener, fresh) {
     updateNudge();
   }
   $("byos").hidden = false;
+  revealIn([$("byos").querySelector(".sheet")], {dy: -10, delay: 0, duration: 420});
   setExpanded(true);
   $("byos-error").textContent = "";
   $("f-testing").focus();
 }
 function closeByos(returnFocus, restore) {
   if (restore) restoreStash(); else byosStash = null;
+  ghostOut($("byos").querySelector(".sheet"), 0, -10);
   $("byos").hidden = true;
   setExpanded(false);
   if (returnFocus) (byosOpener || $("own")).focus();
@@ -1782,15 +1821,25 @@ $("byos-form").addEventListener("submit", async e => {
 // keyboard and screen-reader users land at the top of the new content.
 const obScreens = [...document.querySelectorAll(".ob-screen")];
 let obReturnFocus = null;
+function currentView() {
+  if (!$("tool").hidden) return {el: $("tool"), step: 5};
+  const s = obScreens.find(x => !x.hidden);
+  return s && !$("onboard").hidden ? {el: s, step: +s.dataset.step} : null;
+}
 function showStep(n) {
+  const from = currentView(), dir = from && from.step > n ? -1 : 1;
+  if (from) ghostOut(from.el, -28 * dir, 0);
   $("onboard").hidden = false;
   $("tool").hidden = true;
   obScreens.forEach(s => { s.hidden = +s.dataset.step !== n; });
   const screen = obScreens.find(s => +s.dataset.step === n);
   screen.querySelector("h1, h2").focus();
   window.scrollTo(0, 0);
+  if (from) revealIn([screen], {dx: 28 * dir, dy: 0});
 }
 function enterTool() {
+  const from = currentView();
+  if (from) ghostOut(from.el, -28, 0);
   $("onboard").hidden = true;
   $("tool").hidden = false;
   reservePillWidths();
@@ -1798,6 +1847,7 @@ function enterTool() {
   // Back from a refresher: return to the button that opened it.
   (obReturnFocus || $("tool-h")).focus();
   obReturnFocus = null;
+  revealIn([".intro", ".readout-bar", ".panel-bar", ".controls", ".stage"].map(q => document.querySelector(q)), {dy: 18, stagger: 70});
 }
 $("onboard").addEventListener("click", e => {
   const go = e.target.closest("[data-go]");
