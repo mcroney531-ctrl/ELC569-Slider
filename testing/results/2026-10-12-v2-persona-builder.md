@@ -213,3 +213,16 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
 - The archetype list in Try it on phones is capped at min(40svh, 260px) and scrolls inside its box. The cap ends partway through the fourth archetype, so the cut is visible. Stop 1 now fits above the tour card at 390px and 360px (region bottom 307 vs card top 569 and 465).
 - Bottom fade: the archetypes, settings and preview boxes each get a soft 32px fade while there is more below. It goes away at the end of the box and comes back when scrolled up. A ResizeObserver plus `render()` keep it current, because the boxes are first measured while Try it is still hidden. It only applies inside Try it, and nothing in the workspace or on desktop is affected.
 - Tests: try-test checks that the archetypes scroll on phones, that all three boxes fade while more is below, that the fade clears at the end of the list and comes back at the top, that desktop shows no fades, and that the workspace shows no fades and no boxed archetypes. try, split, onboard, v2, v21 and jr all pass.
+
+## Tour: the highlighted region stays live (scroll and try it while the card is up)
+
+- Request: the phone scroll boxes couldn't be used during the tour. The tour card was a modal dialog, so the whole page behind it was inert, and the tour covers most of the time someone spends in Try it.
+- Change:
+  - The tour card now opens non-modally (`show()` rather than `showModal()`).
+  - `spotIsolate()` makes every sibling along the path from the highlighted region up to `<body>` inert, keeping only the card and the spotlight live. So only the card and the highlighted region can be reached by pointer or keyboard.
+  - `spotFree()` undoes this on every stop change and when the tour ends.
+  - On a phone, the region's box scrolls under a finger or wheel and the page stays put. The region can also be tried out: choose an archetype on stop 1, move a slider on stop 2.
+- Esc: the dialog's `cancel` event is replaced by a document keydown, so Esc ends the tour from the card or from inside the region. It is skipped when another dialog is open, for example View journey opened from stop 2.
+- Refit: when the region changes size while live, `spotRefit()` re-measures the spotlight without scrolling or animating. The ResizeObserver from the fade cue triggers it.
+- The card has z-index 1001 because it is no longer in the top layer.
+- Tests: try-test checks that during the tour only the region and the card are live. On phones it checks that the archetype list scrolls on wheel at stop 1 and the page does not move. It also checks that Esc from inside the region ends the tour and leaves nothing inert. All six suites pass.

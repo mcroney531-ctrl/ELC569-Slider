@@ -922,7 +922,7 @@
   .spot { position: fixed; z-index: 1000; pointer-events: none; border-radius: 18px; outline: 2px solid #5EE7F5; outline-offset: 0;
     box-shadow: 0 0 0 4px rgba(94, 231, 245, .18), 0 0 0 9999px rgba(2, 10, 18, .58); }
   .spot[hidden] { display: none; }
-  dialog.tourcard { position: fixed; margin: 0; width: min(340px, calc(100vw - 24px)); max-height: min(70dvh, 420px); overflow: hidden; padding: 16px 16px 14px;
+  dialog.tourcard { position: fixed; z-index: 1001; margin: 0; width: min(340px, calc(100vw - 24px)); max-height: min(70dvh, 420px); overflow: hidden; padding: 16px 16px 14px;
     border-radius: 16px; border: 1px solid #8EE3D6; border-top: 3px solid #14B8A6; background: #E6FBF7; color: #0B2F3A;
     box-shadow: 0 18px 40px rgba(0, 0, 0, .45); }
   dialog.tourcard::backdrop { background: transparent; }
@@ -1296,8 +1296,8 @@
     </div>
   </dialog>
 
-  <!-- Spotlight tour: three stops over Build. The card is a modal dialog, so the dimmed page can't be reached by
-       keyboard or pointer while it is open; the spotlight itself is decoration. -->
+  <!-- Spotlight tour: three stops over Build. Everything but the card and the highlighted region is inert while it is
+       open, so the dimmed page can't be reached by keyboard or pointer; the spotlight itself is decoration. -->
   <div class="spot" id="spot" aria-hidden="true" hidden></div>
   <dialog class="tourcard" id="tourcard" aria-labelledby="tc-title" aria-describedby="tc-where tc-text">
     <div class="tc-body" id="tc-body" tabindex="-1" role="group" aria-labelledby="tc-count tc-title" aria-describedby="tc-where tc-text">
@@ -2521,8 +2521,9 @@ function goStage(id, {focus = true} = {}) {
 document.querySelectorAll("[data-stage-go]").forEach(b => b.addEventListener("click", () => goStage(b.dataset.stageGo)));
 
 // ---------- Spotlight tour: where things are in the builder (run on Try it) ----------
-// Three stops, advanced only by Next/Back; nothing has to be done to the example. It reads the page, never changes it.
-// The card is a modal <dialog>: the rest of the page is inert while it is open, and Esc ends it.
+// Three stops, advanced only by Next/Back; nothing has to be done to the example.
+// The card is a non-modal <dialog>. Everything except the card and the highlighted region is made inert, so that region
+// stays live: it can be scrolled (its box scrolls on a phone) and tried out. Esc ends the tour.
 const SPOT = [
   {target: () => $("arch"), title: "Choose a perspective", where: "Highlighted: the six archetype choices.",
     text: "Each archetype represents a different testing perspective. Choose one to see how that person might experience your project."},
@@ -2530,16 +2531,16 @@ const SPOT = [
     text: "Challenge changes how demanding the test conditions are. Journey changes the path the person takes. You can adjust either without changing who the person is."},
   {target: () => $("preview-card"), title: "See the preview", where: "Highlighted: the persona preview.",
     text: "This is where the test takes shape. As you adjust the settings, the preview shows how this person would behave and move through the experience. Open \u201CSee what this becomes\u201D below to read the test it turns into."}];
-let spot = null;   // {i}: the stop on screen; null when no tour is running
+let spot = null;   // {i, inert}: the stop on screen and what it made inert; null when no tour is running
 function spotStart() {
   // Make sure the settings stop has something to show: preview an archetype that can still be added.
   if (candidate(cand) < 0) { const a = LENSES.findIndex((l, i) => candidate(i) >= 0); if (a >= 0) cand = a; }
   if (!demo) goStage("build", {focus: false});
-  spot = {i: 0};
+  spot = {i: 0, inert: []};
   document.getAnimations().forEach(x => x.finish());   // measure the settled layout, not a slide in progress
   document.documentElement.style.overflow = "hidden";
   $("spot").hidden = false;
-  $("tourcard").showModal();
+  $("tourcard").show();
   spotShow(true);
 }
 function spotShow(first) {
@@ -2550,23 +2551,36 @@ function spotShow(first) {
   $("tc-text").textContent = st.text;
   $("tc-back").hidden = n === 1;
   $("tc-next").textContent = n === 3 ? "Start exploring" : "Next";
+  spotIsolate(st.target());
   spotPlace(first);
   $("tc-body").focus({preventScroll: true});        // read once: step, title, what is highlighted, the explanation
 }
-function spotPlace(first) {
+// Make the rest of the page inert: every sibling along the path from the region up to <body>, except the card and spotlight.
+function spotIsolate(target) {
+  spotFree();
+  const keep = [$("tourcard"), $("spot")];
+  for (let el = target; el && el !== document.body; el = el.parentElement)
+    for (const sib of el.parentElement.children)
+      if (sib !== el && !keep.includes(sib) && !sib.inert) { sib.inert = true; spot.inert.push(sib); }
+}
+function spotFree() { for (const el of spot.inert) el.inert = false; spot.inert = []; }
+// The region changed size while live (a new archetype, a moved setting): fit the spotlight again, without scrolling.
+function spotRefit() { if (spot) spotPlace(false, {refit: true}); }
+function spotPlace(first, {refit = false} = {}) {
   if (!spot) return;
   const el = SPOT[spot.i].target(), card = $("tourcard"), sp = $("spot"), phone = innerWidth <= 620, gap = 12;
   // Bring the region into view first. On a phone the card sits at the bottom, so the region starts near the top;
   // room under the page lets the last region rise that far even when little of the page follows it.
-  if (phone) {
+  if (phone && !refit) {
     card.style.cssText = "left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); top: auto; width: auto;";
     document.body.style.paddingBottom = card.offsetHeight + 24 + "px";
   }
   const r0 = el.getBoundingClientRect();
-  window.scrollBy(0, phone ? r0.top - 20 : r0.top - Math.max(16, (innerHeight - Math.min(r0.height, innerHeight - 32)) / 2));
+  if (!refit) window.scrollBy(0, phone ? r0.top - 20 : r0.top - Math.max(16, (innerHeight - Math.min(r0.height, innerHeight - 32)) / 2));
   const r = el.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = innerHeight;
   let top, left, box = {left: r.left - 6, top: r.top - 6, width: r.width + 12, height: r.height + 12};
   if (phone) {
+    card.style.cssText = "left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); top: auto; width: auto;";
     // The spotlight stops above the card, so the card never covers what it explains.
     const limit = vh - card.offsetHeight - 24;
     box.top = Math.max(box.top, 8); box.height = Math.max(48, Math.min(box.top + box.height, limit) - box.top);
@@ -2583,11 +2597,13 @@ function spotPlace(first) {
   const to = {left: box.left + "px", top: box.top + "px", width: box.width + "px", height: box.height + "px"};
   const from = {left: sp.style.left, top: sp.style.top, width: sp.style.width, height: sp.style.height};
   Object.assign(sp.style, to);
+  if (refit) return;
   if (!first && motionOK() && from.width) sp.animate([from, to], {duration: 220, easing: EASE_P2_OUT});
   if (motionOK()) card.animate([{opacity: 0, transform: "translateY(6px)"}, {opacity: 1, transform: "none"}], {duration: 180, easing: EASE_P2_OUT});
 }
 function spotEnd({quiet = false} = {}) {
   if (!spot) return;
+  spotFree();
   spot = null;
   if ($("tourcard").open) $("tourcard").close();
   $("spot").hidden = true;
@@ -2603,7 +2619,7 @@ function spotEnd({quiet = false} = {}) {
 $("tc-next").addEventListener("click", () => { if (spot.i < 2) { spot.i++; spotShow(); } else spotEnd(); });
 $("tc-back").addEventListener("click", () => { if (spot.i > 0) { spot.i--; spotShow(); } });
 $("tc-skip").addEventListener("click", spotEnd);
-$("tourcard").addEventListener("cancel", e => { e.preventDefault(); spotEnd(); });   // Esc
+document.addEventListener("keydown", e => { if (spot && e.key === "Escape" && !document.querySelector("dialog[open]:not(#tourcard)")) { e.preventDefault(); spotEnd(); } });   // Esc, from the card or the region
 window.addEventListener("resize", () => spotPlace());
 
 // ---------- Try it: the intro borrows the real builder ----------
@@ -2644,7 +2660,7 @@ function moreCue() {
 }
 for (const id of MORE_BOXES) $(id).addEventListener("scroll", moreCue, {passive: true});
 // Re-check when a box appears, changes size or gets new content (it is measured hidden when Try it opens).
-if (window.ResizeObserver) { const ro = new ResizeObserver(() => moreCue()); for (const id of MORE_BOXES) { ro.observe($(id)); if ($(id).firstElementChild) ro.observe($(id).firstElementChild); } }
+if (window.ResizeObserver) { const ro = new ResizeObserver(() => { moreCue(); spotRefit(); }); for (const id of MORE_BOXES) { ro.observe($(id)); if ($(id).firstElementChild) ro.observe($(id).firstElementChild); } }
 // "See what this becomes": the real export function, for the person being previewed.
 function renderDemoBrief() {
   const pi = candidate(cand);
