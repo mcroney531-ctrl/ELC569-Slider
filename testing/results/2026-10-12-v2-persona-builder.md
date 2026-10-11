@@ -195,3 +195,15 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
     - Five different exit routes, each restoring the exact project state (entries, settings, open editor, selection, stage); the sample never in the pool; one Worker call in total.
   - Updated `v2-test`, `v21-test` and `jr-test` to drive a real project. `onboard-test` covers the three-step intro.
   - Retired `tour-test`, `sample-test` and `acc-test` (their behaviour is covered by the new suites or no longer exists).
+
+## Try it on phones: scrolling settings and preview, tour buttons always visible
+
+- Request: on a phone, tour stops 2 and 3 cut off the settings and the preview, and on stop 3 the tour card clipped its own buttons.
+- Phones (≤620px), Try it only: the settings editor and the preview each have a maximum height of 44svh and scroll inside their own box, with a thin cyan scrollbar and contained overscroll. In Try it the preview gets `tabindex="0"` and the label "Persona preview" so keyboard users can scroll it. Both are removed when the builder goes back to the workspace. The workspace and desktop are unchanged.
+- Tour card: it is now a flex column. The explanation scrolls if it has to, and Skip, Back and Next never scroll out of view. On phones the buttons stay on one row.
+- Tour placement on phones: the highlighted region is scrolled to 20px from the top (was 76px). While the tour runs, temporary bottom room lets the last region rise above the card; that room is removed when the tour ends.
+- Measured (region top–bottom vs card top):
+  - 390×844: stop 2 is 20–391 vs 549; stop 3 is 20–392 vs 522.
+  - 360×740: stop 2 is 20–346 vs 422; stop 3 is 20–346 vs 418.
+- Tests: try-test adds checks at every stop and viewport that the buttons are visible and that the region fits above the card on a phone. It also checks that the phone sections scroll, that desktop and the workspace have no inner scrolling, and that the tab stop and the bottom room are cleaned up. try, split, onboard, v2, v21 and jr all pass.
+- Caveat: phone scrollbars are overlay and only appear while scrolling, so the cue is content cut off mid-line at the box edge.

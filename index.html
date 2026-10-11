@@ -241,7 +241,13 @@
   .demo-brief-text { margin: 0; max-height: 340px; overflow: auto; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: #F4F7FB;
     font: .8125rem/1.5 ui-monospace, Consolas, monospace; white-space: pre-wrap; color: var(--ink); }
   .demo-brief-text:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
-  @media (max-width: 620px) { .demo-stage { padding: 12px; margin: 4px -6px 8px; border-radius: 18px; } }
+  @media (max-width: 620px) { .demo-stage { padding: 12px; margin: 4px -6px 8px; border-radius: 18px; }
+    /* On a phone the settings and the preview each scroll inside their own box, so either fits on screen above the tour card. */
+    .demo-stage #editor, .demo-stage #preview-card { max-height: 44svh; overflow-y: auto; overscroll-behavior: contain;
+      scrollbar-width: thin; scrollbar-color: rgba(94, 231, 245, .75) rgba(255, 255, 255, .08); }
+    .demo-stage #editor::-webkit-scrollbar, .demo-stage #preview-card::-webkit-scrollbar { width: 6px; }
+    .demo-stage #editor::-webkit-scrollbar-thumb, .demo-stage #preview-card::-webkit-scrollbar-thumb { background: rgba(94, 231, 245, .75); border-radius: 3px; }
+    .demo-stage #preview-card:focus-visible { outline: 3px solid #5EE7F5; outline-offset: 2px; } }
   /* No project yet: every workspace stage shows the same short start, never the sample. */
   .no-project { padding: 18px; border: 1px dashed var(--ws-border); border-radius: 14px; color: #F5F7FF; margin: 0 0 4px; }
   .no-project .np-h { margin: 0 0 4px; font-weight: 800; font-size: 1.0625rem; }
@@ -912,17 +918,20 @@
   .spot { position: fixed; z-index: 1000; pointer-events: none; border-radius: 18px; outline: 2px solid #5EE7F5; outline-offset: 0;
     box-shadow: 0 0 0 4px rgba(94, 231, 245, .18), 0 0 0 9999px rgba(2, 10, 18, .58); }
   .spot[hidden] { display: none; }
-  dialog.tourcard { position: fixed; margin: 0; width: min(340px, calc(100vw - 24px)); max-height: min(70dvh, 420px); overflow: auto; padding: 16px 16px 14px;
+  dialog.tourcard { position: fixed; margin: 0; width: min(340px, calc(100vw - 24px)); max-height: min(70dvh, 420px); overflow: hidden; padding: 16px 16px 14px;
     border-radius: 16px; border: 1px solid #8EE3D6; border-top: 3px solid #14B8A6; background: #E6FBF7; color: #0B2F3A;
     box-shadow: 0 18px 40px rgba(0, 0, 0, .45); }
   dialog.tourcard::backdrop { background: transparent; }
+  /* The explanation scrolls if it must; the buttons below it always stay in view. */
+  dialog.tourcard[open] { display: flex; flex-direction: column; }
+  .tc-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
   .tc-body:focus { outline: none; }
-  .tc-body:focus-visible { outline: 3px solid #0B6E8C; outline-offset: 4px; border-radius: 6px; }
+  .tc-body:focus-visible { outline: 3px solid #0B6E8C; outline-offset: -3px; border-radius: 6px; }
   .tc-count { margin: 0; font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #0F766E; }
   .tc-title { margin: 2px 0 6px; font-size: 1.125rem; font-weight: 800; color: #0B2F3A; }
   .tc-where { margin: 0 0 6px; font-size: .8125rem; font-weight: 700; color: #0F766E; }
   .tc-text { margin: 0 0 14px; line-height: 1.45; color: #23424F; }
-  .tc-btns { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+  .tc-btns { flex: none; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
   .tc-nav { display: flex; gap: 8px; margin-left: auto; }
   .tc-btns button { min-height: 44px; padding: 0 16px; border-radius: 12px; font: inherit; font-weight: 700; background: transparent; color: #0B2F3A; border: 1.5px solid #0B2F3A; }
   .tc-btns button:hover { background: rgba(11, 47, 58, .06); }
@@ -931,7 +940,10 @@
   .tc-btns .tc-skip { border-color: transparent; text-decoration: underline; text-underline-offset: 3px; padding: 0 6px; }
   .tc-btns button[hidden] { display: none; }
   .tc-btns :focus-visible { outline: 3px solid #0B6E8C; outline-offset: 2px; }
-  @media (max-width: 620px) { dialog.tourcard { max-height: 46dvh; } }
+  @media (max-width: 620px) { dialog.tourcard { max-height: 46dvh; }
+    /* One row of buttons, so the explanation keeps the room. */
+    .tc-btns { flex-wrap: nowrap; gap: 6px; } .tc-nav { gap: 6px; }
+    .tc-btns button { padding: 0 12px; font-size: .9375rem; white-space: nowrap; } .tc-btns .tc-skip { padding: 0 4px; } }
   @media (forced-colors: active) { .spot { outline: 3px solid Highlight; box-shadow: none; } dialog.tourcard { border: 2px solid CanvasText; } }
   .replace-note { margin: 10px 0 0; padding: 10px 12px; border-left: 4px solid #B45309; border-radius: 10px; background: #FFF6EA; color: #5A3200; font-weight: 600; }
   .replace-note[hidden] { display: none; }
@@ -2540,13 +2552,17 @@ function spotShow(first) {
 function spotPlace(first) {
   if (!spot) return;
   const el = SPOT[spot.i].target(), card = $("tourcard"), sp = $("spot"), phone = innerWidth <= 620, gap = 12;
-  // Bring the region into view first. On a phone the card sits at the bottom, so the region starts near the top.
+  // Bring the region into view first. On a phone the card sits at the bottom, so the region starts near the top;
+  // room under the page lets the last region rise that far even when little of the page follows it.
+  if (phone) {
+    card.style.cssText = "left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); top: auto; width: auto;";
+    document.body.style.paddingBottom = card.offsetHeight + 24 + "px";
+  }
   const r0 = el.getBoundingClientRect();
-  window.scrollBy(0, phone ? r0.top - 76 : r0.top - Math.max(16, (innerHeight - Math.min(r0.height, innerHeight - 32)) / 2));
+  window.scrollBy(0, phone ? r0.top - 20 : r0.top - Math.max(16, (innerHeight - Math.min(r0.height, innerHeight - 32)) / 2));
   const r = el.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = innerHeight;
   let top, left, box = {left: r.left - 6, top: r.top - 6, width: r.width + 12, height: r.height + 12};
   if (phone) {
-    card.style.cssText = "left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); top: auto; width: auto;";
     // The spotlight stops above the card, so the card never covers what it explains.
     const limit = vh - card.offsetHeight - 24;
     box.top = Math.max(box.top, 8); box.height = Math.max(48, Math.min(box.top + box.height, limit) - box.top);
@@ -2573,6 +2589,7 @@ function spotEnd({quiet = false} = {}) {
   $("spot").hidden = true;
   $("spot").style.cssText = "";
   document.documentElement.style.overflow = "";
+  document.body.style.paddingBottom = "";
   // Back to the workspace, on its first control: the archetype that is chosen.
   if (quiet) return;
   const r = document.querySelector('#arch-list input:checked') || $("build-h");
@@ -2597,6 +2614,8 @@ function demoEnter() {
   parkEditor();
   current = SAMPLE_PANEL; entries = []; memo = {}; selectedIid = null; cand = 0;
   $("demo-home").appendChild(grid);
+  // On a phone the preview scrolls in its own box (CSS); make it reachable by keyboard while it is here.
+  $("preview-card").tabIndex = 0; $("preview-card").setAttribute("aria-label", "Persona preview");
   $("demo-brief").open = false;
   render();
 }
@@ -2607,6 +2626,7 @@ function demoExit() {
   demo = null;
   parkEditor();
   home.insertBefore(document.querySelector(".build-grid"), next);
+  $("preview-card").removeAttribute("tabindex"); $("preview-card").removeAttribute("aria-label");
   ({current, entries, memo, selectedIid, cand, nextIid} = snap);
   $("tool").dataset.stage = snap.stage;
   for (const st of STAGES) $("st-" + st).setAttribute("aria-current", st === snap.stage ? "step" : "false");
