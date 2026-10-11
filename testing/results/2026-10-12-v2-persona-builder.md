@@ -159,3 +159,7 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
   - Markers and file names, and a success ending sample mode.
   - Real exports clean, and the real-panel warning kept.
 - Updated three V2/V2.1 assertions for the intended wording, file-name and warning changes.
+- **Banner colours (approved):**
+  - Mint `#E6FBF7` with a 2px navy `#0B2F3A` outline, a thin teal ring and a soft shadow.
+  - A navy tag, and a navy "Build my own panel" button with white text.
+  - Contrast: text 9.9:1, tag 10.8:1, button 14.2:1. Forced colors: plain outline.

@@ -885,16 +885,18 @@
   .stale p { margin: 0 0 8px; }
   .stale button { background: #fff; color: var(--navy); border: 1.5px solid var(--navy); }
   .sec-build .next-cue { margin: 0 0 16px; background: rgba(255, 255, 255, .06); color: #F5FAFD; border: 1px solid rgba(45, 212, 191, .3); border-left: 4px solid #2DD4BF; }
-  /* Sample mode: one compact line under the stepper. Plain text, never announced. */
+  /* Sample mode: one compact mint line under the stepper (the same "guidance" mint as the tour card), with a dark
+     outline and a thin teal ring so it sits with the workspace. Plain text, never announced. */
   .sample-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin: 0 0 14px; padding: 8px 10px 8px 16px;
-    border-radius: 14px; background: #0B3346; border: 1px solid rgba(94, 231, 245, .35); color: #DCEAF2; }
+    border-radius: 14px; background: #E6FBF7; border: 2px solid #0B2F3A; color: #23424F;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, .28), 0 6px 18px rgba(11, 47, 58, .18); }
   .sample-bar[hidden] { display: none; }
   .sample-msg { margin: 0; flex: 1 1 320px; font-size: .9375rem; line-height: 1.4; }
-  .sample-tag { flex: none; display: inline-block; padding: 1px 8px; border-radius: 999px; background: rgba(0, 222, 216, .16); color: #5EE7F5;
+  .sample-tag { flex: none; display: inline-block; padding: 1px 8px; border-radius: 999px; background: #0B2F3A; color: #9FF0E4;
     font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
-  .sample-cta { flex: none; min-height: 40px; padding: 0 16px; border-radius: 12px; font: inherit; font-weight: 800; background: linear-gradient(90deg, #23D4C4, #2EE6C1); color: #062C35; border: 0; }
-  .sample-cta:hover { background: linear-gradient(90deg, #3ADCCD, #4AEDCB); }
-  .sample-cta:focus-visible { outline: 3px solid #5EE7F5; outline-offset: 2px; }
+  .sample-cta { flex: none; min-height: 40px; padding: 0 16px; border-radius: 12px; font: inherit; font-weight: 800; background: #0B2F3A; color: #fff; border: 0; }
+  .sample-cta:hover { background: #14445A; }
+  .sample-cta:focus-visible { outline: 3px solid #0B6E8C; outline-offset: 2px; }
   /* Phone: tag and button share the first row, the sentence takes the second. */
   @media (max-width: 620px) {
     .sample-bar { display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: "tag . cta" "msg msg msg"; gap: 6px 8px; padding: 8px 10px 10px 12px; }
@@ -924,6 +926,7 @@
   .tc-btns button[hidden] { display: none; }
   .tc-btns :focus-visible { outline: 3px solid #0B6E8C; outline-offset: 2px; }
   @media (max-width: 620px) { dialog.tourcard { max-height: 46dvh; } }
+  @media (forced-colors: active) { .sample-bar { border-color: CanvasText; box-shadow: none; } }
   @media (forced-colors: active) { .spot { outline: 3px solid Highlight; box-shadow: none; } dialog.tourcard { border: 2px solid CanvasText; } }
   .replace-note { margin: 10px 0 0; padding: 10px 12px; border-left: 4px solid #B45309; border-radius: 10px; background: #FFF6EA; color: #5A3200; font-weight: 600; }
   .replace-note[hidden] { display: none; }
