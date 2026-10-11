@@ -206,21 +206,7 @@
   .suggested-note { color: var(--muted); font-size: .8125rem; text-align: center; margin-top: 6px; }
   .suggested-note .sugg { margin: 0 4px 0 0; }
   .format-role { font-weight: 700; margin: 0 0 2px; }
-  .byos { border: 1px solid var(--line); border-top: 4px solid var(--navy); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; background: #fff; box-shadow: 0 6px 20px rgba(27, 42, 74, .08); }
-  .byos h2 { font-size: 1.125rem; margin-bottom: 4px; }
-  .byos .field { margin-top: 14px; }
-  .byos label, .byos legend { display: block; font-weight: 700; color: var(--navy); margin-bottom: 4px; padding: 0; }
-  .byos .opt { font-weight: 400; color: var(--muted); }
-  .byos .help { color: var(--muted); font-size: .875rem; margin-bottom: 6px; }
-  .byos input[type=text], .byos textarea {
-    width: 100%; font: inherit; color: var(--ink); background: #fff; border: 2px solid var(--line-strong); border-radius: 8px; padding: 8px 10px; min-height: 44px;
-  }
-  .byos textarea { min-height: 72px; resize: vertical; }
-  .byos input[type=text]:focus-visible, .byos textarea:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
-  .byos fieldset { border: 0; padding: 0; margin: 14px 0 0; min-width: 0; }
-  .moments { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr)); gap: 8px; }
-  .moments label { font-weight: 600; color: var(--muted); font-size: .8125rem; margin-bottom: 2px; }
-  .privacy { color: var(--muted); font-size: .8125rem; margin-top: 12px; }
+  .byos .sr-only { position: absolute; }
   .byos-error { color: #8a1c1c; font-weight: 600; font-size: .9375rem; }
   .byos-error:empty { display: none; }
   .slider-help { margin: 2px 0 6px 0; color: var(--muted); font-size: .875rem; }
@@ -442,7 +428,6 @@
   .build-status.dk { margin: 0; border: 0; border-radius: 0; background: var(--deck); color: #fff; padding-top: 0; padding-bottom: 16px; }
   .build-status.dk::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 8px; border-radius: 50%; background: var(--teal); vertical-align: 1px; }
   .byos.dk { margin: 0; border: 0; border-radius: 0; box-shadow: none; padding-top: 0; padding-bottom: 18px; color: var(--ink); }
-  .byos .sheet { background: #fff; border-radius: 16px; border-top: 4px solid var(--teal); padding: 18px; }
 
   .controls.dk { position: static; margin: 0; border: 0; border-top: 1px solid var(--deck-line); border-radius: 0 0 22px 22px; box-shadow: 0 14px 34px rgba(7, 24, 39, .22); background: var(--deck); padding-top: 16px; padding-bottom: 20px; }
   .controls-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; margin-bottom: 12px; }
@@ -498,7 +483,6 @@
     html { scroll-padding-top: 104px; }
     .panel-bar.dk button { flex: 1 1 100%; }
     .controls.dk { border-radius: 0 0 18px 18px; padding-top: 14px; }
-    .byos .sheet { padding: 14px; }
     .stage { margin-top: 14px; }
   }
 
@@ -697,6 +681,65 @@
   @keyframes jr-fade { from { opacity: 0; } to { opacity: 1; } }
   @media (max-width: 520px) { .jr-banner { padding: 16px 12px 16px 18px; } .jr-content { padding: 16px 18px 20px; } .jr-strip { gap: 8px 2px; } .jr-chip { padding: 6px 12px; font-size: .9375rem; gap: 6px; } .jr-strip li:not(:last-child)::after { margin: 0 1px 0 4px; font-size: 1rem; } }
   @media (forced-colors: active) { .jr-dialog { border: 2px solid CanvasText; } }
+
+  /* ---------- Project form: a pale frosted surface on the dark deck, two grouped sections ---------- */
+  .byos .sheet { background: linear-gradient(180deg, #F6FAFF 0%, #EAF1FA 100%); border: 1px solid rgba(255, 255, 255, .9); border-radius: 26px; padding: 14px;
+    box-shadow: 0 18px 40px rgba(2, 12, 24, .38), inset 0 1px 0 #fff; }
+  .byos form { display: grid; gap: 14px; }
+  .fsec { background: rgba(255, 255, 255, .6); border: 1px solid rgba(190, 208, 232, .6); border-radius: 20px; padding: 22px 22px 24px; }
+  .fsec-head { display: flex; align-items: center; gap: 18px; margin-bottom: 20px; }
+  .fsec-ic { flex: none; display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; color: #35D6BE;
+    background: radial-gradient(circle at 32% 26%, #0F5A52 0%, #073631 72%);
+    box-shadow: inset 0 0 0 1px rgba(45, 212, 191, .38), inset 0 0 16px rgba(45, 212, 191, .22), 0 6px 14px rgba(7, 54, 49, .32); }
+  .fsec-ic svg { width: 32px; height: 32px; }
+  .fsec-h { margin: 0; color: #0F2347; font-size: 1.375rem; font-weight: 800; line-height: 1.2; }
+  .fsec-d { margin: 5px 0 0; color: #5B6F93; font-size: .9375rem; line-height: 1.4; }
+  .fsec-d2 { font-size: .875rem; }
+  .byos .field { margin-top: 18px; }
+  .byos label { display: block; margin: 0 0 4px; color: #0F2347; font-weight: 800; line-height: 1.3; }
+  .byos .opt { font-weight: 400; color: #6B7C99; }
+  .byos .help { margin: 0 0 8px; color: #5B6F93; font-size: .8125rem; line-height: 1.4; }
+  .byos input[type=text], .byos textarea { display: block; width: 100%; min-height: 50px; padding: 10px 14px; font: inherit; color: var(--ink); background: #fff;
+    border: 1.5px solid #5A6E92; border-radius: 12px; box-shadow: inset 0 1px 2px rgba(15, 35, 71, .07); }
+  .byos textarea { min-height: 96px; resize: vertical; }
+  @media (hover: hover) { .byos input[type=text]:hover, .byos textarea:hover { border-color: #33466D; } }
+  .byos input[type=text]:focus-visible, .byos textarea:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-color: #33466D; }
+  .byos fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+  .moments { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 16px; }
+  .privacy { margin: 22px 0 0; padding-top: 16px; border-top: 1px solid #CFDBEE; color: #5B6F93; font-size: .875rem; }
+  .byos .actions { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 12px; margin-top: 16px; }
+  .byos .byos-error { grid-column: 1 / -1; margin: 0; }
+  .byos #build, .byos #cancel { min-height: 54px; border-radius: 14px; font-size: 1.0625rem; font-weight: 800; }
+  .byos #build { color: #fff; border: 1px solid rgba(45, 212, 191, .42);
+    background: linear-gradient(135deg, #06283A 0%, #073631 55%, #0C5A55 125%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12), inset 0 0 0 1px rgba(45, 212, 191, .12), 0 8px 18px rgba(4, 40, 50, .3); }
+  .byos #build:hover { background: linear-gradient(135deg, #06283A 0%, #073631 55%, #0C5A55 125%); filter: brightness(1.14); }
+  .byos #cancel { color: #1B2A4A; background: rgba(255, 255, 255, .75); border: 2px solid #1B2A4A; }
+  .byos #cancel:hover { background: #fff; }
+  .byos :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+  /* The detail hint: the same family as the guidance callouts, on the dark teal surface */
+  .byos .nudge { margin: 12px 0 0; min-height: 66px; padding: 14px 18px 14px 78px; border-radius: 16px; color: #fff; font-size: 1rem; line-height: 1.4;
+    background: linear-gradient(135deg, #0B4F4D 0%, #073631 55%, #0A2F3F 100%); border: 1px solid rgba(45, 212, 191, .28);
+    box-shadow: 0 8px 20px rgba(7, 54, 49, .3), inset 0 1px 0 rgba(255, 255, 255, .08); }
+  .byos .nudge::before { left: 16px; top: 14px; bottom: 14px; width: 5px; background: linear-gradient(180deg, #5EEAD4, #14B8A6); box-shadow: 0 0 10px rgba(45, 212, 191, .5); }
+  .byos .nudge::after { left: 34px; width: 26px; height: 26px; margin-top: -13px; border: 1px solid rgba(255, 255, 255, .3);
+    background: radial-gradient(circle at 35% 30%, #7CF2DD, #0D9488 72%); box-shadow: 0 0 16px rgba(45, 212, 191, .6); }
+  @media (max-width: 520px) {
+    .byos .sheet { padding: 10px; border-radius: 22px; }
+    .fsec { padding: 18px 16px 20px; border-radius: 18px; }
+    /* icon beside the heading only; the descriptions then run the full width */
+    .fsec-head { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 6px 12px; margin-bottom: 16px; }
+    .fsec-head > div { display: contents; }
+    .fsec-ic { width: 46px; height: 46px; }
+    .fsec-ic svg { width: 24px; height: 24px; }
+    .fsec-h { font-size: 1.1875rem; }
+    .fsec-d { grid-column: 1 / -1; margin-top: 2px; }
+    .byos .nudge { padding: 12px 14px 12px 64px; }
+    .byos .nudge::before { left: 13px; top: 12px; bottom: 12px; }
+    .byos .nudge::after { left: 27px; }
+  }
+  @media (max-width: 400px) { .moments { grid-template-columns: minmax(0, 1fr); gap: 14px; } }
+  @media (max-width: 420px) { .byos .actions { grid-template-columns: minmax(0, 1fr); } }
 
   /* ---------- Motion, only when the learner allows it ---------- */
   @media (prefers-reduced-motion: no-preference) {
@@ -951,39 +994,56 @@
 
   <section class="byos dk" id="byos" hidden aria-labelledby="byos-h">
     <div class="sheet">
-    <h2 id="byos-h">Your project</h2>
-    <p class="help">We'll create six test personas. Your panel starts with 3; use Panel size to add more perspectives. The sliders shape the panel without building it again.</p>
+    <h2 id="byos-h" class="sr-only">Your project</h2>
     <form id="byos-form" novalidate>
-      <div class="field">
-        <label for="f-testing">What are you testing?</label>
-        <p class="help" id="f-testing-help">For example: A 20-minute Storyline course for new hires.</p>
-        <input type="text" id="f-testing" maxlength="98" aria-describedby="f-testing-help byos-error">
-      </div>
-      <div class="field">
-        <label for="f-goal">What do people need to do or accomplish in it? <span class="opt">(optional)</span></label>
-        <p class="help" id="f-goal-help">For example: Learn how to report a safety hazard, make a choice in a branching scenario, and pass a graded quiz.</p>
-        <textarea id="f-goal" maxlength="198" aria-describedby="f-goal-help f-nudge"></textarea>
-        <p class="nudge" id="f-nudge" hidden>A little more detail will produce more specific test personas.</p>
-      </div>
-      <div class="field">
-        <label for="f-audience">Who is it for? <span class="opt">(optional)</span></label>
-        <input type="text" id="f-audience" maxlength="120">
-      </div>
-      <fieldset>
-        <legend>Four key moments <span class="opt">(optional)</span></legend>
-        <p class="help">Choose four checkpoints in order, from the beginning of the experience to the end. Leave blank and we'll pick four worth testing.</p>
-        <div class="moments">
-          <div><label for="f-m1">Start</label><input type="text" id="f-m1" maxlength="24"></div>
-          <div><label for="f-m2">Moment 2</label><input type="text" id="f-m2" maxlength="24"></div>
-          <div><label for="f-m3">Moment 3</label><input type="text" id="f-m3" maxlength="24"></div>
-          <div><label for="f-m4">Finish</label><input type="text" id="f-m4" maxlength="24"></div>
+      <div class="fsec">
+        <div class="fsec-head">
+          <span class="fsec-ic" aria-hidden="true"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="M14 7h14l9 9v23a3 3 0 0 1-3 3H14a3 3 0 0 1-3-3V10a3 3 0 0 1 3-3Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M28 7v9h9M17 25h14M17 32h9" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div>
+            <h3 class="fsec-h" id="dp-h">Describe your project</h3>
+            <p class="fsec-d">A few quick details help us create relevant test personas.</p>
+            <p class="fsec-d fsec-d2">We'll create six test personas. Your panel starts with 3; use Panel size to add more perspectives. The sliders shape the panel without building it again.</p>
+          </div>
         </div>
-      </fieldset>
-      <p class="privacy">Sent when you build or rebuild your panel. Don't include confidential details.</p>
-      <div class="actions">
-        <button type="submit" class="primary" id="build">Build my panel</button>
-        <button type="button" id="cancel">Cancel</button>
-        <p class="byos-error" id="byos-error"></p>
+        <div class="field">
+          <label for="f-testing">What are you testing?</label>
+          <p class="help" id="f-testing-help">For example: A 20-minute Storyline course for new hires.</p>
+          <input type="text" id="f-testing" maxlength="98" aria-describedby="f-testing-help byos-error">
+        </div>
+        <div class="field">
+          <label for="f-goal">What do people need to do or accomplish in it? <span class="opt">(optional)</span></label>
+          <p class="help" id="f-goal-help">For example: Learn how to report a safety hazard, make a choice in a branching scenario, and pass a graded quiz.</p>
+          <textarea id="f-goal" maxlength="198" aria-describedby="f-goal-help f-nudge"></textarea>
+          <p class="nudge" id="f-nudge" hidden>A little more detail will produce more specific test personas.</p>
+        </div>
+        <div class="field">
+          <label for="f-audience">Who is it for? <span class="opt">(optional)</span></label>
+          <input type="text" id="f-audience" maxlength="120">
+        </div>
+      </div>
+      <div class="fsec">
+        <div class="fsec-head">
+          <span class="fsec-ic" aria-hidden="true"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="M24 43s-13-11.500-13-22a13 13 0 0 1 26 0c0 10.500-13 22-13 22Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><circle cx="24" cy="21" r="5" fill="none" stroke="currentColor" stroke-width="3"/></svg></span>
+          <div>
+            <h3 class="fsec-h" id="mj-h">Map the journey</h3>
+            <p class="fsec-d" id="mj-d">Choose four checkpoints in order, from the beginning of the experience to the end. Leave blank and we'll pick four worth testing.</p>
+          </div>
+        </div>
+        <fieldset aria-describedby="mj-d">
+          <legend class="sr-only">Four key moments <span class="opt">(optional)</span></legend>
+          <div class="moments">
+            <div><label for="f-m1">Start</label><input type="text" id="f-m1" maxlength="24"></div>
+            <div><label for="f-m2">Moment 2</label><input type="text" id="f-m2" maxlength="24"></div>
+            <div><label for="f-m3">Moment 3</label><input type="text" id="f-m3" maxlength="24"></div>
+            <div><label for="f-m4">Finish</label><input type="text" id="f-m4" maxlength="24"></div>
+          </div>
+        </fieldset>
+        <p class="privacy">Sent when you build or rebuild your panel. Don't include confidential details.</p>
+        <div class="actions">
+          <button type="submit" class="primary" id="build">Build my panel</button>
+          <button type="button" id="cancel">Cancel</button>
+          <p class="byos-error" id="byos-error"></p>
+        </div>
       </div>
     </form>
     </div>
