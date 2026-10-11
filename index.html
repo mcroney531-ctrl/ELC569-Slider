@@ -391,7 +391,7 @@
   .controls h2 { color: var(--pqa-text); font-size: 1.125rem; }
   .controls-head .hint-line { margin: 0; }
   @media (min-width: 1000px) {
-    #sliders { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    #sliders { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
     .controls .slider + .slider { margin-top: 0; }
     #sliders > .actions { grid-column: 1 / -1; margin-top: 2px; justify-content: flex-end; }
     #lock { width: auto; min-width: 260px; }
@@ -656,9 +656,9 @@
   .sub-closed[hidden] { display: none; }
 
   /* Workspace stages: one stage on screen at a time. display:none keeps the others out of the reading order. */
-  #tool:not([data-stage="project"]) #sec-project, #tool:not([data-stage="shape"]) #sec-shape,
-  #tool:not([data-stage="personas"]) #sec-personas, #tool:not([data-stage="personas"]) #review { display: none; }
-  .stagenav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0 0 14px; }
+  #tool:not([data-stage="project"]) #sec-project, #tool:not([data-stage="build"]) #sec-build,
+  #tool:not([data-stage="panel"]) #sec-panel, #tool:not([data-stage="export"]) #review { display: none; }
+  .stagenav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 0 0 14px; }
   .stagenav .st { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 16px; border: 1px solid var(--ws-border); border-radius: 16px; background: linear-gradient(180deg, rgba(8, 44, 66, .9), var(--ws-surface)); color: #B8CFDD; font: inherit; font-weight: 800; text-align: left; box-shadow: 0 6px 16px rgba(27, 42, 74, .16); }
   .stagenav .st:hover { background: #0A3248; }
   .stagenav .st[aria-current="step"] { color: #fff; border-color: #25D6C4; background: linear-gradient(180deg, #0B4458, #072C3F); box-shadow: inset 0 -3px #25D6C4, 0 6px 16px rgba(27, 42, 74, .16); }
@@ -736,7 +736,7 @@
   .review .actions button:not(.primary) { background: #fff; color: var(--navy); border-color: var(--navy); }
 
   @media (min-width: 901px) {
-    #sliders { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    #sliders { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
     #sliders > .actions { grid-column: 1 / -1; margin-top: 2px; justify-content: flex-end; }
     #lock { width: auto; min-width: 260px; }
   }
@@ -767,6 +767,77 @@
     .review .review-head .format { margin-left: 0; width: 100%; }
   }
   @media (forced-colors: active) { .sec { border: 2px solid CanvasText; box-shadow: none; } }
+
+  /* ---------- V2: Build, Your panel, the shared editor ---------- */
+  .build-grid { display: grid; gap: 18px; }
+  @media (min-width: 900px) { .build-grid { grid-template-columns: minmax(0, 330px) minmax(0, 1fr); align-items: start; } }
+  .arch { border: 0; margin: 0; padding: 0; min-width: 0; }
+  .arch-legend { padding: 0; margin: 0 0 10px; color: #fff; font-weight: 800; font-size: 1.0625rem; }
+  .arch-list { display: grid; gap: 8px; }
+  .arch-opt { position: relative; display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 8px 12px; border: 1px solid var(--ws-border); border-radius: 14px; background: rgba(255, 255, 255, .04); color: #fff; cursor: pointer; }
+  .arch-opt input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+  .arch-opt:hover { background: rgba(255, 255, 255, .08); }
+  .arch-opt:has(input:checked) { border-color: #25D6C4; background: #0B4458; box-shadow: inset 4px 0 #25D6C4; }
+  .arch-opt:has(input:focus-visible) { outline: 3px solid #5EE7F5; outline-offset: 2px; }
+  .arch-opt .av { width: 44px; height: 44px; }
+  .arch-opt.is-added .av { opacity: .55; }
+  .arch-t { min-width: 0; }
+  .arch-name { display: block; font-weight: 800; line-height: 1.25; }
+  .arch-d { display: block; font-size: .8125rem; color: var(--ws-muted); line-height: 1.3; }
+  .arch-badge { display: inline-block; margin-top: 4px; padding: 1px 8px; border-radius: 999px; font-size: .75rem; font-weight: 800; background: rgba(0, 222, 216, .14); color: #5EE7F5; }
+  .arch-badge:empty { display: none; }
+  .arch-opt.is-added .arch-badge { background: rgba(255, 255, 255, .1); color: #DCE8F0; }
+  .rec3 { margin-top: 12px; }
+  .rec3[hidden] { display: none; }
+  .rec3 button { width: 100%; min-height: 48px; border-radius: 14px; font: inherit; font-weight: 700; background: transparent; color: #fff; border: 1.5px solid rgba(245, 250, 253, .55); }
+  .rec3 button:hover { background: rgba(255, 255, 255, .1); }
+  .rec3-note { margin: 6px 2px 0; font-size: .8125rem; color: var(--ws-muted); }
+  .preview { min-width: 0; display: grid; gap: 12px; color: var(--ink); }
+  .preview-h { margin: 0; color: #fff; font-size: 1.0625rem; font-weight: 800; }
+  .preview-card .card { margin: 0; }
+  .card-name { margin: 0; font-size: 1.0625rem; color: var(--navy); }
+  .added-note { padding: 12px 14px; border: 1px solid rgba(45, 212, 191, .3); border-left: 4px solid #2DD4BF; border-radius: 12px; background: rgba(255, 255, 255, .06); color: #fff; }
+  .added-note p { margin: 0 0 8px; }
+  .added-note button, .entry-foot button, .apply button, .panel-empty button, .review-empty button, .stale button { min-height: 44px; padding: 0 16px; border-radius: 12px; font: inherit; font-weight: 700; }
+  .added-note button, .apply button { background: transparent; color: #fff; border: 1.5px solid rgba(245, 250, 253, .55); }
+  .add-row { display: flex; justify-content: flex-end; }
+  .add-row[hidden], .added-note[hidden], .apply[hidden], .panel-empty[hidden], .review-empty[hidden], .stale[hidden], .review-body[hidden] { display: none; }
+  .add-row button { min-height: 52px; padding: 0 24px; border-radius: 14px; font: inherit; font-weight: 800; background: linear-gradient(90deg, #23D4C4, #2EE6C1); color: #062C35; border: 0; }
+  .add-row button:hover, .panel-empty button:hover, .review-empty button:hover { background: linear-gradient(90deg, #3ADCCD, #4AEDCB); color: #062C35; }
+  .added-note button:hover, .apply button:hover { background: rgba(255, 255, 255, .1); }
+  .add-row :focus-visible, .added-note :focus-visible, .rec3 :focus-visible, .apply :focus-visible { outline: 3px solid #5EE7F5; outline-offset: 3px; }
+  .build-sum { margin: 18px 0 0; }
+  .build-sum .live-av { flex-wrap: wrap; }
+  .editor.controls { padding: 14px; border-radius: 16px; border: 1px solid var(--ws-border); border-top: 3px solid #2DD4BF; box-shadow: none; }
+  .editor[hidden] { display: none; }
+  .editor-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; margin-bottom: 4px; }
+  .editor-h { margin: 0; font-weight: 800; color: #fff; }
+  .editor .jr-link { color: #5EE7F5; background: none; border: 0; padding: 4px 0; font: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; min-height: 44px; }
+  .editor .hint-line { margin: 0 0 10px; }
+  @container pqa (min-width: 620px) { #sliders { grid-template-columns: repeat(2, minmax(0, 1fr)); } #sliders .slider + .slider { margin-top: 0; } }
+  .apply { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .apply button[aria-disabled="true"] { opacity: .6; cursor: default; }
+  .entries { padding: 0; margin: 0; }
+  .entry { display: grid; gap: 12px; align-items: start; min-width: 0; }
+  .entry.is-selected { grid-column: 1 / -1; }
+  @media (min-width: 900px) { .entry.is-selected { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); } }
+  .entry .card { height: 100%; }
+  .entry-foot { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
+  .entry-set { margin: 0 0 8px; font-size: .875rem; color: var(--ink); }
+  .entry-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+  .entry-foot button { background: #fff; color: var(--navy); border: 1.5px solid var(--navy); }
+  .entry-foot button:hover { background: var(--soft); }
+  .entry-foot .entry-edit[aria-expanded="true"] { background: var(--navy); color: #fff; }
+  .entry.is-selected .card { border-color: #25D6C4; box-shadow: 0 0 0 2px #25D6C4; }
+  .panel-empty, .review-empty { padding: 18px; border: 1px dashed var(--ws-border); border-radius: 14px; color: #fff; }
+  .panel-empty p, .review-empty p { margin: 0 0 10px; }
+  .panel-empty button, .review-empty button { background: linear-gradient(90deg, #23D4C4, #2EE6C1); color: #062C35; border: 0; }
+  .review-empty { margin: 0 20px 16px; }
+  .stale { padding: 12px 14px; border-left: 4px solid #F2B26B; border-radius: 10px; background: #FFF6EA; color: var(--ink); margin-bottom: 12px; }
+  .stale p { margin: 0 0 8px; }
+  .stale button { background: #fff; color: var(--navy); border: 1.5px solid var(--navy); }
+  .replace-note { margin: 10px 0 0; padding: 10px 12px; border-left: 4px solid #B45309; border-radius: 10px; background: #FFF6EA; color: #5A3200; font-weight: 600; }
+  .replace-note[hidden] { display: none; }
 
   /* ---------- Project form: a pale frosted surface on the dark deck, two grouped sections ---------- */
   .byos .sheet { background: linear-gradient(180deg, #F6FAFF 0%, #EAF1FA 100%); border: 1px solid rgba(255, 255, 255, .9); border-radius: 26px; padding: 14px;
@@ -1056,8 +1127,9 @@
 
   <nav class="stagenav" id="stagenav" aria-label="Workspace stages">
     <button type="button" class="st" id="st-project" data-stage-go="project" aria-current="step"><span class="st-n" aria-hidden="true">1</span><span class="st-t">Project<small>What you're testing</small></span></button>
-    <button type="button" class="st" id="st-shape" data-stage-go="shape"><span class="st-n" aria-hidden="true">2</span><span class="st-t">Shape<small>Configure the panel</small></span></button>
-    <button type="button" class="st" id="st-personas" data-stage-go="personas"><span class="st-n" aria-hidden="true">3</span><span class="st-t">Personas<small>Explore and export</small></span></button>
+    <button type="button" class="st" id="st-build" data-stage-go="build"><span class="st-n" aria-hidden="true">2</span><span class="st-t">Build<small>Add personas</small></span></button>
+    <button type="button" class="st" id="st-panel" data-stage-go="panel"><span class="st-n" aria-hidden="true">3</span><span class="st-t">Your panel<small>Review and adjust</small></span></button>
+    <button type="button" class="st" id="st-export" data-stage-go="export"><span class="st-n" aria-hidden="true">4</span><span class="st-t">Export<small>Brief or AI prompt</small></span></button>
   </nav>
 
   <section class="sec sec-project" id="sec-project" aria-labelledby="sec-project-h">
@@ -1084,7 +1156,7 @@
           <div>
             <h3 class="fsec-h" id="dp-h">Describe your project</h3>
             <p class="fsec-d">A few quick details help us create relevant test personas.</p>
-            <p class="fsec-d fsec-d2">We'll create six test personas. Your panel starts with 3; use Panel size to add more perspectives. The sliders shape the panel without building it again.</p>
+            <p class="fsec-d fsec-d2">We'll create one person for each of the six archetypes. You choose who joins your panel, and changing their challenge or journey never builds them again.</p>
           </div>
         </div>
         <div class="field">
@@ -1121,9 +1193,10 @@
           </div>
         </fieldset>
         <p class="privacy">Sent when you build or rebuild your panel. Don't include confidential details.</p>
+        <p class="replace-note" id="replace-note" hidden></p>
         <p class="build-status" id="build-status" hidden aria-hidden="true"></p>
         <div class="actions">
-          <button type="submit" class="primary" id="build">Build my panel</button>
+          <button type="submit" class="primary" id="build" aria-describedby="replace-note">Build my panel</button>
           <button type="button" id="cancel">Cancel</button>
           <p class="byos-error" id="byos-error"></p>
         </div>
@@ -1131,33 +1204,53 @@
     </form>
     </div>
   </dialog>
-  <div class="st-actions"><button type="button" class="primary" data-stage-go="shape">Continue to Shape</button></div>
+  <div class="st-actions"><button type="button" class="primary" data-stage-go="build">Continue to Build</button></div>
   </section>
 
-  <section class="sec controls" id="sec-shape" aria-labelledby="controls-h">
-    <h2 class="sec-h" id="controls-h" tabindex="-1"><span class="sec-btn">
+  <section class="sec sec-build" id="sec-build" aria-labelledby="build-h">
+    <h2 class="sec-h" id="build-h" tabindex="-1"><span class="sec-btn">
       <span class="sec-ic" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#s-sliders"/></svg></span>
-      <span class="sec-t"><span class="sec-title">Shape your panel</span>
-        <span class="sec-sub"><span class="sub-open">Customize the size, challenge level, and journey for your test panel.</span><span class="sub-closed" id="shape-sum" hidden></span></span></span>
+      <span class="sec-t"><span class="sec-title">Build your panel</span>
+        <span class="sec-sub">Choose an archetype, set their challenge and journey, then add them. One persona is enough for a quick test.</span></span>
     </span></h2>
-    <div class="sec-panel" id="shape-panel"><div class="sec-body">
-    <div class="controls-head">
-    <p class="next-cue" id="next-cue" hidden>Your panel is ready. Adjust who's included, the challenge, and their journey, then see your personas.</p>
-    <p class="hint-line" id="controls-hint">Drag a marker, or use the arrow keys.</p></div>
-    <div id="sliders">
-      <div class="live-sum" id="shape-live"><span class="live-av" id="shape-live-av" aria-hidden="true"></span><p class="live-t" id="shape-live-t"></p></div>
-      <div class="slider s-panel">
-        <svg class="motif" id="panel-motif" viewBox="0 0 320 80" preserveAspectRatio="xMaxYMid meet" aria-hidden="true" focusable="false"><g class="occ"><circle cx="45" cy="40" r="12"/><circle cx="91" cy="40" r="12"/><circle cx="137" cy="40" r="12"/><circle cx="183" cy="40" r="12"/><circle cx="229" cy="40" r="12"/><circle cx="275" cy="40" r="12"/></g></svg>
-        <div class="slider-head"><span class="row-icon" aria-hidden="true"><svg><use href="#r-panel"/></svg></span><label for="panel">Panel size</label><span class="slider-val" id="panel-val" aria-hidden="true"></span></div>
-        <p class="slider-help">Add more perspectives to your test.</p>
-        <div class="range-wrap" id="panel-wrap">
-          <div class="rail"><span class="fill"></span></div>
-          <input type="range" id="panel" min="1" max="6" step="1" value="3">
-          <span class="thumb" id="panel-thumb" aria-hidden="true"></span>
+    <div class="sec-body">
+      <p class="next-cue" id="next-cue" hidden>Six people are ready for your project. Start with the recommended three, or choose one.</p>
+      <div class="build-grid">
+        <fieldset class="arch" id="arch">
+          <legend class="arch-legend">Choose an archetype</legend>
+          <div class="arch-list" id="arch-list"></div>
+          <div class="rec3"><button type="button" id="rec3">Start with the recommended three</button><p class="rec3-note" id="rec3-note">Core user, Newcomer and Experienced user, at Typical and Straight through.</p></div>
+        </fieldset>
+        <div class="preview" id="preview" aria-labelledby="preview-h" role="region">
+          <h3 class="preview-h" id="preview-h">Preview</h3>
+          <div class="preview-card" id="preview-card"></div>
+          <div class="added-note" id="added-note" hidden><p id="added-text"></p><button type="button" id="added-go">Change their settings in Your panel</button></div>
+          <div class="editor-home" id="editor-home"></div>
+          <div class="add-row" id="add-row"><button type="button" class="primary" id="add">Add to your panel</button></div>
         </div>
-        <div class="ends"><span><svg class="end-icon" aria-hidden="true"><use href="#e-one"/></svg>Core user</span><span><svg class="end-icon" aria-hidden="true"><use href="#e-all"/></svg>Full coverage</span></div>
-        <p class="state-help" id="panel-state"></p>
       </div>
+      <div class="build-sum" id="build-sum"><span class="live-av" id="build-sum-av" aria-hidden="true"></span><p class="live-t" id="build-sum-t"></p></div>
+    </div>
+    <div class="st-actions"><button type="button" data-stage-go="project">Back to Project</button><button type="button" class="primary" data-stage-go="panel">See your panel</button></div>
+  </section>
+
+  <section class="sec sec-personas" id="sec-panel" aria-labelledby="panel-stage-h">
+    <h2 class="sec-h" id="panel-stage-h" tabindex="-1"><span class="sec-btn">
+      <span class="sec-ic" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#i-panel"/></svg></span>
+      <span class="sec-t"><span class="sec-title">Your panel</span>
+        <span class="sec-sub" id="panel-sub"></span></span>
+    </span></h2>
+    <div class="sec-body">
+      <div class="panel-empty" id="panel-empty" hidden><p>Your panel is empty. Add a persona to start.</p><button type="button" class="primary" data-stage-go="build">Add a persona</button></div>
+      <ol class="cards entries" id="cards"></ol>
+    </div>
+    <div class="st-actions" id="panel-actions"><button type="button" id="clear-panel">Clear panel</button><button type="button" id="add-more" data-stage-go="build">Add a persona</button><button type="button" class="primary" id="lock" data-stage-go="export">Review &amp; export</button></div>
+  </section>
+
+  <div class="editor controls" id="editor" role="group" aria-labelledby="editor-h" hidden>
+    <div class="editor-head"><p class="editor-h" id="editor-h"></p><button type="button" class="jr-link" id="jr-link" aria-haspopup="dialog">View journey</button></div>
+    <p class="hint-line" id="controls-hint">Drag a marker, or use the arrow keys.</p>
+    <div id="sliders">
       <div class="slider s-challenge">
         <svg class="motif" id="challenge-motif" viewBox="0 0 320 80" preserveAspectRatio="xMaxYMid meet" aria-hidden="true" focusable="false"><g class="wave"><path d="M0 40 C20 40 20 40 40 40 S60 28 80 40 S100 52 120 40 S140 18 160 40 S180 62 200 40 S220 12 240 40 S260 68 280 40 S300 20 320 40"/></g></svg>
         <div class="slider-head"><span class="row-icon" aria-hidden="true"><svg><use href="#r-challenge"/></svg></span><label for="challenge">Challenge level</label><span class="slider-val" id="challenge-val" aria-hidden="true"></span></div>
@@ -1183,39 +1276,10 @@
         <p class="state-help" id="journey-state"></p>
       </div>
     </div>
-    <div id="locked-row" hidden>
-      <p class="summary" id="summary"></p>
-      <p class="code" id="code"></p>
-      <div class="actions"><button type="button" id="edit">Adjust panel</button></div>
-    </div>
-    </div></div>
-    <div class="st-actions"><button type="button" data-stage-go="project">Back to Project</button><button type="button" class="primary" data-stage-go="personas">See your personas</button></div>
-  </section>
-
-  <section class="sec sec-personas" id="sec-personas" aria-labelledby="personas-h">
-    <h2 class="sec-h" id="personas-h" tabindex="-1"><span class="sec-btn">
-      <span class="sec-ic" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#i-panel"/></svg></span>
-      <span class="sec-t"><span class="sec-title">Test personas</span>
-        <span class="sec-sub"><span class="sub-open" id="personas-open-sum"></span><span class="sub-closed" id="personas-sum" hidden></span></span></span>
-    </span></h2>
-    <div class="sec-panel" id="personas-panel"><div class="sec-body">
-  <div class="stage">
-    <section class="zone zone-seats" id="zone-seats" aria-labelledby="seats-h">
-      <div class="zone-head"><svg class="icon" aria-hidden="true"><use href="#i-panel"/></svg><h3 id="seats-h">Seats</h3><div class="zone-tools"><p class="caption" id="seats-caption"></p><button type="button" class="jr-link" id="jr-link" aria-haspopup="dialog">View journey</button></div></div>
-      <ul class="seats" id="seats"></ul>
-    </section>
-
-    <section class="zone zone-cards" id="zone-cards" aria-labelledby="cards-h">
-      <div class="zone-head sr-only"><h3 id="cards-h">Personas</h3></div>
-      <p class="tier-line" id="tier-caption"></p>
-      <ul class="cards" id="cards"></ul>
-    </section>
+    <div class="apply" id="apply" hidden><button type="button" id="apply-c"></button><button type="button" id="apply-j"></button></div>
   </div>
-    </div></div>
-    <div class="st-actions" id="lock-row"><span class="note" id="lock-note"></span><button type="button" id="adjust-settings">Adjust settings</button><button type="button" class="primary" id="lock" aria-describedby="lock-note">Review &amp; export</button></div>
-  </section>
 
-  <section class="review sec" id="review" hidden aria-labelledby="brief-h">
+  <section class="review sec" id="review" aria-labelledby="brief-h">
     <div class="review-head">
       <span class="sec-ic" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#s-doc"/></svg></span>
       <h2 id="brief-h" tabindex="-1">Review and export</h2>
@@ -1227,6 +1291,9 @@
         </div>
       </fieldset>
     </div>
+    <div class="review-empty" id="review-empty" hidden><p>Add at least one persona to export a test.</p><button type="button" class="primary" data-stage-go="build">Add a persona</button></div>
+    <div class="review-body" id="review-body">
+    <div class="stale" id="stale" hidden><p id="stale-text">Your panel changed after you edited this export.</p><button type="button" id="refresh-export">Update the export</button></div>
     <div class="role-callout">
       <div><p class="format-role" id="format-role"></p>
       <p class="help-line" id="format-help"></p></div>
@@ -1241,10 +1308,12 @@
       </div>
     </div>
     <div class="persona-copy">
-      <p class="persona-copy-label" id="persona-copy-label">Or copy one persona as its own prompt</p>
+      <p class="persona-copy-label" id="persona-copy-label">Or copy one persona on their own</p>
       <div class="persona-copy-row" id="persona-copy-row" role="group" aria-labelledby="persona-copy-label"></div>
     </div>
+    </div>
     <p class="note honesty">Test personas can help you find problems early. They don't replace testing or research with real people.</p>
+    <div class="st-actions"><button type="button" data-stage-go="panel">Back to Your panel</button></div>
   </section>
   </div>
 
@@ -1431,11 +1500,9 @@ function routeParts(seq, names) {
   return seq.map(n => { const s = names[n - 1] + (seen.has(n) ? " again" : ""); seen.add(n); return s; });
 }
 const routeSentence = (seq, names) => routeParts(seq, names).join(" -> ");
-const configCode = s => `P${s.panel}-C${s.challenge}-J${s.journey}`;
 
 // A panel is an ordered list of entries. Each entry points at one generated person (by archetype index into
 // current.personas) and owns its own challenge and journey. Everything on screen and in the export derives from these.
-const entriesFor = s => Array.from({length: s.panel}, (_, i) => ({iid: "e" + i, a: i, challenge: s.challenge, journey: s.journey}));
 function deriveEntry(panel, e) {
   const p = panel.personas[e.a], level = LEVELS[e.challenge - 1], pattern = PATTERNS[e.journey - 1];
   const m = panel.experience.moments, o = e.challenge > 1 ? p.overlays[e.challenge - 2] : null;   // challenge owns behavior
@@ -1448,86 +1515,77 @@ function deriveEntry(panel, e) {
     routeShort: routeParts(pattern.seq, m.map(x => x.short)),             // journey owns movement
     route: routeSentence(pattern.seq, m.map(x => x.full))};
 }
-function deriveView(panel, s) {
-  const {panel: n, challenge, journey} = s, level = LEVELS[challenge - 1], pattern = PATTERNS[journey - 1];
-  const shorts = panel.experience.moments.map(x => x.short);
-  return {
-    panel: n, challenge, journey, level, pattern, id: panel.id, experience: panel.experience,
-    summary: `Panel of ${n} · ${level.label} · ${pattern.label}`,
-    code: `Panel ${panel.id} · ${configCode({panel: n, challenge, journey})}`,
-    valueText: {
-      panel: `${n} persona${n === 1 ? "" : "s"}: ${panel.personas.slice(0, n).map(firstName).join(", ")}`,
-      challenge: level.aria, journey: pattern.aria},
-    journeyText: JOURNEY_TEXT[journey - 1](shorts),
-    seated: entriesFor(s).map(e => deriveEntry(panel, e))};
-}
+const plural = n => `${n} persona${n === 1 ? "" : "s"}`;
+const settingsCode = x => `C${x.challenge}-J${x.journey}`;
 // Marks what the tool filled in, so it never reads as something the person said.
 const SUGG = " (suggested by the tool)";
-function buildBrief(panel, s) {
-  const v = deriveView(panel, s), ex = v.experience;
-  const out = ["# Test Panel Brief", "", v.code, "",
+// Both exports cover the whole panel, or one entry when `only` is its index. Every persona section is self-contained:
+// it carries its own challenge, journey and route, because nothing is shared across the panel any more.
+function exportHead(panel, xs, only) {
+  return `${panel.id === "SAMPLE" ? "Sample panel" : "Panel " + panel.id} \u00B7 ${only === null ? plural(xs.length) : xs[0].p.name}`;
+}
+function buildBrief(panel, list, only = null) {
+  const xs = (only === null ? list : [list[only]]).map(e => deriveEntry(panel, e)), ex = panel.experience;
+  const shorts = ex.moments.map(x => x.short);
+  const out = ["# Test Panel Brief", "", exportHead(panel, xs, only), "",
     `**Testing:** ${ex.summary}`];
   if (ex.audience) out.push(`**For:** ${ex.audience}${ex.audienceSuggested ? SUGG : ""}`);
   out.push("", "**Key moments:**", ...ex.moments.map((x, i) => `${i + 1}. ${x.short}: ${x.full}${x.suggested ? SUGG : ""}`), "",
-    `**Challenge level:** ${v.level.label}. ${v.level.sentence}`,
-    `**Shared journey:** ${v.pattern.label}. ${v.journeyText.behavior}`,
-    `**Shared route:** ${routeSentence(v.pattern.seq, ex.moments.map(x => x.short))}`,
-    `**Shared journey check:** ${v.journeyText.risk}`, "",
-    "Each persona is a script for one test pass. Become that person, follow the shared route through your build, and note where your experience helps them, breaks, or lets them slip through.", "",
+    only === null
+      ? "Each persona is a script for one test pass, with their own challenge level and route. Become that person, follow their route through your build, and note where your experience helps them, breaks, or lets them slip through."
+      : "This persona is a script for one test pass. Become that person, follow their route through your build, and note where your experience helps them, breaks, or lets them slip through.", "",
     "_Test personas can help you find problems early. They don't replace testing or research with real people._");
-  v.seated.forEach(x => {
-    const p = x.p, watch = [p.coreRisk, x.levelRisk].filter(Boolean);
+  xs.forEach(x => {
+    const p = x.p, watch = [p.coreRisk, x.levelRisk].filter(Boolean), fn = firstName(p);
     out.push("", `## ${p.name} (${x.lens})`, "",
+      `**Settings:** ${x.level.label} \u00B7 ${x.pattern.label} (${settingsCode(x)})`, "",
       `- **Who they are:** ${p.whoTheyAre}`,
       `- **Goal:** ${p.goal}`,
       `- **Starting point:** ${p.startingPoint}`,
       `- **Working style:** ${p.workingStyle}`,
       `- **Judges it by:** "${p.judgesBy}"`,
+      `- **Challenge level:** ${x.level.label}. ${x.level.sentence}`,
       `- **Current test behavior:** ${x.behavior}`,
       `- **Says / does:** ${x.saysOrDoes}`,
-      `- **Journey:** Follow the shared route (${v.pattern.label}).`,
-      `- **Watch for:**`, ...watch.map(w => `  - ${w}`),
+      `- **Journey:** ${x.pattern.label}. ${x.journeyText.behavior}`,
+      `- **Route:** ${routeSentence(x.pattern.seq, shorts)}`,
+      `- **Watch for:**`, ...watch.map(w => `  - ${w}`), `  - Journey check: ${x.journeyText.risk}`,
       `- **Run this test:**`,
-      `  1. Set up: open your build fresh, as ${firstName(p)}. Starting point: ${p.startingPoint}`,
-      `  2. Play: follow the shared route. At each moment, behave as described under Current test behavior.`,
-      `  3. Watch for: the points above, plus the shared journey check.`,
-      `  4. Log: where it helped, where it broke, where it let ${firstName(p)} through when it shouldn't have, and where ${firstName(p)} would give up.`);
+      `  1. Set up: open your build fresh, as ${fn}. Starting point: ${p.startingPoint}`,
+      `  2. Play: follow ${fn}'s route above. At each moment, behave as described under Current test behavior.`,
+      `  3. Watch for: the points above.`,
+      `  4. Log: where it helped, where it broke, where it let ${fn} through when it shouldn't have, and where ${fn} would give up.`);
   });
   return out.join("\n") + "\n";
 }
 
-// The AI test prompt: the same panel and settings, written as instructions for the
-// person's own AI assistant to play each persona against their real project material.
-// With `only` (a seat index), it covers that one persona.
-function buildPrompt(panel, s, only = null) {
-  const v = deriveView(panel, s), ex = v.experience;
-  const seated = only === null ? v.seated : [v.seated[only]];
-  const route = routeSentence(v.pattern.seq, ex.moments.map(x => x.short));
+// The AI test prompt: the same panel, written as instructions for the person's own AI assistant to play each persona
+// against their real project material. A single-persona prompt is the most reliable way to run it (one chat each).
+function buildPrompt(panel, list, only = null) {
+  const xs = (only === null ? list : [list[only]]).map(e => deriveEntry(panel, e)), ex = panel.experience;
+  const shorts = ex.moments.map(x => x.short), whole = only === null;
   const out = ["# Persona test prompt", "",
     "You are helping me run an exploratory walkthrough of a digital experience I built, using test personas. You will play one persona at a time and react to the real project material I share with you: screenshots, storyboards, scripts, quiz questions or descriptions.", "",
     "## Project", "",
+    exportHead(panel, xs, only),
     `Testing: ${ex.summary}`];
   if (ex.audience) out.push(`For: ${ex.audience}${ex.audienceSuggested ? SUGG : ""}`);
   out.push("", "Key moments, in order from the beginning of the experience to the end:",
     ...ex.moments.map((x, i) => `${i + 1}. ${x.short}: ${x.full}${x.suggested ? SUGG : ""}`), "",
-    "## Settings", "",
-    `Panel ${panel.id} · ${configCode(s)}`,
-    `Challenge level: ${v.level.label}. ${v.level.sentence}`,
-    `Journey: ${v.pattern.label}. ${v.journeyText.behavior}`,
-    `Route, the same for every persona: ${route}`, "",
     "## Rules while you play a persona", "",
     "1. Act as the persona, not as a UX reviewer. Speak in the first person as them, with brief actions in square brackets, for example [rereads the label]. Include the mistakes, uncertainty, shortcuts and misunderstandings that follow from who they are, and don't comment on what they are \"really\" doing or feeling.",
     "2. Don't infer what I intended, and don't help the persona succeed.",
     "3. The persona knows only their starting point, their stable traits, and what they have actually encountered in this test. Don't use anything from later moments or material I haven't shown yet.",
-    "4. Don't invent buttons, text, feedback, navigation, system behavior or outcomes, including that nothing happens. If the material doesn't show the result of an action (a click, a hover, a wait), ask me, and in the same question name the next moment on the route so I can share that instead: \"Question for you: What happens after I click Submit? If that isn't shown, please share <next moment>.\" Call a repeat visit \"<moment> again\".",
-    "5. Follow the route exactly. The challenge level can change how the persona behaves within a moment, including an interruption, pause, exit or re-entry, but it never chooses the next moment.",
+    "4. Don't invent buttons, text, feedback, navigation, system behavior or outcomes, including that nothing happens. If the material doesn't show the result of an action (a click, a hover, a wait), ask me, and in the same question name the next moment on the route so I can share that instead: \"Question for you: What happens after I click Next? If you'd rather move on, share the Scenario moment.\"",
+    "5. Follow the persona's route exactly. Their challenge level can change how they behave within a moment, including an interruption, pause, exit or re-entry, but it never chooses the next moment.",
     "6. Keep each persona exactly as capable, motivated, experienced and confident as their profile says.",
-    "7. Stay at the stated challenge level. Don't escalate difficulty to find more problems.",
+    "7. Stay at the persona's stated challenge level. Don't escalate difficulty to find more problems.",
     "8. On a repeat visit, the persona remembers what they plausibly learned before. Don't assume my product kept or reset anything unless I show you.",
     "9. Don't add accessibility needs, assistive technology, personal characteristics, possessions, tools or circumstances that the profile doesn't state.",
-    "10. Stay in character. When you need something from me (the next moment, or the result of an action), put it on its own line starting \"Question for you:\". That line doesn't break character. Step fully out of character only for the log.", "",
-    only === null ? "## Personas" : "## Persona");
-  seated.forEach(x => {
+    "10. Stay in character. When you need something from me (the next moment, or the result of an action), put it on its own line starting \"Question for you:\". That line doesn't break character. Step fully out of character only for the log.");
+  if (whole) out.push("11. Each persona is a separate test. Their route, challenge level, and everything they noticed or learned belong to their own run. Never carry anything from one persona's run into another's.");
+  out.push("", whole ? "## Personas" : "## Persona");
+  xs.forEach(x => {
     const p = x.p;
     out.push("", `### ${p.name} (${x.lens})`, "",
       `- Who they are: ${p.whoTheyAre}`,
@@ -1535,24 +1593,27 @@ function buildPrompt(panel, s, only = null) {
       `- Starting point: ${p.startingPoint}`,
       `- Working style: ${p.workingStyle}`,
       `- Judges it by: "${p.judgesBy}"`,
+      `- Challenge level: ${x.level.label}. ${x.level.sentence}`,
       `- At this challenge level: ${x.behavior}`,
       `- Example of what they say or do: ${x.saysOrDoes}`,
-      `- Watch for: ${[p.coreRisk, x.levelRisk].filter(Boolean).join(" ")}`);
+      `- Journey: ${x.pattern.label}. ${x.journeyText.behavior}`,
+      `- Route: ${routeSentence(x.pattern.seq, shorts)}`,
+      `- Watch for: ${[p.coreRisk, x.levelRisk].filter(Boolean).join(" ")}`,
+      `- Journey check: ${x.journeyText.risk}`);
   });
-  const first = ex.moments[v.pattern.seq[0] - 1].short;
   out.push("", "## How we'll work", "",
-    only === null
-      ? "1. Do not summarize this prompt. First ask only which persona I want to run. After I choose, ask me for the first moment on the route."
-      : `1. Do not summarize this prompt. You are running ${seated[0].p.name}. First ask me only for the first moment on the route: “${first}”.`,
-    "2. For each moment I share, respond in character: what they notice, try, say, misunderstand or skip. Then ask me for the next moment on the route, by name.",
+    whole
+      ? "1. Do not summarize this prompt. First ask only which persona I want to run. After I choose, ask me for the first moment on that persona's route."
+      : `1. Do not summarize this prompt. You are running ${xs[0].p.name}. First ask me only for the first moment on the route: \u201C${shorts[xs[0].pattern.seq[0] - 1]}\u201D.`,
+    "2. For each moment I share, respond in character: what they notice, try, say, misunderstand or skip. Then ask me for the next moment on their route, by name.",
     "3. The route can visit a moment more than once. Each visit is its own step, and I'll share the material for that visit.",
     "4. When the route is complete, step out of character and log:",
     "   - Helped: where the experience worked for them",
     "   - Broke: where it failed them",
     "   - Slipped through: where it let them pass when it shouldn't have",
     "   - Gave up: where they would quit, if anywhere",
-    `   - Journey check: ${v.journeyText.risk}`);
-  if (only === null) out.push("5. Then offer to run the next persona.");
+    whole ? "   - Journey check: the one listed for that persona" : `   - Journey check: ${xs[0].journeyText.risk}`);
+  if (whole) out.push("5. Then stop and wait. If I ask for another persona, start them from their own starting point and route, as if the earlier runs never happened. Separate chats keep personas apart more reliably than one long chat, so I may run each persona in a fresh chat instead.");
   out.push("", "Test personas can help you find problems early. They don't replace testing or research with real people.");
   return out.join("\n") + "\n";
 }
@@ -1594,9 +1655,8 @@ function routePath(ys) {
 }
 // Each value pill keeps the width of its longest value, so changing a value never reflows the row.
 function reservePillWidths() {
-  if ($("tool").hidden || !$("sec-shape").offsetWidth) return;           // measured once the tool and its panel are on screen
+  if ($("tool").hidden || !$("editor").offsetWidth) return;           // measured once the editor is on screen
   const labels = {
-    panel: [1, 2, 3, 4, 5, 6].map(n => `${n} persona${n === 1 ? "" : "s"}`),
     challenge: LEVELS.map(l => l.label),
     journey: PATTERNS.map(pt => pt.label)};
   for (const id in labels) {
@@ -1608,10 +1668,9 @@ function reservePillWidths() {
     el.style.minWidth = Math.ceil(w) + "px";
   }
 }
-function setMotifs() {
-  document.querySelectorAll("#panel-motif .occ circle").forEach((c, i) => c.classList.toggle("on", i < state.panel));
-  document.querySelector("#challenge-motif .wave").style.transform = `scaleY(${WAVE_SCALE[state.challenge - 1]})`;
-  const ys = ROUTE_Y[state.journey - 1];
+function setMotifs(t) {
+  document.querySelector("#challenge-motif .wave").style.transform = `scaleY(${WAVE_SCALE[t.challenge - 1]})`;
+  const ys = ROUTE_Y[t.journey - 1];
   document.querySelector("#journey-motif .route-line").setAttribute("d", routePath(ys));
   document.querySelectorAll("#journey-motif .nodes circle").forEach((c, i) => { c.setAttribute("cx", ROUTE_X[i]); c.setAttribute("cy", ys[i]); });
 }
@@ -1621,14 +1680,7 @@ const EASE_OUT2 = "cubic-bezier(.25, .46, .45, .94)", EASE_OUT3 = "cubic-bezier(
 function animateRow(id, prev, next) {
   if (reduceMotion.matches || prev === next || !Element.prototype.animate) return;
   $(id + "-val").animate([{transform: "scale(1)"}, {transform: "scale(1.06)"}, {transform: "scale(1)"}], {duration: 320, easing: EASE_OUT3});
-  if (id === "panel") {
-    document.querySelectorAll("#panel-motif .occ circle").forEach((c, i) => {
-      const was = i < prev, now = i < next;
-      if (was !== now) c.animate(now
-        ? [{opacity: .3, transform: "scale(.6)"}, {opacity: 1, transform: "scale(1)"}]
-        : [{opacity: 1, transform: "scale(1)"}, {opacity: .3, transform: "scale(.85)"}], {duration: 220, easing: EASE_OUT2});
-    });
-  } else if (id === "challenge") {
+  if (id === "challenge") {
     const from = WAVE_SCALE[prev - 1], to = WAVE_SCALE[next - 1];
     document.querySelector("#challenge-motif .wave").animate(
       [{transform: `scaleY(${from})`}, {transform: `scaleY(${to * 1.18})`, offset: .55}, {transform: `scaleY(${to})`}], {duration: 320, easing: EASE_OUT3});
@@ -1639,7 +1691,7 @@ function animateRow(id, prev, next) {
 
 // ---------- DOM ----------
 const $ = id => document.getElementById(id);
-const inputs = {panel: $("panel"), challenge: $("challenge"), journey: $("journey")};
+const inputs = {challenge: $("challenge"), journey: $("journey")};
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 // ---------- Page transitions ----------
@@ -1673,13 +1725,35 @@ function revealIn(els, {dx = 0, dy = 16, delay = 90, stagger = 0, duration = 560
     [{opacity: 0, transform: `translate(${dx}px, ${dy}px)`}, {opacity: 1, transform: "none"}],
     {duration, delay: delay + i * stagger, easing: EASE_REVEAL, fill: "backwards"}));
 }
-const state = {panel: 3, challenge: 1, journey: 1};
-let current = SAMPLE_PANEL;            // the one coherent source panel the sliders work on
-let lastJrKey = null, cardEls = [], locked = false, briefEdited = false, buildTimer = null;
+// ---------- Panel state ----------
+// current: the project and the people generated for it, one per archetype in coverage order.
+// entries: the panel, in the order people were added. Each entry owns its challenge and journey; nothing is shared.
+let current = SAMPLE_PANEL;
+let entries = [], nextIid = 1, selectedIid = null, cand = 0, panelVersion = 0, memo = {};
+let briefEdited = false, buildTimer = null;
+const cardEls = new Map();
+const LENS_HINT = ["Who it was designed for", "Less background than you assumed", "Brings habits from what already works",
+  "Short on time or attention", "Unsure, or not very motivated", "A real situation you may not have planned for"];
+const settingsFor = a => memo[a] || {challenge: 1, journey: 1};      // a removed person comes back as they were
+const entryOf = a => entries.find(e => e.a === a);
+const selected = () => entries.find(e => e.iid === selectedIid) || null;
+const suggestedNext = () => LENSES.findIndex((l, i) => !entryOf(i)); // the tool's coverage order, never a new ranking
+const stageNow = () => $("tool").dataset.stage;
+function changed() { panelVersion++; }
+// The one editor works on the previewed person while building, or on the selected entry in Your panel.
+function target() {
+  if (stageNow() === "panel") return selected();
+  if (stageNow() === "build" && !entryOf(cand)) return {cand: true, a: cand, ...settingsFor(cand)};
+  return null;
+}
 
 function setupStatic() {
-  $("shape-live-av").innerHTML = LENSES.map((l, i) => avatarHTML(i)).join("");
-  ["panel", "challenge", "journey"].forEach(id => {
+  $("arch-list").innerHTML = LENSES.map((l, i) =>
+    `<label class="arch-opt" data-a="${i}"><input type="radio" name="arch" value="${i}">${avatarHTML(i)}` +
+    `<span class="arch-t"><span class="arch-name">${l}</span><span class="arch-d">${LENS_HINT[i]}</span><span class="arch-badge"></span></span></label>`).join("");
+  $("arch-list").addEventListener("change", e => { if (e.target.name === "arch") { cand = +e.target.value; render(); } });
+  $("preview-card").appendChild(makeCard(0, "h4"));
+  ["challenge", "journey"].forEach(id => {
     const inp = inputs[id], max = +inp.max, min = +inp.min, wrap = $(id + "-wrap");
     for (let v = min; v <= max; v++) {
       const t = document.createElement("span");
@@ -1690,14 +1764,8 @@ function setupStatic() {
   });
 }
 
-// Seats and cards are rebuilt only when the source panel changes.
+// The project header. People and the panel are reset by the caller when the project changes.
 function mountPanel() {
-  $("seats").innerHTML = current.personas.map((p, i) =>
-    `<li class="seat"><span class="seat-shape">${avatarHTML(i, "outline")}${avatarHTML(i, "token")}</span>` +
-    `<span class="seat-text" aria-hidden="true"><span class="seat-name"></span><span class="seat-lens">${LENSES[i]}</span></span><span class="sr-only"></span></li>`).join("");
-  cardEls.forEach(el => el.remove());
-  cardEls = [];
-  lastJrKey = null;
   const sample = current.id === "SAMPLE";
   $("panel-id").textContent = sample ? "Sample panel" : `Panel ${current.id}`;
   $("panel-h").textContent = (sample ? "You're looking at a sample panel for: " : "Your panel for: ") + current.experience.summary;
@@ -1708,128 +1776,254 @@ function mountPanel() {
   $("jr-key-sugg").hidden = !picked.length;
   $("moments-note").innerHTML = picked.length ? `<span class="jr-dot" aria-hidden="true"></span><strong>Suggested by the tool:</strong> ${picked.length === 4 ? "all four key moments" : esc(picked.join(", "))}. Use Edit project details to name your own.` : "";
   $("own").textContent = sample ? "Try it with your own project" : "Edit project details";
-  $("own").classList.toggle("primary", sample); // after a build, Review & export is the next step
+  $("own").classList.toggle("primary", sample);
   $("fresh").hidden = sample;
-  updateCue();
+}
+function resetPanel() {
+  entries = []; memo = {}; selectedIid = null; cand = 0;
+  parkEditor();
+  cardEls.forEach(el => el.remove()); cardEls.clear();
+  changed();
 }
 
-function makeCard(i) {
-  const li = document.createElement("li");
-  li.className = "card";
-  li.innerHTML =
-    `<div class="card-head">${avatarHTML(i)}<div><h3></h3><p class="role"></p></div></div>` +
+function makeCard(a, h = "h3") {
+  const el = document.createElement("div");
+  el.className = "card";
+  el.innerHTML =
+    `<div class="card-head">${avatarHTML(a)}<div><${h} class="card-name"></${h}><p class="role"></p></div></div>` +
     `<p class="who"></p><p class="judges"><b>Judges it by:</b> <span></span></p>` +
     `<p class="behavior"></p>` +
     `<div class="bubble"><p></p></div>` +
     `<span class="tag"><svg viewBox="0 0 14 14" aria-hidden="true"></svg><span class="tag-text"></span></span>` +
     `<p class="route-label">Route</p><ol class="route"></ol>`;
-  return li;
+  return el;
 }
-
 // Restart a one-shot CSS animation class (no-op visually under reduced motion).
 function replay(el, cls) {
   el.classList.remove(cls);
   void el.offsetWidth;
   el.classList.add(cls);
 }
-
-function render() {
-  const v = deriveView(current, state);
-
-  // Sliders: thumbs, fills, visible values, aria-valuetext
-  for (const id of ["panel", "challenge", "journey"]) {
-    const inp = inputs[id];
-    inp.value = state[id];
-    inp.setAttribute("aria-valuetext", v.valueText[id]);
-    $(id + "-wrap").style.setProperty("--f", (state[id] - inp.min) / (inp.max - inp.min));
+function fillCard(el, x) {
+  const p = x.p;
+  el.className = el.className.replace(/\btier-\d\b/g, "").trim() + " tier-" + x.challenge;
+  el.querySelector(".card-head .av").className = `av av-${ARCHETYPE_CLASS[x.lens]}`;
+  el.querySelector(".card-name").textContent = p.name;
+  el.querySelector(".role").textContent = x.lens;
+  el.querySelector(".who").textContent = p.whoTheyAre;
+  el.querySelector(".judges span").textContent = `\u201C${p.judgesBy}\u201D`;
+  // Challenge owns behavior; at level 1 the behavior line shows their own working style.
+  el.querySelector(".behavior").innerHTML = x.challenge > 1
+    ? `<b>${esc(x.level.label)}:</b> ${esc(x.behavior)}`
+    : `<b>Typical:</b> ${esc(p.workingStyle)}`;
+  const said = el.querySelector(".bubble p");
+  if (said.textContent !== x.saysOrDoes) {
+    if (said.textContent && el.dataset.who === p.name) replay(el.querySelector(".bubble"), "swap");
+    said.textContent = x.saysOrDoes;
   }
-  $("panel-val").textContent = `${v.panel} persona${v.panel === 1 ? "" : "s"}`;
-  $("challenge-val").textContent = v.level.label;
-  $("journey-val").textContent = v.pattern.label;
-  for (const id of ["panel", "challenge", "journey"])
-    $(id + "-wrap").querySelectorAll(".tick").forEach((t, i) => t.classList.toggle("on", i < state[id] - 1));
-  $("panel-state").textContent = STATE_HELP.panel[v.panel - 1];
-  $("challenge-state").textContent = STATE_HELP.challenge[v.challenge - 1];
-  $("journey-state").textContent = STATE_HELP.journey[v.journey - 1];
-  setMotifs();
-  // Section summaries: shown only while a section is collapsed. Plain text, not announced.
-  $("shape-sum").textContent = [$("panel-val").textContent, $("challenge-val").textContent, $("journey-val").textContent].join(" \u00B7 ");
-  $("personas-sum").textContent = $("panel-val").textContent;
-  $("shape-live-t").textContent = $("shape-sum").textContent;
-  $("shape-live-av").querySelectorAll(".av").forEach((a, i) => a.classList.toggle("open", i >= v.panel));
-  $("personas-open-sum").textContent = `Here ${v.panel === 1 ? "is 1 persona" : "are " + v.panel + " personas"} based on your current settings.`;
-
-  // Panel owns WHO: seats and cards
-  $("seats-caption").textContent = `Panel of ${v.panel}`;
-  document.querySelectorAll(".seat").forEach((s, i) => {
-    const on = i < v.panel, p = current.personas[i];
-    s.classList.toggle("filled", on);
-    s.querySelector(".seat-name").textContent = on ? firstName(p) : "Open";
-    s.querySelector(".sr-only").textContent = `Seat ${i + 1}, ${LENSES[i]}: ${on ? p.name : "empty"}`;
-  });
-  const list = $("cards");
-  while (cardEls.length > v.panel) cardEls.pop().remove();
-  while (cardEls.length < v.panel) {
-    const el = makeCard(cardEls.length);
-    el.classList.add("enter");
-    el.addEventListener("animationend", e => { if (e.target === el) el.classList.remove("enter"); });
-    list.appendChild(el); cardEls.push(el);
-  }
-  v.seated.forEach((x, i) => {
-    const el = cardEls[i], p = x.p;
-    el.className = el.className.replace(/\btier-\d\b/g, "").trim() + " tier-" + v.challenge;
-    el.querySelector("h3").textContent = p.name;
-    el.querySelector(".role").textContent = x.lens;
-    el.querySelector(".who").textContent = p.whoTheyAre;
-    el.querySelector(".judges span").textContent = `“${p.judgesBy}”`;
-    // Challenge owns behavior; at level 1 the behavior line shows their own working style.
-    el.querySelector(".behavior").innerHTML = v.challenge > 1
-      ? `<b>${esc(v.level.label)}:</b> ${esc(x.behavior)}`
-      : `<b>Typical:</b> ${esc(p.workingStyle)}`;
-    const said = el.querySelector(".bubble p");
-    if (said.textContent !== x.saysOrDoes) {
-      if (said.textContent) replay(el.querySelector(".bubble"), "swap");
-      said.textContent = x.saysOrDoes;
-    }
-    const tag = TAGS[v.challenge];
-    if (tag) { el.querySelector(".tag svg").innerHTML = tag.icon; el.querySelector(".tag-text").textContent = tag.text; }
-    const route = el.querySelector(".route");            // journey owns movement
-    if (route.dataset.j !== String(v.journey)) {
-      const seen = new Set();
-      route.innerHTML = v.pattern.seq.map(n => {
-        const again = seen.has(n); seen.add(n);
-        return `<li><span class="chip${again ? " again" : ""}"><span class="n" aria-hidden="true">${n}</span>` +
-          `${esc(current.experience.moments[n - 1].short)}${again ? '<span class="re" aria-hidden="true">↺</span><span class="sr-only"> again</span>' : ""}</span></li>`;
-      }).join("");
-      if (route.dataset.j) replay(route, "swap");
-      route.dataset.j = v.journey;
-    }
-  });
-
-  // Challenge owns WHAT behavior: level caption
-  $("tier-caption").innerHTML = `<strong>${esc(v.level.label)}:</strong> `;
-  $("tier-caption").append(v.level.sentence);
-
-  // Journey owns HOW they move: one shared route, written out in words. Rebuilt only when the route or moment names change.
-  const jrKey = current.id + ":" + v.journey + ":" + current.experience.moments.map(m => m.short).join("|");
-  if (lastJrKey !== jrKey) {
-    lastJrKey = jrKey;
-    const ms = current.experience.moments, shorts = ms.map(m => m.short), seen = new Set(), spoken = [];
-    $("jr-strip").innerHTML = v.pattern.seq.map(n => {
+  const tag = TAGS[x.challenge];
+  if (tag) { el.querySelector(".tag svg").innerHTML = tag.icon; el.querySelector(".tag-text").textContent = tag.text; }
+  const route = el.querySelector(".route"), key = current.id + ":" + x.journey + ":" + current.experience.moments.map(m => m.short).join("|");
+  if (route.dataset.k !== key) {
+    const seen = new Set();
+    route.innerHTML = x.pattern.seq.map(n => {
       const again = seen.has(n); seen.add(n);
-      spoken.push(shorts[n - 1] + (again ? " again" : ""));
-      return `<li><span class="jr-chip${again ? " again" : ""}${ms[n - 1].suggested ? " pick" : ""}">${esc(shorts[n - 1])}${again ? ' again<span aria-hidden="true"> \u21BA</span>' : ""}</span></li>`;
+      return `<li><span class="chip${again ? " again" : ""}"><span class="n" aria-hidden="true">${n}</span>` +
+        `${esc(current.experience.moments[n - 1].short)}${again ? '<span class="re" aria-hidden="true">\u21BA</span><span class="sr-only"> again</span>' : ""}</span></li>`;
     }).join("");
-    $("jr-sr").textContent = `Journey: ${v.pattern.label}. ${spoken.join(", ")}.`;
-    $("jr-pattern").textContent = v.pattern.label;
+    if (route.dataset.k && el.dataset.who === p.name) replay(route, "swap");
+    route.dataset.k = key;
   }
-
-  $("summary").textContent = v.summary;
-  $("code").textContent = v.code;
+  el.dataset.who = p.name;
+}
+function makeEntry(e) {
+  const li = document.createElement("li"), name = current.personas[e.a].name;
+  li.className = "entry";
+  li.dataset.iid = e.iid;
+  const card = makeCard(e.a);
+  card.insertAdjacentHTML("beforeend",
+    `<div class="entry-foot"><p class="entry-set"></p><div class="entry-btns">` +
+    `<button type="button" class="entry-edit" aria-expanded="false" aria-controls="editor">Change settings<span class="sr-only"> for ${esc(name)}</span></button>` +
+    `<button type="button" class="entry-remove">Remove<span class="sr-only"> ${esc(name)}</span></button></div></div>`);
+  li.appendChild(card);
+  card.querySelector(".entry-edit").addEventListener("click", () => selectEntry(selectedIid === e.iid ? null : e.iid));
+  card.querySelector(".entry-remove").addEventListener("click", () => removeEntry(e.iid));
+  return li;
 }
 
-// Which stage zones each slider owns, so a move visibly lands somewhere.
-const ZONES = {panel: ["zone-seats"], challenge: ["zone-cards"], journey: ["zone-cards"]};
+function render() {
+  renderBuild();
+  renderPanel();
+  renderEditor();
+  $("next-cue").hidden = current.id === "SAMPLE" || entries.length > 0;
+}
+
+function renderBuild() {
+  const sug = suggestedNext();
+  document.querySelectorAll(".arch-opt").forEach(o => {
+    const i = +o.dataset.a, inPanel = !!entryOf(i);
+    o.querySelector("input").checked = i === cand;
+    o.classList.toggle("is-added", inPanel);
+    o.classList.toggle("is-sugg", i === sug);
+    o.querySelector(".arch-badge").textContent = inPanel ? "In your panel" : i === sug ? "Suggested next" : "";
+  });
+  const inPanel = entryOf(cand), p = current.personas[cand];
+  fillCard($("preview-card").firstChild, deriveEntry(current, inPanel || {a: cand, ...settingsFor(cand)}));
+  $("added-note").hidden = !inPanel;
+  if (inPanel) $("added-text").textContent = `${p.name} is already in your panel. For now, each archetype can be added once.`;
+  $("add-row").hidden = !!inPanel;
+  $("add").textContent = `Add ${firstName(p)} to your panel`;
+  $("rec3").parentNode.hidden = [0, 1, 2].every(a => entryOf(a));
+  $("build-sum-av").innerHTML = entries.map(e => avatarHTML(e.a)).join("");
+  $("build-sum-t").textContent = entries.length
+    ? `Your panel: ${entries.map(e => firstName(current.personas[e.a])).join(", ")}`
+    : "Your panel is empty.";
+}
+
+function renderPanel() {
+  const n = entries.length;
+  $("panel-sub").textContent = n
+    ? `${plural(n)}, in the order you added them. Each one has their own challenge and journey.`
+    : "No personas yet.";
+  $("panel-empty").hidden = n > 0;
+  $("clear-panel").hidden = n === 0;
+  const list = $("cards");
+  entries.forEach(e => {
+    let el = cardEls.get(e.iid);
+    if (!el) {
+      el = makeEntry(e); cardEls.set(e.iid, el); list.appendChild(el);
+      el.classList.add("enter");
+      el.addEventListener("animationend", ev => { if (ev.target === el) el.classList.remove("enter"); });
+    }
+    const x = deriveEntry(current, e), on = e.iid === selectedIid;
+    fillCard(el.querySelector(".card"), x);
+    el.querySelector(".entry-set").innerHTML = `<b>Challenge:</b> ${esc(x.level.label)} \u00B7 <b>Journey:</b> ${esc(x.pattern.label)}`;
+    el.classList.toggle("is-selected", on);
+    el.querySelector(".entry-edit").setAttribute("aria-expanded", String(on));
+  });
+}
+
+// Out of use, the editor waits outside every card, so removing a card can never take it along.
+function parkEditor() {
+  const ed = $("editor");
+  ed.hidden = true;
+  if (ed.parentNode !== $("tool")) $("tool").appendChild(ed);
+}
+function renderEditor() {
+  const t = target(), ed = $("editor");
+  const home = !t ? null : t.cand ? $("editor-home") : cardEls.get(t.iid);
+  if (!home) { parkEditor(); return; }
+  if (ed.parentNode !== home) home.appendChild(ed);
+  ed.hidden = false;
+  const p = current.personas[t.a], level = LEVELS[t.challenge - 1], pattern = PATTERNS[t.journey - 1];
+  $("editor-h").textContent = `Test settings for ${p.name}`;
+  for (const id of ["challenge", "journey"]) {
+    const inp = inputs[id];
+    inp.value = t[id];
+    inp.setAttribute("aria-valuetext", id === "challenge" ? level.aria : pattern.aria);
+    $(id + "-wrap").style.setProperty("--f", (t[id] - inp.min) / (inp.max - inp.min));
+    $(id + "-wrap").querySelectorAll(".tick").forEach((k, i) => k.classList.toggle("on", i < t[id] - 1));
+  }
+  $("challenge-val").textContent = level.label;
+  $("journey-val").textContent = pattern.label;
+  $("challenge-state").textContent = STATE_HELP.challenge[t.challenge - 1];
+  $("journey-state").textContent = STATE_HELP.journey[t.journey - 1];
+  setMotifs(t);
+  // Apply to all: only in Your panel, only with more than one person, and always an explicit, one-dimension action.
+  const many = !t.cand && entries.length > 1;
+  $("apply").hidden = !many;
+  if (many) {
+    for (const [id, dim, label] of [["apply-c", "challenge", level.label], ["apply-j", "journey", pattern.label]]) {
+      const same = entries.every(e => e[dim] === t[dim]);
+      $(id).textContent = same ? `Everyone is on ${label}` : `Use ${label} for everyone`;
+      $(id).setAttribute("aria-disabled", String(same));
+    }
+  }
+  reservePillWidths();
+}
+
+// ---------- Panel actions ----------
+function addEntry(a) {
+  if (entryOf(a) || entries.length >= LENSES.length) return null;
+  const s = settingsFor(a), e = {iid: "e" + nextIid++, a, challenge: s.challenge, journey: s.journey};
+  entries.push(e);
+  changed();
+  return e;
+}
+function selectEntry(iid) {
+  selectedIid = iid;
+  render();
+}
+function removeEntry(iid) {
+  const k = entries.findIndex(e => e.iid === iid);
+  if (k < 0) return;
+  const e = entries[k], p = current.personas[e.a], el = cardEls.get(iid);
+  memo[e.a] = {challenge: e.challenge, journey: e.journey};
+  entries.splice(k, 1);
+  changed();
+  if (selectedIid === iid) selectedIid = null;
+  parkEditor();
+  // The rest of the panel slides into place; state is already final.
+  const rest = [...cardEls.values()].filter(x => x !== el), before = rest.map(x => x.getBoundingClientRect());
+  ghostOut(el, 0, 0);
+  el.remove(); cardEls.delete(iid);
+  render();
+  if (motionOK()) rest.forEach((x, i) => {
+    const r = x.getBoundingClientRect(), dx = before[i].left - r.left, dy = before[i].top - r.top;
+    if (dx || dy) x.animate([{transform: `translate(${dx}px, ${dy}px)`}, {transform: "none"}], {duration: 260, easing: EASE_P2_OUT});
+  });
+  const next = entries[k] || entries[k - 1];
+  (next ? cardEls.get(next.iid).querySelector(".entry-edit") : $("panel-empty").querySelector("button")).focus();
+  announce(`Removed ${p.name}. ${entries.length ? plural(entries.length) + " in your panel." : "Your panel is empty."}`);
+}
+$("add").addEventListener("click", () => {
+  const e = addEntry(cand);
+  if (!e) return;
+  const x = deriveEntry(current, e), sug = suggestedNext();
+  if (sug >= 0) cand = sug;
+  render();
+  const av = $("build-sum-av").lastElementChild;
+  if (motionOK() && av) av.animate([{opacity: 0, transform: "scale(.6)"}, {opacity: 1, transform: "none"}], {duration: 300, easing: EASE_P2_OUT});
+  document.querySelector(`#arch-list input[value="${cand}"]`).focus();
+  announce(`Added ${x.p.name}, ${x.lens}: ${x.level.label}, ${x.pattern.label}. ${plural(entries.length)} in your panel.` +
+    (sug >= 0 ? ` Suggested next: ${LENSES[sug]}.` : " All six archetypes are in your panel."));
+});
+$("rec3").addEventListener("click", () => {
+  const added = [0, 1, 2].map(a => addEntry(a)).filter(Boolean);
+  if (!added.length) return;
+  const sug = suggestedNext();
+  if (sug >= 0) cand = sug;
+  goStage("panel");
+  announce(`Added ${added.map(e => current.personas[e.a].name).join(", ")}. ${plural(entries.length)} in your panel.`);
+});
+$("added-go").addEventListener("click", () => {
+  const e = entryOf(cand);
+  selectedIid = e.iid;
+  goStage("panel", {focus: false});
+  cardEls.get(e.iid).querySelector(".entry-edit").focus();
+});
+$("clear-panel").addEventListener("click", () => {
+  if (!confirm(`Remove all ${plural(entries.length)} from your panel? Their settings are kept if you add them again.`)) return;
+  entries.forEach(e => { memo[e.a] = {challenge: e.challenge, journey: e.journey}; });
+  parkEditor();
+  entries = []; selectedIid = null;
+  cardEls.forEach(el => el.remove()); cardEls.clear();
+  changed();
+  render();
+  $("panel-empty").querySelector("button").focus();
+  announce("Your panel is empty.");
+});
+function applyAll(dim) {
+  const t = selected(), btn = $(dim === "challenge" ? "apply-c" : "apply-j");
+  if (!t || btn.getAttribute("aria-disabled") === "true") return;
+  entries.forEach(e => { e[dim] = t[dim]; memo[e.a] = {challenge: e.challenge, journey: e.journey}; });
+  changed();
+  render();
+  const label = dim === "challenge" ? LEVELS[t.challenge - 1].label : PATTERNS[t.journey - 1].label;
+  announce(`${dim === "challenge" ? "Challenge" : "Journey"} set to ${label} for all ${plural(entries.length)}.`);
+}
+$("apply-c").addEventListener("click", () => applyAll("challenge"));
+$("apply-j").addEventListener("click", () => applyAll("journey"));
 
 // ---------- Status line: only for results with no native announcement ----------
 // Slider changes are announced by the focused range's own aria-valuetext.
@@ -1840,57 +2034,79 @@ function announce(text) {
   statusTimer = setTimeout(() => { $("status").textContent = text; }, 50);
 }
 
-for (const id of ["panel", "challenge", "journey"]) {
-  inputs[id].addEventListener("input", e => {
-    const prev = state[id];
-    state[id] = +e.target.value;
+for (const id of ["challenge", "journey"]) {
+  inputs[id].addEventListener("input", ev => {
+    const t = target();
+    if (!t) return;
+    const prev = t[id], v = +ev.target.value;
+    if (t.cand) memo[t.a] = {...settingsFor(t.a), [id]: v};
+    else { t[id] = v; memo[t.a] = {challenge: t.challenge, journey: t.journey}; changed(); }
     render();
-    animateRow(id, prev, state[id]);
-    if (!reduceMotion.matches) ZONES[id].forEach(z => replay($(z), "changed"));
+    animateRow(id, prev, v);
   });
 }
 
-// ---------- Lock / review / export ----------
-// Two exports from the same panel and settings. Edits are kept per format until the next lock.
+// ---------- Review and export ----------
+// Two exports from the same panel. They are rebuilt when the panel has changed, unless the person edited the text:
+// then the edits stay on screen and updating is their explicit choice.
 const FORMATS = {
   brief: {label: "Persona brief (editable)", copy: "Copy brief", done: "Brief", file: "test-panel-brief.md",
     role: "You play each persona as you test your build.",
     help: "Each persona is a script for one test pass. Open your build, follow their route, and note where your experience helps, breaks, or lets them slip through."},
   prompt: {label: "AI test prompt (editable)", copy: "Copy prompt", done: "Prompt", file: "test-panel-prompt.md",
     role: "Your AI assistant plays each persona while you show it your build.",
-    help: "Paste this into your AI assistant, then share your project material moment by moment. It plays each persona and logs what it finds."}};
-let format = "brief", drafts = {};
+    help: "Paste this into your AI assistant, then share your project material moment by moment. For the cleanest results, copy one persona below and give each their own fresh chat."}};
+let format = "brief", drafts = {}, draftVersion = -1;
 function showFormat(f) {
   drafts[format] = $("brief").value;
   format = f;
-  $("brief").value = drafts[f];
+  $("brief").value = drafts[f] || "";
   $("brief-label").textContent = FORMATS[f].label;
   $("copy").textContent = FORMATS[f].copy;
   $("format-role").textContent = FORMATS[f].role;
   $("format-help").textContent = FORMATS[f].help;
   $("export-msg").textContent = "";
+  fillPersonaCopy();
 }
 document.querySelectorAll('input[name="format"]').forEach(r => r.addEventListener("change", () => { if (r.checked) showFormat(r.value); }));
+function fillExport(force = false) {
+  const n = entries.length;
+  $("review-empty").hidden = n > 0;
+  $("review-body").hidden = n === 0;
+  if (!n) return;
+  const stale = draftVersion !== panelVersion;
+  $("stale").hidden = !(stale && briefEdited && !force);
+  if (!$("stale").hidden) return;
+  if (stale || force) {
+    drafts = {brief: buildBrief(current, entries), prompt: buildPrompt(current, entries)};
+    $("brief").value = drafts[format];
+    draftVersion = panelVersion;
+    briefEdited = false;
+    const old = $("persona-fallback"); if (old) old.remove();
+  }
+  showFormat(format);
+}
+$("refresh-export").addEventListener("click", () => { fillExport(true); $("brief").focus(); announce("Export updated from your current panel."); });
 
-// One button per seated persona, for a prompt that covers only that person.
+// One button per persona, for a brief or prompt that covers only that person.
 function fillPersonaCopy() {
   const row = $("persona-copy-row");
   row.innerHTML = "";
-  deriveView(current, state).seated.forEach((x, i) => {
-    const b = document.createElement("button");
+  entries.forEach((e, k) => {
+    const p = current.personas[e.a], b = document.createElement("button");
     b.type = "button";
-    b.innerHTML = avatarHTML(current.personas.indexOf(x.p), "pc-token") + `<span>${esc(firstName(x.p))}</span>`;
-    b.setAttribute("aria-label", `Copy the prompt for ${x.p.name}, ${x.lens}`);
-    b.addEventListener("click", () => copyPersona(i));
+    b.innerHTML = avatarHTML(e.a, "pc-token") + `<span>${esc(firstName(p))}</span>`;
+    b.setAttribute("aria-label", `Copy the ${format === "brief" ? "brief" : "prompt"} for ${p.name}, ${LENSES[e.a]}`);
+    b.addEventListener("click", () => copyPersona(k));
     row.appendChild(b);
   });
 }
-async function copyPersona(i) {
-  const text = buildPrompt(current, state, i), name = current.personas[i].name;
+async function copyPersona(k) {
+  const text = (format === "brief" ? buildBrief : buildPrompt)(current, entries, k), name = current.personas[entries[k].a].name;
   try {
     if (!navigator.clipboard || !window.isSecureContext) throw new Error("no clipboard");
     await navigator.clipboard.writeText(text);
-    const msg = `Prompt for ${name} copied.`;
+    const msg = `${FORMATS[format].done} for ${name} copied.`;
     $("export-msg").textContent = msg;
     announce(msg);
   } catch (err) {
@@ -1901,58 +2117,13 @@ async function copyPersona(i) {
       ta.style.cssText = "display:block;width:100%;min-height:9em;margin-top:10px;font:.8125rem/1.4 ui-monospace,Consolas,monospace";
       $("persona-copy-row").after(ta);
     }
-    ta.setAttribute("aria-label", `Test prompt for ${name}`);
+    ta.setAttribute("aria-label", `Test ${format === "brief" ? "brief" : "prompt"} for ${name}`);
     ta.value = text; ta.focus(); ta.select();
-    const msg = `Copy isn't available here. The prompt for ${name} is selected. Use your device or browser's Copy command.`;
+    const msg = `Copy isn't available here. The ${format === "brief" ? "brief" : "prompt"} for ${name} is selected. Use your device or browser's Copy command.`;
     $("export-msg").textContent = msg;
     announce(msg);
   }
 }
-
-function updateCue() {
-  // The cue points a new panel's owner at the next step; it is not shown on the sample or once locked.
-  $("next-cue").hidden = current.id === "SAMPLE" || locked;
-}
-function lock() {
-  locked = true;
-  updateCue();
-  fillPersonaCopy();
-  const old = $("persona-fallback"); if (old) old.remove();
-  drafts = {brief: buildBrief(current, state), prompt: buildPrompt(current, state)};
-  $("brief").value = drafts[format];
-  showFormat(format);
-  briefEdited = false;
-  $("lock-note").textContent = "";
-  $("export-msg").textContent = "";
-  $("lock").hidden = true;
-  $("sliders").hidden = true;
-  $("locked-row").hidden = false;
-  $("review").hidden = false;
-  $("brief-h").focus();
-  revealIn([$("locked-row")], {dy: 8, delay: 0, duration: 400});
-  revealIn([$("review")], {dy: 28, delay: 60});
-  announce("Ready to review and export. " + deriveView(current, state).summary);
-}
-function showSliders() {
-  locked = false;
-  updateCue();
-  ghostOut($("review"), 0, 24);
-  $("sliders").hidden = false;
-  $("lock").hidden = false;
-  $("locked-row").hidden = true;
-  $("review").hidden = true;
-  revealIn([$("sliders")], {dy: 10, delay: 0, duration: 420});
-  // Warn before the edits are lost, not after.
-  $("lock-note").textContent = briefEdited ? "Choosing Review and export again will regenerate the export and replace your edits." : "";
-}
-function unlock() {
-  showSliders();
-  inputs.panel.focus();
-}
-$("lock").addEventListener("click", lock);
-// "Adjust settings": from a locked export this is the same step as "Adjust panel".
-$("adjust-settings").addEventListener("click", () => { if (locked) showSliders(); goStage("shape"); });
-$("edit").addEventListener("click", unlock);
 $("brief").addEventListener("input", () => { briefEdited = true; });
 
 function fallbackSelect(prefix) {
@@ -2024,12 +2195,20 @@ function openByos(opener, fresh) {
     FIELD_IDS.forEach(id => { $(id).value = ""; });
     updateNudge();
   }
+  buildLabel();
   $("byos").showModal();
   document.documentElement.style.overflow = "hidden";
   revealIn([$("byos").querySelector(".sheet")], {dy: 14, delay: 0, duration: 240});
   setExpanded(true);
   $("byos-error").textContent = "";
   $("f-testing").focus();
+}
+// Building replaces the panel, so say so before it happens, not after.
+function buildLabel() {
+  const n = entries.length;
+  $("replace-note").hidden = !n;
+  $("replace-note").textContent = n ? `Building replaces your current panel of ${plural(n)}. Cancel keeps it.` : "";
+  $("build").textContent = n ? "Build and replace my panel" : "Build my panel";
 }
 function closeByos(returnFocus, restore) {
   if (restore) restoreStash(); else byosStash = null;
@@ -2102,14 +2281,12 @@ $("byos-form").addEventListener("submit", async e => {
     if (!audience) panel.experience.audienceSuggested = true;
     panel.id = makePanelId();
     current = panel;
-    if (locked) showSliders();
-    briefEdited = false;
-    $("lock-note").textContent = "";
+    resetPanel();
     mountPanel();
     render();
     closeByos(false);
-    goStage("shape");
-    announce(`Panel ${panel.id} is ready for ${panel.experience.summary}. Six personas, ${$("panel").value} shown; use Panel size to add more.`);
+    goStage("build");
+    announce(`Panel ${panel.id} is ready for ${panel.experience.summary}. Six people are ready to add, one for each archetype.`);
   } catch (err) {
     if (buildCancelled) return;
     const msg = err && err.name === "AbortError" ? "Building took too long." : (err && err.message) || "Something went wrong.";
@@ -2120,7 +2297,7 @@ $("byos-form").addEventListener("submit", async e => {
     $("build-status").hidden = true;
     $("tool").classList.remove("is-building");
     $("byos-form").removeAttribute("aria-busy");
-    $("build").textContent = "Build my panel";
+    buildLabel();
   }
 });
 
@@ -2159,9 +2336,22 @@ function accSet(item, open) {
 // The journey window: a native modal dialog (focus stays inside, Esc closes, background is inert,
 // focus returns to the link). Only the visuals are animated.
 let jrClosing = false;
+function fillJourney(t) {
+  const pattern = PATTERNS[t.journey - 1], ms = current.experience.moments, shorts = ms.map(m => m.short), seen = new Set(), spoken = [];
+  $("jr-strip").innerHTML = pattern.seq.map(n => {
+    const again = seen.has(n); seen.add(n);
+    spoken.push(shorts[n - 1] + (again ? " again" : ""));
+    return `<li><span class="jr-chip${again ? " again" : ""}${ms[n - 1].suggested ? " pick" : ""}">${esc(shorts[n - 1])}${again ? ' again<span aria-hidden="true"> \u21BA</span>' : ""}</span></li>`;
+  }).join("");
+  const name = current.personas[t.a].name;
+  $("jr-title").textContent = `${firstName(current.personas[t.a])}'s journey`;
+  $("jr-sr").textContent = `${name}'s journey: ${pattern.label}. ${spoken.join(", ")}.`;
+  $("jr-pattern").textContent = pattern.label;
+}
 function jrOpen() {
-  const d = $("jr-dialog");
-  if (d.open) return;
+  const d = $("jr-dialog"), t = target();
+  if (d.open || !t) return;
+  fillJourney(t);
   d.showModal();
   document.documentElement.style.overflow = "hidden";
   if (motionOK()) d.animate([{opacity: 0, transform: "translateY(12px) scale(.98)"}, {opacity: 1, transform: "none"}], {duration: 240, easing: EASE_P2_OUT});
@@ -2183,20 +2373,22 @@ $("jr-dialog").addEventListener("close", () => {
   $("jr-dialog").getAnimations().forEach(a => a.cancel());
   $("jr-link").focus();
 });
-// ---------- Workspace stages: Project, Shape and Personas ----------
+// ---------- Workspace stages: Project, Build, Your panel, Export ----------
 // One stage is on screen at a time (the others are display:none, so they leave the reading order). Navigating only
-// changes what is shown; it never touches the panel, the sliders or the Worker. Focus lands on the stage heading.
-const STAGES = ["project", "shape", "personas"], STAGE_HEAD = {project: "sec-project-h", shape: "controls-h", personas: "personas-h"};
-const STAGE_BOX = {project: "sec-project", shape: "sec-shape", personas: "sec-personas"};
+// changes what is shown; it never touches the panel or the Worker. Focus lands on the stage heading.
+const STAGES = ["project", "build", "panel", "export"];
+const STAGE_HEAD = {project: "sec-project-h", build: "build-h", panel: "panel-stage-h", export: "brief-h"};
+const STAGE_BOX = {project: "sec-project", build: "sec-build", panel: "sec-panel", export: "review"};
 function goStage(id, {focus = true} = {}) {
   const tool = $("tool"), from = tool.dataset.stage;
   if (!STAGES.includes(id)) return;
   tool.dataset.stage = id;
   for (const st of STAGES) $("st-" + st).setAttribute("aria-current", st === id ? "step" : "false");
-  reservePillWidths();
+  if (id === "export") fillExport();
+  render();
   if (from !== id) {
     const dir = STAGES.indexOf(id) > STAGES.indexOf(from) ? 1 : -1;
-    revealIn([$(STAGE_BOX[id]), id === "personas" ? $("review") : null], {dx: 16 * dir, dy: 0, delay: 0, duration: 260});
+    revealIn([$(STAGE_BOX[id])], {dx: 16 * dir, dy: 0, delay: 0, duration: 260});
   }
   if (focus) { $(STAGE_HEAD[id]).focus({preventScroll: true}); window.scrollTo(0, 0); }
 }
