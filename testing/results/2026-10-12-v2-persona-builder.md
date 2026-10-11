@@ -107,3 +107,8 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
 - Persona cards (Build preview and Your panel) replace the Route chip row with a "View route" link. Screen readers hear it as "View route for [name]".
 - The link opens the existing Journey window for that card's person. Focus returns to the link that opened it. The route stays in both exports.
 - v2-test checks every journey pattern through the card link against the export.
+
+## Card fixes and Challenge icon (2026-10-12)
+- "View route" now sits on its own line. On Inconsistent and Edge case it used to run straight into the challenge tag.
+- Removed the Edge case "irregular top rule" (a short purple dashed mark at the card's top-left). The rounded corner clipped it, so it read as a stray artifact. The "Unexpected request" tag still marks Edge case in text.
+- Challenge uses the approved glossy tile artwork (`design/icons/challenge-tile.png` master; a 96px WebP of about 3 KB is embedded). The faint speckle row above the tile was cleared in the small version. The line icon returns in forced-colors mode.
