@@ -650,12 +650,37 @@
   .sec-t { min-width: 0; flex: 1 1 auto; }
   .sec-title { display: block; color: #fff; font-size: 1.3125rem; font-weight: 800; line-height: 1.2; }
   .sec-sub { display: block; margin-top: 3px; color: var(--ws-muted); font-size: .9375rem; line-height: 1.4; font-weight: 400; }
-  .sec-btn { display: flex; align-items: center; gap: 16px; width: 100%; min-height: 72px; padding: 16px 20px; border: 0; border-radius: 22px; background: none; color: #fff; font: inherit; font-weight: 400; text-align: left; cursor: pointer; }
-  .sec-btn:hover { background: rgba(255, 255, 255, .04); }
-  .sec-btn:focus-visible { outline-offset: -4px; }
-  .sec-chev { flex: none; width: 24px; height: 24px; color: #CFE8F2; }
-  .sec-btn[aria-expanded="true"] .sec-chev { transform: rotate(180deg); }
-  .sec-btn[aria-expanded="true"] .sub-closed, .sec-btn[aria-expanded="false"] .sub-open { display: none; }
+  .sec-btn { display: flex; align-items: center; gap: 16px; width: 100%; min-height: 72px; padding: 16px 20px; border: 0; border-radius: 22px; background: none; color: #fff; font: inherit; font-weight: 400; text-align: left; }
+  .sec-h:focus { outline: none; }
+  .sec-h:focus-visible .sec-btn { outline: 3px solid #5EE7F5; outline-offset: -4px; }
+  .sub-closed[hidden] { display: none; }
+
+  /* Workspace stages: one stage on screen at a time. display:none keeps the others out of the reading order. */
+  #tool:not([data-stage="project"]) #sec-project, #tool:not([data-stage="shape"]) #sec-shape,
+  #tool:not([data-stage="personas"]) #sec-personas, #tool:not([data-stage="personas"]) #review { display: none; }
+  .stagenav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0 0 14px; }
+  .stagenav .st { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 16px; border: 1px solid var(--ws-border); border-radius: 16px; background: linear-gradient(180deg, rgba(8, 44, 66, .9), var(--ws-surface)); color: #B8CFDD; font: inherit; font-weight: 800; text-align: left; box-shadow: 0 6px 16px rgba(27, 42, 74, .16); }
+  .stagenav .st:hover { background: #0A3248; }
+  .stagenav .st[aria-current="step"] { color: #fff; border-color: #25D6C4; background: linear-gradient(180deg, #0B4458, #072C3F); box-shadow: inset 0 -3px #25D6C4, 0 6px 16px rgba(27, 42, 74, .16); }
+  .stagenav .st-n { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid currentColor; font-size: .9375rem; }
+  .stagenav .st[aria-current="step"] .st-n { background: #25D6C4; border-color: #25D6C4; color: #062C35; }
+  .stagenav .st-t { display: block; min-width: 0; }
+  .stagenav small { display: block; margin-top: 2px; font-size: .8125rem; font-weight: 400; color: #AFC2D0; }
+  .stagenav :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .st-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; padding: 4px 20px 20px; }
+  .st-actions .note { margin-right: auto; color: var(--ws-muted); }
+  .st-actions .note:empty { display: none; }
+  .st-actions button { min-height: 48px; padding: 0 22px; border-radius: 14px; font: inherit; font-weight: 700; background: transparent; color: #fff; border: 1.5px solid rgba(245, 250, 253, .55); }
+  .st-actions button:hover { background: rgba(255, 255, 255, .1); }
+  .st-actions button.primary { background: linear-gradient(90deg, #23D4C4, #2EE6C1); color: #062C35; border-color: transparent; }
+  .st-actions button.primary:hover { background: linear-gradient(90deg, #3ADCCD, #4AEDCB); }
+  .st-actions :focus-visible { outline: 3px solid #5EE7F5; outline-offset: 3px; }
+  .live-sum { grid-column: 1 / -1; display: flex; align-items: center; gap: 14px; margin: 0 0 4px; padding: 10px 14px; border: 1px solid rgba(45, 212, 191, .3); border-radius: 14px; background: rgba(255, 255, 255, .05); }
+  .live-av { display: flex; flex: none; gap: 4px; }
+  .live-av .av { width: 38px; height: 38px; }
+  .live-av .av.open { opacity: .3; filter: grayscale(.9); }
+  .live-t { margin: 0; color: #fff; font-weight: 700; }
+  @media (prefers-reduced-motion: no-preference) { .live-av .av { transition: opacity .2s ease-out, filter .2s ease-out; } }
   .sec-panel { border-radius: 0 0 22px 22px; }
   .sec-body { padding: 0 20px 20px; }
 
@@ -672,7 +697,11 @@
   .sec-act button.primary, .controls button.primary { background: linear-gradient(90deg, #23D4C4, #2EE6C1); color: #062C35; border-color: transparent; }
   .sec-act button.primary:hover, .controls button.primary:hover { background: linear-gradient(90deg, #3ADCCD, #4AEDCB); }
   .sec .build-status { margin: 0 20px 14px; padding: 10px 14px; border: 1px solid rgba(45, 212, 191, .3); border-left: 4px solid #2DD4BF; border-radius: 12px; background: rgba(255, 255, 255, .06); color: #fff; }
-  .sec-project .byos { margin: 0; padding: 0 14px 14px; color: var(--ink); }
+  dialog.byos { width: min(790px, calc(100vw - 24px)); max-width: none; max-height: calc(100dvh - 24px); margin: auto; padding: 0; border: 0; background: transparent; color: var(--ink); overflow: auto; }
+  dialog.byos:not([open]) { display: none; }
+  dialog.byos::backdrop { background: rgba(3, 21, 34, .8); }
+  .byos .build-status { margin: 12px 0 0; color: #0F2347; background: #E3F6F3; border-color: rgba(15, 159, 143, .45); }
+  .byos .build-status[hidden] { display: none; }
 
   /* Shape your panel */
   .sec.controls { padding: 0; border: 1px solid var(--ws-border); border-top: 1px solid var(--ws-border); }
@@ -722,13 +751,21 @@
     .sec-act { flex: 1 1 100%; justify-content: stretch; }
     .sec-act button { flex: 1 1 100%; }
     .sec-body { padding: 0 14px 16px; }
-    .sec .build-status { margin: 0 14px 12px; }
-    .sec-project .byos { padding: 0 10px 10px; }
+    .stagenav { gap: 6px; }
+    .stagenav .st { flex-direction: column; justify-content: center; gap: 4px; padding: 8px 4px; min-height: 68px; text-align: center; border-radius: 14px; }
+    .stagenav .st-n { width: 24px; height: 24px; font-size: .8125rem; }
+    .stagenav .st-t { font-size: .875rem; }
+    .stagenav small { display: none; }
+    .st-actions { padding: 4px 14px 16px; }
+    .st-actions button { flex: 1 1 140px; }
+    .live-sum { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .live-av .av { width: 36px; height: 36px; }
+    dialog.byos { width: 100vw; height: 100dvh; max-height: none; }
+    dialog.byos .sheet { min-height: 100%; border-radius: 0; }
     .review > * { margin-left: 14px; margin-right: 14px; }
     .review .review-head { padding: 14px 14px 12px; }
     .review .review-head .format { margin-left: 0; width: 100%; }
   }
-  @media (prefers-reduced-motion: no-preference) { .sec-chev { transition: transform .24s cubic-bezier(.33, 1, .68, 1); } }
   @media (forced-colors: active) { .sec { border: 2px solid CanvasText; box-shadow: none; } }
 
   /* ---------- Project form: a pale frosted surface on the dark deck, two grouped sections ---------- */
@@ -1008,7 +1045,7 @@
     </section>
   </div>
 
-  <div id="tool" hidden>
+  <div id="tool" data-stage="project" hidden>
   <div class="intro">
     <div class="intro-top">
       <h1 id="tool-h" tabindex="-1">Build a test panel for your project</h1>
@@ -1017,23 +1054,27 @@
     <p class="lead">Describe what you're testing. Build a panel of test personas. Use them to stress-test your experience before real users do.</p>
   </div>
 
-  <section class="sec sec-project" aria-labelledby="sec-project-h">
+  <nav class="stagenav" id="stagenav" aria-label="Workspace stages">
+    <button type="button" class="st" id="st-project" data-stage-go="project" aria-current="step"><span class="st-n" aria-hidden="true">1</span><span class="st-t">Project<small>What you're testing</small></span></button>
+    <button type="button" class="st" id="st-shape" data-stage-go="shape"><span class="st-n" aria-hidden="true">2</span><span class="st-t">Shape<small>Configure the panel</small></span></button>
+    <button type="button" class="st" id="st-personas" data-stage-go="personas"><span class="st-n" aria-hidden="true">3</span><span class="st-t">Personas<small>Explore and export</small></span></button>
+  </nav>
+
+  <section class="sec sec-project" id="sec-project" aria-labelledby="sec-project-h">
     <div class="sec-head">
       <span class="sec-ic" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#s-doc"/></svg></span>
       <div class="sec-t">
-        <h2 class="sec-title" id="sec-project-h">Your project</h2>
+        <h2 class="sec-title" id="sec-project-h" tabindex="-1">Your project</h2>
         <span class="panel-id" id="panel-id"></span>
         <h3 class="proj-h" id="panel-h" tabindex="-1"></h3>
         <p class="for" id="panel-for"></p>
       </div>
       <div class="sec-act">
-        <button type="button" class="primary" id="own" aria-expanded="false" aria-controls="byos">Try it with your own project</button>
-        <button type="button" id="fresh" aria-expanded="false" aria-controls="byos" hidden>Build a new panel</button>
+        <button type="button" class="primary" id="own" aria-expanded="false" aria-haspopup="dialog" aria-controls="byos">Try it with your own project</button>
+        <button type="button" id="fresh" aria-expanded="false" aria-haspopup="dialog" aria-controls="byos" hidden>Build a new panel</button>
       </div>
     </div>
-    <p class="build-status" id="build-status" hidden aria-hidden="true"></p>
-
-  <section class="byos" id="byos" hidden aria-labelledby="byos-h">
+  <dialog class="byos" id="byos" aria-labelledby="byos-h">
     <div class="sheet">
     <h2 id="byos-h" class="sr-only">Your project</h2>
     <form id="byos-form" novalidate>
@@ -1080,6 +1121,7 @@
           </div>
         </fieldset>
         <p class="privacy">Sent when you build or rebuild your panel. Don't include confidential details.</p>
+        <p class="build-status" id="build-status" hidden aria-hidden="true"></p>
         <div class="actions">
           <button type="submit" class="primary" id="build">Build my panel</button>
           <button type="button" id="cancel">Cancel</button>
@@ -1088,21 +1130,22 @@
       </div>
     </form>
     </div>
-  </section>
+  </dialog>
+  <div class="st-actions"><button type="button" class="primary" data-stage-go="shape">Continue to Shape</button></div>
   </section>
 
   <section class="sec controls" id="sec-shape" aria-labelledby="controls-h">
-    <h2 class="sec-h" id="controls-h"><button type="button" class="sec-btn" id="shape-btn" aria-expanded="true" aria-controls="shape-panel">
+    <h2 class="sec-h" id="controls-h" tabindex="-1"><span class="sec-btn">
       <span class="sec-ic" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#s-sliders"/></svg></span>
       <span class="sec-t"><span class="sec-title">Shape your panel</span>
-        <span class="sec-sub"><span class="sub-open">Customize the size, challenge level, and journey for your test panel.</span><span class="sub-closed" id="shape-sum"></span></span></span>
-      <svg class="sec-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button></h2>
-    <div class="sec-panel" id="shape-panel" role="region" aria-labelledby="shape-btn"><div class="sec-body">
+        <span class="sec-sub"><span class="sub-open">Customize the size, challenge level, and journey for your test panel.</span><span class="sub-closed" id="shape-sum" hidden></span></span></span>
+    </span></h2>
+    <div class="sec-panel" id="shape-panel"><div class="sec-body">
     <div class="controls-head">
-    <p class="next-cue" id="next-cue" hidden>Your panel is ready. Adjust who's included, the challenge, and their journey. Then review and export your test.</p>
+    <p class="next-cue" id="next-cue" hidden>Your panel is ready. Adjust who's included, the challenge, and their journey, then see your personas.</p>
     <p class="hint-line" id="controls-hint">Drag a marker, or use the arrow keys.</p></div>
     <div id="sliders">
+      <div class="live-sum" id="shape-live"><span class="live-av" id="shape-live-av" aria-hidden="true"></span><p class="live-t" id="shape-live-t"></p></div>
       <div class="slider s-panel">
         <svg class="motif" id="panel-motif" viewBox="0 0 320 80" preserveAspectRatio="xMaxYMid meet" aria-hidden="true" focusable="false"><g class="occ"><circle cx="45" cy="40" r="12"/><circle cx="91" cy="40" r="12"/><circle cx="137" cy="40" r="12"/><circle cx="183" cy="40" r="12"/><circle cx="229" cy="40" r="12"/><circle cx="275" cy="40" r="12"/></g></svg>
         <div class="slider-head"><span class="row-icon" aria-hidden="true"><svg><use href="#r-panel"/></svg></span><label for="panel">Panel size</label><span class="slider-val" id="panel-val" aria-hidden="true"></span></div>
@@ -1139,7 +1182,6 @@
         <div class="ends"><span><svg class="end-icon" aria-hidden="true"><use href="#e-straight"/></svg>Straight through</span><span><svg class="end-icon" aria-hidden="true"><use href="#e-restarts"/></svg>Restarts often</span></div>
         <p class="state-help" id="journey-state"></p>
       </div>
-      <div class="actions"><button type="button" class="primary" id="lock" aria-describedby="lock-note">Review &amp; export</button><span class="note" id="lock-note"></span></div>
     </div>
     <div id="locked-row" hidden>
       <p class="summary" id="summary"></p>
@@ -1147,16 +1189,16 @@
       <div class="actions"><button type="button" id="edit">Adjust panel</button></div>
     </div>
     </div></div>
+    <div class="st-actions"><button type="button" data-stage-go="project">Back to Project</button><button type="button" class="primary" data-stage-go="personas">See your personas</button></div>
   </section>
 
   <section class="sec sec-personas" id="sec-personas" aria-labelledby="personas-h">
-    <h2 class="sec-h" id="personas-h"><button type="button" class="sec-btn" id="personas-btn" aria-expanded="true" aria-controls="personas-panel">
+    <h2 class="sec-h" id="personas-h" tabindex="-1"><span class="sec-btn">
       <span class="sec-ic" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#i-panel"/></svg></span>
       <span class="sec-t"><span class="sec-title">Test personas</span>
-        <span class="sec-sub"><span class="sub-open" id="personas-open-sum"></span><span class="sub-closed" id="personas-sum"></span></span></span>
-      <svg class="sec-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button></h2>
-    <div class="sec-panel" id="personas-panel" role="region" aria-labelledby="personas-btn"><div class="sec-body">
+        <span class="sec-sub"><span class="sub-open" id="personas-open-sum"></span><span class="sub-closed" id="personas-sum" hidden></span></span></span>
+    </span></h2>
+    <div class="sec-panel" id="personas-panel"><div class="sec-body">
   <div class="stage">
     <section class="zone zone-seats" id="zone-seats" aria-labelledby="seats-h">
       <div class="zone-head"><svg class="icon" aria-hidden="true"><use href="#i-panel"/></svg><h3 id="seats-h">Seats</h3><div class="zone-tools"><p class="caption" id="seats-caption"></p><button type="button" class="jr-link" id="jr-link" aria-haspopup="dialog">View journey</button></div></div>
@@ -1170,6 +1212,7 @@
     </section>
   </div>
     </div></div>
+    <div class="st-actions" id="lock-row"><span class="note" id="lock-note"></span><button type="button" id="adjust-settings">Adjust settings</button><button type="button" class="primary" id="lock" aria-describedby="lock-note">Review &amp; export</button></div>
   </section>
 
   <section class="review sec" id="review" hidden aria-labelledby="brief-h">
@@ -1547,7 +1590,7 @@ function routePath(ys) {
 }
 // Each value pill keeps the width of its longest value, so changing a value never reflows the row.
 function reservePillWidths() {
-  if ($("tool").hidden || $("shape-panel").hidden) return;           // measured once the tool and its panel are on screen
+  if ($("tool").hidden || !$("sec-shape").offsetWidth) return;           // measured once the tool and its panel are on screen
   const labels = {
     panel: [1, 2, 3, 4, 5, 6].map(n => `${n} persona${n === 1 ? "" : "s"}`),
     challenge: LEVELS.map(l => l.label),
@@ -1631,6 +1674,7 @@ let current = SAMPLE_PANEL;            // the one coherent source panel the slid
 let lastJrKey = null, cardEls = [], locked = false, briefEdited = false, buildTimer = null;
 
 function setupStatic() {
+  $("shape-live-av").innerHTML = LENSES.map((l, i) => avatarHTML(i)).join("");
   ["panel", "challenge", "journey"].forEach(id => {
     const inp = inputs[id], max = +inp.max, min = +inp.min, wrap = $(id + "-wrap");
     for (let v = min; v <= max; v++) {
@@ -1707,6 +1751,8 @@ function render() {
   // Section summaries: shown only while a section is collapsed. Plain text, not announced.
   $("shape-sum").textContent = [$("panel-val").textContent, $("challenge-val").textContent, $("journey-val").textContent].join(" \u00B7 ");
   $("personas-sum").textContent = $("panel-val").textContent;
+  $("shape-live-t").textContent = $("shape-sum").textContent;
+  $("shape-live-av").querySelectorAll(".av").forEach((a, i) => a.classList.toggle("open", i >= v.panel));
   $("personas-open-sum").textContent = `Here ${v.panel === 1 ? "is 1 persona" : "are " + v.panel + " personas"} based on your current settings.`;
 
   // Panel owns WHO: seats and cards
@@ -1874,6 +1920,7 @@ function lock() {
   briefEdited = false;
   $("lock-note").textContent = "";
   $("export-msg").textContent = "";
+  $("lock").hidden = true;
   $("sliders").hidden = true;
   $("locked-row").hidden = false;
   $("review").hidden = false;
@@ -1887,6 +1934,7 @@ function showSliders() {
   updateCue();
   ghostOut($("review"), 0, 24);
   $("sliders").hidden = false;
+  $("lock").hidden = false;
   $("locked-row").hidden = true;
   $("review").hidden = true;
   revealIn([$("sliders")], {dy: 10, delay: 0, duration: 420});
@@ -1898,6 +1946,8 @@ function unlock() {
   inputs.panel.focus();
 }
 $("lock").addEventListener("click", lock);
+// "Adjust settings": from a locked export this is the same step as "Adjust panel".
+$("adjust-settings").addEventListener("click", () => { if (locked) showSliders(); goStage("shape"); });
 $("edit").addEventListener("click", unlock);
 $("brief").addEventListener("input", () => { briefEdited = true; });
 
@@ -1938,7 +1988,7 @@ $("download").addEventListener("click", () => {
 // ---------- Bring your own situation ----------
 // One live call per Build/Rebuild; sliders never call the endpoint.
 const ENDPOINT = window.BYOS_ENDPOINT || (document.querySelector('meta[name="byos-endpoint"]') || {}).content || "";
-let building = false;
+let building = false, buildCtrl = null, buildCancelled = false;
 
 // The two description boxes become the one description the endpoint takes.
 function joinedDescription() {
@@ -1970,37 +2020,34 @@ function openByos(opener, fresh) {
     FIELD_IDS.forEach(id => { $(id).value = ""; });
     updateNudge();
   }
-  $("byos").hidden = false;
-  revealIn([$("byos").querySelector(".sheet")], {dy: -10, delay: 0, duration: 420});
+  $("byos").showModal();
+  document.documentElement.style.overflow = "hidden";
+  revealIn([$("byos").querySelector(".sheet")], {dy: 14, delay: 0, duration: 240});
   setExpanded(true);
   $("byos-error").textContent = "";
   $("f-testing").focus();
 }
 function closeByos(returnFocus, restore) {
   if (restore) restoreStash(); else byosStash = null;
-  ghostOut($("byos").querySelector(".sheet"), 0, -10);
-  $("byos").hidden = true;
+  if ($("byos").open) $("byos").close();
+  document.documentElement.style.overflow = "";
   setExpanded(false);
   if (returnFocus) (byosOpener || $("own")).focus();
 }
-$("own").addEventListener("click", () => {
-  if ($("byos").hidden) { openByos($("own"), false); return; }
-  if (byosStash) { restoreStash(); byosOpener = $("own"); $("f-testing").focus(); return; }   // switch from new back to edit
-  closeByos(true);
-});
-$("fresh").addEventListener("click", () => {
-  if ($("byos").hidden) { openByos($("fresh"), true); return; }
-  if (byosStash) { closeByos(true, true); return; }                                          // toggle closed, text restored
-  byosOpener = $("fresh"); openByos($("fresh"), true);                                       // switch from edit to new
-});
-$("cancel").addEventListener("click", () => closeByos(true, true));
+// The form is a modal dialog: Cancel, Esc and the opener all end up in closeByos. Cancelling while a build is
+// running also abandons that request, so the panel on screen is never replaced behind the person's back.
+$("own").addEventListener("click", () => openByos($("own"), false));
+$("fresh").addEventListener("click", () => openByos($("fresh"), true));
+function cancelByos() { buildCancelled = true; if (buildCtrl) buildCtrl.abort(); closeByos(true, true); }
+$("cancel").addEventListener("click", cancelByos);
+$("byos").addEventListener("cancel", e => { e.preventDefault(); cancelByos(); });
 
 function byosFail(msg) {
   $("byos-error").textContent = msg;
   announce(msg);
 }
 async function requestPanel(body) {
-  const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 90000);
+  const ctrl = buildCtrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 90000);
   try {
     const res = await fetch(ENDPOINT, {method: "POST", headers: {"Content-Type": "application/json"},
       body: JSON.stringify(body), signal: ctrl.signal});
@@ -2028,14 +2075,14 @@ $("byos-form").addEventListener("submit", async e => {
     byosFail("Building your own panel isn't set up on this copy of the page yet. You can keep exploring the sample.");
     return;
   }
-  building = true;
+  building = true; buildCancelled = false;
   $("byos-error").textContent = "";
   $("byos-form").setAttribute("aria-busy", "true");
   $("build").textContent = "Building your panel…";
   // Building takes about 40 seconds. Make that unmistakable, and say the panel on screen is not the result.
   const wasSample = current.id === "SAMPLE", started = Date.now();
   const tick = () => {
-    $("build-status").textContent = `Building your panel… ${Math.round((Date.now() - started) / 1000)}s. This usually takes about 40 seconds. The panel below is still ${wasSample ? "the sample" : "your previous panel"}, not the result.`;
+    $("build-status").textContent = `Building your panel… ${Math.round((Date.now() - started) / 1000)}s. This usually takes about 40 seconds. The panel you have now is still ${wasSample ? "the sample" : "your previous panel"}, not the result.`;
   };
   tick(); $("build-status").hidden = false;
   buildTimer = setInterval(tick, 1000);
@@ -2057,13 +2104,14 @@ $("byos-form").addEventListener("submit", async e => {
     mountPanel();
     render();
     closeByos(false);
-    $("panel-h").focus();
+    goStage("shape");
     announce(`Panel ${panel.id} is ready for ${panel.experience.summary}. Six personas, ${$("panel").value} shown; use Panel size to add more.`);
   } catch (err) {
+    if (buildCancelled) return;
     const msg = err && err.name === "AbortError" ? "Building took too long." : (err && err.message) || "Something went wrong.";
     byosFail(`Couldn't build your panel. ${msg} Try rephrasing, or keep exploring this one.`);
   } finally {
-    building = false;
+    building = false; buildCtrl = null;
     clearInterval(buildTimer);
     $("build-status").hidden = true;
     $("tool").classList.remove("is-building");
@@ -2131,36 +2179,24 @@ $("jr-dialog").addEventListener("close", () => {
   $("jr-dialog").getAnimations().forEach(a => a.cancel());
   $("jr-link").focus();
 });
-// ---------- Workspace sections: Shape your panel and Test personas open and close independently ----------
-// Closing never leaves focus inside hidden content (the trigger takes it first); the content stays mounted, inert while
-// it leaves, then hidden. Opening during a close cancels the pending hide. The disclosure state is separate from all data.
-function secSet(btn, open) {
-  const panel = $(btn.getAttribute("aria-controls"));
-  if ((btn.getAttribute("aria-expanded") === "true") === open) return;
-  btn.setAttribute("aria-expanded", String(open));
-  (panel._anims || []).forEach(a => a.cancel());
-  panel._anims = [];
-  const tok = panel._tok = {};
-  if (!open && panel.contains(document.activeElement)) btn.focus();
-  if (!motionOK()) { panel.inert = false; panel.hidden = !open; if (open) reservePillWidths(); return; }
-  if (open) {
-    panel.hidden = false; panel.inert = false;
-    reservePillWidths();
-    const h = panel.scrollHeight;
-    panel.style.overflow = "hidden";
-    const a = panel.animate([{height: "0px"}, {height: h + "px"}], {duration: 260, easing: EASE_P2_OUT});
-    panel._anims.push(a);
-    a.finished.then(() => { if (panel._tok === tok) panel.style.overflow = ""; }, () => {});
-  } else {
-    panel.inert = true;
-    const h = panel.offsetHeight;
-    panel.style.overflow = "hidden";
-    const a = panel.animate([{height: h + "px"}, {height: "0px"}], {duration: 230, easing: EASE_P2_INOUT, fill: "forwards"});
-    panel._anims.push(a);
-    a.finished.then(() => { if (panel._tok === tok) { panel.hidden = true; panel.inert = false; panel.style.overflow = ""; a.cancel(); } }, () => {});
+// ---------- Workspace stages: Project, Shape and Personas ----------
+// One stage is on screen at a time (the others are display:none, so they leave the reading order). Navigating only
+// changes what is shown; it never touches the panel, the sliders or the Worker. Focus lands on the stage heading.
+const STAGES = ["project", "shape", "personas"], STAGE_HEAD = {project: "sec-project-h", shape: "controls-h", personas: "personas-h"};
+const STAGE_BOX = {project: "sec-project", shape: "sec-shape", personas: "sec-personas"};
+function goStage(id, {focus = true} = {}) {
+  const tool = $("tool"), from = tool.dataset.stage;
+  if (!STAGES.includes(id)) return;
+  tool.dataset.stage = id;
+  for (const st of STAGES) $("st-" + st).setAttribute("aria-current", st === id ? "step" : "false");
+  reservePillWidths();
+  if (from !== id) {
+    const dir = STAGES.indexOf(id) > STAGES.indexOf(from) ? 1 : -1;
+    revealIn([$(STAGE_BOX[id]), id === "personas" ? $("review") : null], {dx: 16 * dir, dy: 0, delay: 0, duration: 260});
   }
+  if (focus) { $(STAGE_HEAD[id]).focus({preventScroll: true}); window.scrollTo(0, 0); }
 }
-for (const id of ["shape-btn", "personas-btn"]) $(id).addEventListener("click", () => secSet($(id), $(id).getAttribute("aria-expanded") !== "true"));
+document.querySelectorAll("[data-stage-go]").forEach(b => b.addEventListener("click", () => goStage(b.dataset.stageGo)));
 
 $("acc").addEventListener("click", e => {
   const btn = e.target.closest(".acc-btn");
@@ -2201,7 +2237,7 @@ function enterTool() {
   // Back from a refresher: return to the button that opened it.
   (obReturnFocus || $("tool-h")).focus();
   obReturnFocus = null;
-  revealIn([".intro", ".sec-project", ".controls", ".sec-personas"].map(q => document.querySelector(q)), {dy: 18, stagger: 70});
+  revealIn([".intro", ".stagenav", ".sec-project"].map(q => document.querySelector(q)), {dy: 18, stagger: 70});
 }
 $("onboard").addEventListener("click", e => {
   const go = e.target.closest("[data-go]");

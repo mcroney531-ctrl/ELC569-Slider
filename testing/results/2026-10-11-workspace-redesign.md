@@ -42,3 +42,13 @@ slider pills and, when Shape your panel is folded, in its header summary. Its ID
 - Icons are decorative `aria-hidden` spans (CSS backgrounds): no extra tab stops, roster announcements unchanged, nothing added to exports, no independent animation.
 - PNG masters in `design/avatars/`; runtime uses normalized 128px WebP data URIs (~32 KB total). The labeled reference sheet is not used at runtime.
 - Verified: full suites pass; mapping unchanged after generating a different panel and changing Panel Size / Challenge / Journey, at 1100px, 360px and reduced motion.
+
+## Horizontal workspace (added 2026-10-11)
+
+- The three stacked disclosure sections became three stages (Project, Shape, Personas) with a `nav` of real buttons (`aria-current="step"`). Inactive stages are `display:none`, so they leave the reading order. Navigation never touches panel data or the Worker. Focus lands on the stage heading.
+- The project form is a native modal `<dialog id="byos">` (focus trap, Esc, focus return, scroll lock; full-screen on phones). Cancel or Esc during a build aborts the request and leaves the current panel alone. A successful build closes it, goes to Shape and announces once.
+- Shape keeps the native sliders and gains a compact live summary (six avatars, occupied vs ghosted, plus the text line). It is `aria-hidden`, not a live region, with no tab stops.
+- Review & export (`#lock`) moved to the foot of Personas; `#review` opens in that stage. "Adjust settings" returns to Shape (from a locked export it behaves as "Adjust panel").
+- Motion: Web Animations only (no GSAP); 16px direction-aware slide, 260ms; nothing under reduced motion.
+- Removed: `secSet`, the disclosure buttons `shape-btn` / `personas-btn`. No other existing ID was removed.
+- Tests: `stage-test.js` (new) plus the existing suites. The older suites run with a shim that shows every stage at once. The tab-order assertion moved into `stage-test.js`.
