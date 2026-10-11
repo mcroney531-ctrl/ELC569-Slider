@@ -166,3 +166,32 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
 - **Project form:**
   - The section icons ("Describe your project", "Map the journey") now match the active step number in the stepper: teal `#25D6C4` disc with a dark glyph (8.1:1).
   - "Build my panel" is solid navy (`--navy`, white text 14.2:1; hover `--navy-2`, 8.7:1), matching the Cancel button's navy outline.
+
+## Intro teaches, workspace does the work (2026-10-12, approved)
+- **Boundary:**
+  - The built-in sample stays loaded internally as `current` when there is no project.
+  - One check decides what may render: `hasProject()` for the workspace, and `sampleAllowed()` (true only while Try it is open). `render()` writes `data-project` once, and CSS swaps every workspace stage to its empty state from that attribute.
+  - The editor and the builder refuse to render sample data unless Try it is open.
+- **Workspace with no project:**
+  - Project says "No project yet" and offers Build my own panel.
+  - Build, Your panel and Export each show "Start with your project", with the same button. All four stages stay navigable.
+  - Removed: the sample banner, the sample Export button, sample export markers and file names, "Explore the sample", and the sample replace-warning exception.
+  - Downloads are `test-panel-brief.md` and `test-panel-ai-prompt.md`.
+- **Intro:** three steps: Why persona testing, Why AI, Try it. The accordion and the worked-example step are gone.
+- **Try it:**
+  - It moves the one real builder (`.build-grid`: archetype list, settings editor, preview) into the intro. Add and the panel summary are hidden there.
+  - "See what this becomes" (collapsed) is `buildBrief` for the person and settings shown.
+  - The spotlight starts on entering and its last stop points to the brief. Key terms stay optional.
+  - Buttons: Back, Build my own panel (exits, opens the form on Project), Skip to the tool.
+- **Lifecycle:** `demoEnter()` and `demoExit()` are the only way in and out, called from `showStep` and `enterTool`. That covers every route: Next, Back, Skip, the landing links, the refresher and Build my own panel.
+  - Exit restores the project, entries, settings memo, selection, chosen archetype, next id and stage, and puts the builder back.
+- The project form, the Journey window and the spotlight are moved to `<body>` at start, so they open from the intro too.
+- **Tests:**
+  - `split-test.js` (new): no sample text anywhere in any workspace stage without a project; the three empty states; Cancel returns focus from all four stages; failure keeps "no project"; success shows the real project, and exports carry no sample.
+  - `try-test.js` (new, 1200px, 390px, and 360px with reduced motion):
+    - One builder, the intro step count, and the tour (including stop 3 not overlapping the highlight).
+    - The compact demo; the brief equals the export and starts collapsed.
+    - Build my own panel → Project with the form open.
+    - Five different exit routes, each restoring the exact project state (entries, settings, open editor, selection, stage); the sample never in the pool; one Worker call in total.
+  - Updated `v2-test`, `v21-test` and `jr-test` to drive a real project. `onboard-test` covers the three-step intro.
+  - Retired `tour-test`, `sample-test` and `acc-test` (their behaviour is covered by the new suites or no longer exists).

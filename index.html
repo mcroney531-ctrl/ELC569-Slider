@@ -230,12 +230,35 @@
 
   /* ---------- Onboarding (in front of the tool) ---------- */
   #onboard { max-width: 720px; margin: 0 auto; }
+  #onboard.wide { max-width: none; }
+  .ob-try .try-lead { max-width: 720px; }
+  /* Try it: the borrowed builder sits on the same dark surface as Build; Add and the panel summary stay in the workspace. */
+  .demo-stage { --ws-border: #236077; --ws-surface: #031b2a; --ws-muted: #B9D7E7; --ws-cyan: #00DED8; color: #F5F7FF; margin: 4px 0 8px; padding: 18px;
+    border-radius: 22px; background: linear-gradient(180deg, rgba(8, 44, 66, .96), #031b2a); }
+  .demo-stage :focus-visible { outline-color: #5EE7F5; }
+  .demo-stage .add-row, .demo-stage .build-sum, .demo-stage .added-note { display: none !important; }
+  .demo-brief .demo-brief-t { margin: 4px 0 8px; color: var(--muted); font-size: .9375rem; }
+  .demo-brief-text { margin: 0; max-height: 340px; overflow: auto; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: #F4F7FB;
+    font: .8125rem/1.5 ui-monospace, Consolas, monospace; white-space: pre-wrap; color: var(--ink); }
+  .demo-brief-text:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  @media (max-width: 620px) { .demo-stage { padding: 12px; margin: 4px -6px 8px; border-radius: 18px; } }
+  /* No project yet: every workspace stage shows the same short start, never the sample. */
+  .no-project { padding: 18px; border: 1px dashed var(--ws-border); border-radius: 14px; color: #F5F7FF; margin: 0 0 4px; }
+  .no-project .np-h { margin: 0 0 4px; font-weight: 800; font-size: 1.0625rem; }
+  .no-project .np-t { margin: 0 0 12px; color: var(--ws-muted); }
+  .no-project .np-build { min-height: 44px; padding: 0 18px; border-radius: 12px; font: inherit; font-weight: 800; background: linear-gradient(90deg, #23D4C4, #2EE6C1); color: #062C35; border: 0; }
+  .no-project .np-build:hover { background: linear-gradient(90deg, #3ADCCD, #4AEDCB); }
+  .no-project .np-build:focus-visible { outline: 3px solid #5EE7F5; outline-offset: 2px; }
+  .np-review { margin: 0 20px 16px; }
+  #tool:not([data-project="none"]) .no-project { display: none; }
+  #tool[data-project="none"] :is(.build-grid, .build-sum, #next-cue, #panel-empty, #cards, #panel-actions, #review-body, #review-empty, .review .format, #to-build) { display: none !important; }
+  @media (max-width: 620px) { .np-review { margin: 0 14px 14px; } }
   main { overflow-x: clip; } /* sideways page slides never widen the page */
   .ob-screen { padding: 8px 0 24px; }
-  .ob-screen p, .ob-screen ul, .ob-screen ol, .ob-screen dl { margin: 0 0 14px; }
+  .ob-screen :is(p, ul, ol, dl):not(.demo-stage *) { margin: 0 0 14px; }
   .ob-screen h1 { margin-bottom: 8px; }
   .ob-screen h2 { font-size: 1.5rem; margin: 2px 0 14px; }
-  .ob-screen h3 { color: var(--navy); font-size: 1.125rem; margin: 22px 0 8px; }
+  .ob-screen h3:not(.demo-stage *) { color: var(--navy); font-size: 1.125rem; margin: 22px 0 8px; }
   .ob-eyebrow, .ob-count { color: var(--muted); font-size: .8125rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
   .ob-sub { font-size: 1.25rem; color: var(--navy); font-weight: 600; }
   .ob-honest { color: var(--muted); font-size: .9375rem; border-left: 4px solid var(--line); padding-left: 12px; }
@@ -248,8 +271,8 @@
   .ob-flow li::before { content: counter(flow) / ""; display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; font-size: .75rem; }
   .ob-controls, .ob-terms, .ob-example { display: grid; gap: 10px; }
   .ob-controls > div, .ob-terms > div, .ob-example > div { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
-  .ob-screen dt { font-weight: 700; color: var(--navy); }
-  .ob-screen dd { margin: 2px 0 0; }
+  .ob-screen dt:not(.demo-stage *) { font-weight: 700; color: var(--navy); }
+  .ob-screen dd:not(.demo-stage *) { margin: 2px 0 0; }
   .ob-more { margin: 14px 0 4px; }
   .ob-more summary { cursor: pointer; font-weight: 700; color: var(--navy); min-height: 44px; display: flex; align-items: center; }
   .ob-more summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
@@ -885,23 +908,6 @@
   .stale p { margin: 0 0 8px; }
   .stale button { background: #fff; color: var(--navy); border: 1.5px solid var(--navy); }
   .sec-build .next-cue { margin: 0 0 16px; background: rgba(255, 255, 255, .06); color: #F5FAFD; border: 1px solid rgba(45, 212, 191, .3); border-left: 4px solid #2DD4BF; }
-  /* Sample mode: one compact mint line under the stepper (the same "guidance" mint as the tour card), with a dark
-     outline and a thin teal ring so it sits with the workspace. Plain text, never announced. */
-  .sample-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin: 0 0 14px; padding: 8px 10px 8px 16px;
-    border-radius: 14px; background: #E6FBF7; border: 2px solid #0B2F3A; color: #23424F;
-    box-shadow: 0 0 0 3px rgba(20, 184, 166, .28), 0 6px 18px rgba(11, 47, 58, .18); }
-  .sample-bar[hidden] { display: none; }
-  .sample-msg { margin: 0; flex: 1 1 320px; font-size: .9375rem; line-height: 1.4; }
-  .sample-tag { flex: none; display: inline-block; padding: 1px 8px; border-radius: 999px; background: #0B2F3A; color: #9FF0E4;
-    font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
-  .sample-cta { flex: none; min-height: 40px; padding: 0 16px; border-radius: 12px; font: inherit; font-weight: 800; background: #0B2F3A; color: #fff; border: 0; }
-  .sample-cta:hover { background: #14445A; }
-  .sample-cta:focus-visible { outline: 3px solid #0B6E8C; outline-offset: 2px; }
-  /* Phone: tag and button share the first row, the sentence takes the second. */
-  @media (max-width: 620px) {
-    .sample-bar { display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: "tag . cta" "msg msg msg"; gap: 6px 8px; padding: 8px 10px 10px 12px; }
-    .sample-tag { grid-area: tag; justify-self: start; } .sample-cta { grid-area: cta; min-height: 44px; } .sample-msg { grid-area: msg; font-size: .875rem; }
-  }
   /* Spotlight tour: the page dims around one region; a compact card explains it. */
   .spot { position: fixed; z-index: 1000; pointer-events: none; border-radius: 18px; outline: 2px solid #5EE7F5; outline-offset: 0;
     box-shadow: 0 0 0 4px rgba(94, 231, 245, .18), 0 0 0 9999px rgba(2, 10, 18, .58); }
@@ -926,7 +932,6 @@
   .tc-btns button[hidden] { display: none; }
   .tc-btns :focus-visible { outline: 3px solid #0B6E8C; outline-offset: 2px; }
   @media (max-width: 620px) { dialog.tourcard { max-height: 46dvh; } }
-  @media (forced-colors: active) { .sample-bar { border-color: CanvasText; box-shadow: none; } }
   @media (forced-colors: active) { .spot { outline: 3px solid Highlight; box-shadow: none; } dialog.tourcard { border: 2px solid CanvasText; } }
   .replace-note { margin: 10px 0 0; padding: 10px 12px; border-left: 4px solid #B45309; border-radius: 10px; background: #FFF6EA; color: #5A3200; font-weight: 600; }
   .replace-note[hidden] { display: none; }
@@ -1053,7 +1058,7 @@
     <!-- 1. Why persona testing -->
     <section class="ob-screen" data-step="1" aria-labelledby="ob-h1" hidden>
       <div class="ob-head">
-        <p class="ob-count">Step 1 of 4</p>
+        <p class="ob-count">Step 1 of 3</p>
         <h2 id="ob-h1" tabindex="-1">Why persona testing?</h2>
       </div>
       <p>It's easy to test a build the way you expect someone to use it. Persona testing gives you a reason to approach the same experience differently.</p>
@@ -1075,7 +1080,7 @@
     <!-- 2. Why AI can help -->
     <section class="ob-screen" data-step="2" aria-labelledby="ob-h2" hidden>
       <div class="ob-head">
-        <p class="ob-count">Step 2 of 4</p>
+        <p class="ob-count">Step 2 of 3</p>
         <h2 id="ob-h2" tabindex="-1">Why AI can help</h2>
       </div>
       <p>AI helps you test more kinds of situations and perspectives without inventing every persona yourself. Useful dimensions include:</p>
@@ -1098,92 +1103,19 @@
     </section>
 
     <!-- 3. What this tool does -->
-    <section class="ob-screen" data-step="3" aria-labelledby="ob-h3" hidden>
+    <!-- 3. Try it: the real builder, borrowed from the workspace, on the built-in sample -->
+    <section class="ob-screen ob-try" data-step="3" aria-labelledby="ob-h3" hidden>
       <div class="ob-head">
-        <p class="ob-count">Step 3 of 4</p>
-        <h2 id="ob-h3" tabindex="-1">What this tool does</h2>
-        <p class="ob-subhead">Four steps to test your experience from different perspectives.</p>
+        <p class="ob-count">Step 3 of 3</p>
+        <h2 id="ob-h3" tabindex="-1">Try it</h2>
       </div>
-      <ol class="acc" id="acc">
-        <li class="acc-item" data-n="1">
-          <h3 class="acc-h"><button type="button" class="acc-btn" id="acc-b1" aria-expanded="false" aria-controls="acc-p1">
-            <span class="acc-num" aria-hidden="true">1</span>
-            <span class="acc-ic" aria-hidden="true"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="M12 5h17l9 9v27a2 2 0 0 1-2 2H12a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" fill="#fff" stroke="#1B6FE0" stroke-width="3" stroke-linejoin="round"/><path d="M29 5v9h9" fill="none" stroke="#1B6FE0" stroke-width="3" stroke-linejoin="round"/><path d="M16 22h16M16 29h10" stroke="#1B6FE0" stroke-width="3" stroke-linecap="round"/><circle cx="35" cy="37" r="7" fill="#2DD4BF"/><path d="m31.8 37 2.4 2.4 4-4.4" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            <span class="acc-txt"><span class="acc-title">Describe your build</span><span class="acc-sub">Tell the tool what you're testing.</span></span>
-            <svg class="acc-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button></h3>
-          <div class="acc-panel" id="acc-p1" role="region" aria-labelledby="acc-b1" hidden>
-            <div class="acc-body">
-          <p>One sentence about what you're building and who it's for.</p>
-            </div>
-          </div>
-        </li>
-        <li class="acc-item" data-n="2">
-          <h3 class="acc-h"><button type="button" class="acc-btn" id="acc-b2" aria-expanded="false" aria-controls="acc-p2">
-            <span class="acc-num" aria-hidden="true">2</span>
-            <span class="acc-ic" aria-hidden="true"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><circle cx="24" cy="16" r="7" fill="#1B6FE0"/><path d="M11 40c1-9 6-13 13-13s12 4 13 13Z" fill="#1B6FE0"/><circle cx="10" cy="20" r="5" fill="#3B8EF0"/><path d="M1 38c.8-6 4-9 9-9" fill="none" stroke="#3B8EF0" stroke-width="5" stroke-linecap="round"/><circle cx="38" cy="20" r="5" fill="#0F2E5C"/><path d="M47 38c-.8-6-4-9-9-9" fill="none" stroke="#0F2E5C" stroke-width="5" stroke-linecap="round"/></svg></span>
-            <span class="acc-txt"><span class="acc-title">Choose who to test as</span><span class="acc-sub">Pick an archetype for each persona.</span></span>
-            <svg class="acc-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button></h3>
-          <div class="acc-panel" id="acc-p2" role="region" aria-labelledby="acc-b2" hidden>
-            <div class="acc-body">
-          <p>We create one person for each of six archetypes. Add as many as you need; one is enough for a quick test.</p>
-            </div>
-          </div>
-        </li>
-        <li class="acc-item" data-n="3">
-          <h3 class="acc-h"><button type="button" class="acc-btn" id="acc-b3" aria-expanded="false" aria-controls="acc-p3">
-            <span class="acc-num" aria-hidden="true">3</span>
-            <span class="acc-ic" aria-hidden="true"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><g stroke="#1B6FE0" stroke-width="3.2" stroke-linecap="round"><path d="M5 12h38M5 24h38M5 36h38"/></g><g fill="#fff" stroke="#1B6FE0" stroke-width="3.2"><circle cx="31" cy="12" r="4.6"/><circle cx="16" cy="24" r="4.6"/><circle cx="28" cy="36" r="4.6"/></g></svg></span>
-            <span class="acc-txt"><span class="acc-title">Shape each test</span><span class="acc-sub">Set each persona's challenge and journey.</span></span>
-            <svg class="acc-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button></h3>
-          <div class="acc-panel" id="acc-p3" role="region" aria-labelledby="acc-b3" hidden>
-            <div class="acc-body">
-          <dl class="acc-dims">
-            <div class="dim dim-panel"><span class="dim-bar" aria-hidden="true"></span><dt>Archetype</dt><dd><strong>Who are you testing as?</strong> Each archetype adds a different perspective.</dd></div>
-            <div class="dim dim-challenge"><span class="dim-bar" aria-hidden="true"></span><dt>Challenge</dt><dd><strong>What condition are they testing under?</strong> Typical, Rushed, Inconsistent or Edge case.</dd></div>
-            <div class="dim dim-journey"><span class="dim-bar" aria-hidden="true"></span><dt>Journey</dt><dd><strong>How do they move through the experience?</strong> Straight through, backtracking, detours, loops or restarts.</dd></div>
-          </dl>
-          <p class="acc-sum"><strong>Persona</strong> = who you are testing as.<br><strong>Challenge</strong> = what happens during the test.<br><strong>Journey</strong> = where they go next.</p>
-            </div>
-          </div>
-        </li>
-        <li class="acc-item" data-n="4">
-          <h3 class="acc-h"><button type="button" class="acc-btn" id="acc-b4" aria-expanded="false" aria-controls="acc-p4">
-            <span class="acc-num" aria-hidden="true">4</span>
-            <span class="acc-ic" aria-hidden="true"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="M33 4c-6.1 0-11 4.7-11 10.6C22 22.5 33 34 33 34s11-11.500 11-19.400C44 8.700 39.100 4 33 4Z" fill="#0F2E5C"/><circle cx="33" cy="14.500" r="4" fill="#fff"/><path d="M26 34c-9 1-15 3-15 7.500 0 2.500 2 3.500 6 3.500h12" fill="none" stroke="#0F2E5C" stroke-width="3.200" stroke-linecap="round"/><circle cx="7" cy="41.500" r="4" fill="#fff" stroke="#0F2E5C" stroke-width="3.200"/></svg></span>
-            <span class="acc-txt"><span class="acc-title">Take the persona into the experience</span><span class="acc-sub">Run the test and see what you learn.</span></span>
-            <svg class="acc-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button></h3>
-          <div class="acc-panel" id="acc-p4" role="region" aria-labelledby="acc-b4" hidden>
-            <div class="acc-body">
-          <p>Export a persona for each test pass, with what to watch for.</p>
-            </div>
-          </div>
-        </li>
-      </ol>
-      <p class="acc-take"><strong>Different people. Different paths.</strong> The tool helps you test from more than one point of view.</p>
-      <div class="ob-actions">
-        <button type="button" data-go="2">Back</button>
-        <button type="button" class="primary" data-go="4">Next</button>
-        <button type="button" class="ob-skip" data-go="tool">Skip intro</button>
-      </div>
-    </section>
-
-    <!-- 4. Try it: a guided run in the real tool, with the sample project -->
-    <section class="ob-screen" data-step="4" aria-labelledby="ob-h4" hidden>
-      <div class="ob-head">
-        <p class="ob-count">Step 4 of 4</p>
-        <h2 id="ob-h4" tabindex="-1">Try it with an example</h2>
-      </div>
-      <p>A 20-second tour of the builder, then try it yourself with a sample project: a short learning module for new managers.</p>
-      <ol class="ob-list">
-        <li>Choose a perspective.</li>
-        <li>Shape the test with Challenge and Journey.</li>
-        <li>See the preview of the person you're testing as.</li>
-      </ol>
-      <p class="ob-key">The person stays the same person. Only the test conditions change around them.</p>
+      <p class="try-lead">Choose an archetype, change their Challenge and Journey, and watch the preview. This is a sample project, a short learning module for new managers; nothing here is sent anywhere.</p>
+      <div class="demo-stage" id="demo-home" role="region" aria-label="Example builder"></div>
+      <details class="ob-more demo-brief" id="demo-brief">
+        <summary>See what this becomes</summary>
+        <p class="demo-brief-t">The walkthrough brief for the person above, with their current settings. In your own project, Export gives you one for each persona, or a prompt for an AI assistant.</p>
+        <pre class="demo-brief-text" id="demo-brief-text" tabindex="0" aria-label="Walkthrough brief for the example persona"></pre>
+      </details>
       <details class="ob-more">
         <summary>Key terms (optional)</summary>
         <dl class="ob-terms">
@@ -1199,9 +1131,9 @@
         </dl>
       </details>
       <div class="ob-actions">
-        <button type="button" data-go="3">Back</button>
-        <button type="button" class="primary" data-go="tour">Start the guided example</button>
-        <button type="button" class="ob-skip" data-go="tool">Skip to my project</button>
+        <button type="button" data-go="2">Back</button>
+        <button type="button" class="primary" data-go="own">Build my own panel</button>
+        <button type="button" class="ob-skip" data-go="tool">Skip to the tool</button>
       </div>
     </section>
   </div>
@@ -1221,11 +1153,6 @@
     <button type="button" class="st" id="st-panel" data-stage-go="panel"><span class="st-n" aria-hidden="true">3</span><span class="st-t">Your panel<small>Review and adjust</small></span></button>
     <button type="button" class="st" id="st-export" data-stage-go="export"><span class="st-n" aria-hidden="true">4</span><span class="st-t">Export<small>Brief or AI prompt</small></span></button>
   </nav>
-  <div class="sample-bar" id="sample-bar" hidden>
-    <span class="sample-tag">Sample mode</span>
-    <p class="sample-msg">You're exploring an example panel. Try the controls freely; no AI generation required.</p>
-    <button type="button" class="sample-cta" id="sample-build" aria-haspopup="dialog" aria-controls="byos">Build my own panel</button>
-  </div>
 
   <section class="sec sec-project" id="sec-project" aria-labelledby="sec-project-h">
     <div class="sec-head">
@@ -1251,6 +1178,7 @@
         <span class="sec-sub">Choose an archetype, set their challenge and journey, then add them. One persona is enough for a quick test.</span></span>
     </span></h2>
     <div class="sec-body">
+      <div class="no-project"><p class="np-h">Start with your project</p><p class="np-t">Describe what you're testing to create personas for your panel.</p><button type="button" class="np-build" aria-haspopup="dialog" aria-controls="byos">Build my own panel</button></div>
       <p class="next-cue" id="next-cue" hidden>Six people are ready for your project, one for each archetype. Choose who to test first.</p>
       <div class="build-grid">
         <div class="build-left">
@@ -1285,6 +1213,7 @@
         <span class="sec-sub" id="panel-sub"></span></span>
     </span></h2>
     <div class="sec-body">
+      <div class="no-project"><p class="np-h">Start with your project</p><p class="np-t">Describe what you're testing to create personas for your panel.</p><button type="button" class="np-build" aria-haspopup="dialog" aria-controls="byos">Build my own panel</button></div>
       <div class="panel-empty" id="panel-empty" hidden><p>Your panel is empty. Add a persona to start.</p><button type="button" class="primary" data-stage-go="build">Add a persona</button></div>
       <ol class="cards entries" id="cards"></ol>
     </div>
@@ -1416,6 +1345,7 @@
         </div>
       </fieldset>
     </div>
+    <div class="no-project np-review"><p class="np-h">Start with your project</p><p class="np-t">Describe what you're testing to create personas for your panel.</p><button type="button" class="np-build" aria-haspopup="dialog" aria-controls="byos">Build my own panel</button></div>
     <div class="review-empty" id="review-empty" hidden><p>Add at least one persona to export a test.</p><button type="button" class="primary" data-stage-go="build">Add a persona</button></div>
     <div class="review-body" id="review-body">
     <div class="stale" id="stale" hidden><p id="stale-text">Your panel changed after you edited this export.</p><button type="button" id="refresh-export">Update the export</button></div>
@@ -1438,7 +1368,7 @@
     </div>
     </div>
     <p class="note honesty">Test personas can help you find problems early. They don't replace testing or research with real people.</p>
-    <div class="st-actions"><button type="button" data-stage-go="panel">Back to Your panel</button><button type="button" class="primary" id="export-build" aria-haspopup="dialog" aria-controls="byos" hidden>Build my own panel</button></div>
+    <div class="st-actions"><button type="button" data-stage-go="panel">Back to Your panel</button></div>
   </section>
   </div>
 
@@ -1647,16 +1577,13 @@ const settingsCode = x => `C${x.challenge}-J${x.journey}`;
 const SUGG = " (suggested by the tool)";
 // Both exports cover the whole panel, or one entry when `only` is its index. Every persona section is self-contained:
 // it carries its own challenge, journey and route, because nothing is shared across the panel any more.
-// Sample exports say so in the text itself, so a copied or downloaded sample can't pass for a real test.
-const SAMPLE_MARK = "SAMPLE \u2014 Made with the built-in example project.";
-const sampleMark = panel => panel.id === "SAMPLE" ? [`**${SAMPLE_MARK}**`, ""] : [];
 function exportHead(panel, xs, only) {
   return `${panel.id === "SAMPLE" ? "Sample panel" : "Panel " + panel.id} \u00B7 ${only === null ? plural(xs.length) : xs[0].p.name}`;
 }
 function buildBrief(panel, list, only = null) {
   const xs = (only === null ? list : [list[only]]).map(e => deriveEntry(panel, e)), ex = panel.experience;
   const shorts = ex.moments.map(x => x.short);
-  const out = ["# Test Panel Brief", "", ...sampleMark(panel), exportHead(panel, xs, only), "",
+  const out = ["# Test Panel Brief", "", exportHead(panel, xs, only), "",
     `**Testing:** ${ex.summary}`];
   if (ex.audience) out.push(`**For:** ${ex.audience}${ex.audienceSuggested ? SUGG : ""}`);
   out.push("", "**Key moments:**", ...ex.moments.map((x, i) => `${i + 1}. ${x.short}: ${x.full}${x.suggested ? SUGG : ""}`), "",
@@ -1693,7 +1620,7 @@ function buildBrief(panel, list, only = null) {
 function buildPrompt(panel, list, only = null) {
   const xs = (only === null ? list : [list[only]]).map(e => deriveEntry(panel, e)), ex = panel.experience;
   const shorts = ex.moments.map(x => x.short), whole = only === null;
-  const out = ["# Persona test prompt", "", ...sampleMark(panel),
+  const out = ["# Persona test prompt", "",
     "You are helping me run an exploratory walkthrough of a digital experience I built, using test personas. You will play one persona at a time and react to the real project material I share with you: screenshots, storyboards, scripts, quiz questions or descriptions.", "",
     "## Project", "",
     exportHead(panel, xs, only),
@@ -1784,7 +1711,7 @@ function routePath(ys) {
 }
 // Each value pill keeps the width of its longest value, so changing a value never reflows the row.
 function reservePillWidths() {
-  if ($("tool").hidden || !$("editor").offsetWidth) return;           // measured once the editor is on screen
+  if (!$("editor").offsetWidth) return;           // measured once the editor is on screen
   const labels = {
     challenge: LEVELS.map(l => l.label),
     journey: PATTERNS.map(pt => pt.label)};
@@ -1875,9 +1802,16 @@ const selected = () => entries.find(e => e.iid === selectedIid) || null;
 // After an add, the choice moves on to the next archetype not yet covered, in the tool's coverage order.
 const suggestedNext = () => LENSES.findIndex((l, i) => !inLens(i).length);
 const stageNow = () => $("tool").dataset.stage;
+// The one boundary between sample and real work. The built-in sample stays loaded as `current` when there is no
+// project, but only Try it (the intro demo) may render it; the workspace treats it as "no project yet".
+const hasProject = () => current.id !== "SAMPLE";
+const sampleAllowed = () => demo !== null;
+const mayRender = () => hasProject() || sampleAllowed();
 function changed() { panelVersion++; }
 // The one editor works on the previewed person while building, or on the selected entry in Your panel.
 function target() {
+  if (!mayRender()) return null;
+  if (demo) { const pi = candidate(cand); return pi >= 0 ? {cand: true, p: pi, a: cand, ...settingsFor(pi)} : null; }
   if (stageNow() === "panel") return selected();
   const pi = candidate(cand);
   if (stageNow() === "build" && pi >= 0 && entries.length < MAX_PANEL) return {cand: true, p: pi, a: cand, ...settingsFor(pi)};
@@ -1905,14 +1839,13 @@ function setupStatic() {
 function mountPanel() {
   const sample = current.id === "SAMPLE";
   const ex = current.experience;
-  // With no project of your own, the Project stage is about starting one; the sample is a free side door.
+  // With no project of your own, the Project stage is about starting one.
   $("panel-id").textContent = sample ? "No project yet" : `Panel ${current.id}`;
   $("panel-h").textContent = sample ? "Describe what you're testing to build your panel." : "Your panel for: " + current.experience.summary;
   $("panel-for").innerHTML = sample
-    ? "Building takes about 40 seconds. Prefer to look around first? Explore the sample: it's free and makes no AI request."
+    ? "We'll create six people for your project, one for each archetype. Building takes about 40 seconds."
     : ex.audience ? `For: ${esc(ex.audience)}${ex.audienceSuggested ? ' <span class="sugg">Suggested</span>' : ""}` : "";
-  $("to-build").textContent = sample ? "Explore the sample" : "Continue to Build";
-  $("to-build").classList.toggle("primary", !sample);
+  $("to-build").hidden = sample;
   const picked = ex.moments.filter(m => m.suggested).map(m => m.short);
   $("moments-note").hidden = !picked.length;
   $("jr-key-sugg").hidden = !picked.length;
@@ -1987,17 +1920,17 @@ function makeEntry(e) {
 }
 
 function render() {
-  renderBuild();
+  // CSS swaps every workspace stage to its empty state from this one attribute.
+  $("tool").dataset.project = hasProject() ? "yes" : "none";
+  if (mayRender()) renderBuild();
   renderPanel();
   renderEditor();
-  const sample = current.id === "SAMPLE";
-  $("next-cue").hidden = sample || entries.length > 0;
-  // Sample mode is named once, under the stepper, on every stage where you work with people (Project already says it).
-  $("sample-bar").hidden = !sample || stageNow() === "project";
-  $("export-build").hidden = !sample;
+  $("next-cue").hidden = !hasProject() || entries.length > 0;
+  if (demo) renderDemoBrief();
 }
 
 function renderBuild() {
+  if (!mayRender()) return;
   const full = entries.length >= MAX_PANEL;
   document.querySelectorAll(".arch-opt").forEach(o => {
     const i = +o.dataset.a, n = inLens(i).length;
@@ -2248,10 +2181,10 @@ for (const id of ["challenge", "journey"]) {
 // Two exports from the same panel. They are rebuilt when the panel has changed, unless the person edited the text:
 // then the edits stay on screen and updating is their explicit choice.
 const FORMATS = {
-  brief: {label: "Persona brief (editable)", copy: "Copy brief", done: "Brief", file: "brief.md",
+  brief: {label: "Persona brief (editable)", copy: "Copy brief", done: "Brief", file: "test-panel-brief.md",
     role: "You play each persona as you test your build.",
     help: "Each persona is a script for one test pass. Open your build, follow their route, and note where your experience helps, breaks, or lets them slip through."},
-  prompt: {label: "AI test prompt (editable)", copy: "Copy prompt", done: "Prompt", file: "ai-prompt.md",
+  prompt: {label: "AI test prompt (editable)", copy: "Copy prompt", done: "Prompt", file: "test-panel-ai-prompt.md",
     role: "Your AI assistant plays each persona while you show it your build.",
     help: "Paste this into your AI assistant, then share your project material moment by moment. For the cleanest results, copy one persona below and give each their own fresh chat."}};
 let format = "brief", drafts = {}, draftVersion = -1;
@@ -2346,7 +2279,7 @@ $("download").addEventListener("click", () => {
   try {
     const url = URL.createObjectURL(new Blob([$("brief").value], {type: "text/markdown"}));
     const a = document.createElement("a");
-    a.href = url; a.download = (current.id === "SAMPLE" ? "sample-panel-" : "") + FORMATS[format].file;
+    a.href = url; a.download = FORMATS[format].file;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     // A sandboxed frame can block the file silently, so don't claim it arrived.
@@ -2403,7 +2336,7 @@ function openByos(opener, fresh) {
 }
 // Building replaces the panel, so say so before it happens, not after.
 function buildLabel() {
-  const n = current.id === "SAMPLE" ? 0 : entries.length;       // clearing the sample is expected, not a loss
+  const n = entries.length;
   $("replace-note").hidden = !n;
   $("replace-note").textContent = n ? `Building replaces your current panel of ${plural(n)}. Cancel keeps it.` : "";
   $("build").textContent = n ? "Build and replace my panel" : "Build my panel";
@@ -2418,8 +2351,8 @@ function closeByos(returnFocus, restore) {
 // The form is a modal dialog: Cancel, Esc and the opener all end up in closeByos. Cancelling while a build is
 // running also abandons that request, so the panel on screen is never replaced behind the person's back.
 $("own").addEventListener("click", () => openByos($("own"), false));
-// The same form from anywhere in sample mode; Cancel returns to the button that opened it, on the same stage.
-for (const id of ["sample-build", "export-build"]) $(id).addEventListener("click", () => openByos($(id), false));
+// "Build my own panel" from any stage's empty state opens the same form; Cancel returns to that button, on that stage.
+document.querySelectorAll(".np-build").forEach(b => b.addEventListener("click", () => openByos(b, false)));
 $("fresh").addEventListener("click", () => openByos($("fresh"), true));
 function cancelByos() { buildCancelled = true; if (buildCtrl) buildCtrl.abort(); closeByos(true, true); }
 $("cancel").addEventListener("click", cancelByos);
@@ -2506,34 +2439,6 @@ $("byos-form").addEventListener("submit", async e => {
 // One panel open at a time, all closed to start. Real buttons with aria-expanded/aria-controls;
 // closed panels are `hidden`, so they leave the reading order. Opening never moves focus.
 const EASE_P2_OUT = "cubic-bezier(.33, 1, .68, 1)", EASE_P2_INOUT = "cubic-bezier(.45, 0, .55, 1)";
-function accSet(item, open) {
-  const btn = item.querySelector(".acc-btn"), panel = item.querySelector(".acc-panel");
-  if ((btn.getAttribute("aria-expanded") === "true") === open) return;
-  btn.setAttribute("aria-expanded", String(open));
-  item.classList.toggle("is-open", open);
-  (item._anims || []).forEach(a => a.cancel());
-  item._anims = [];
-  if (!motionOK()) { panel.hidden = !open; return; }
-  const run = (el, frames, opts) => { const a = el.animate(frames, opts); item._anims.push(a); return a; };
-  if (open) {
-    panel.hidden = false;
-    const h = panel.scrollHeight;
-    run(panel, [{height: "0px", opacity: 0}, {height: h + "px", opacity: 1}], {duration: 260, delay: 50, easing: EASE_P2_OUT, fill: "backwards"});
-    run(item.querySelector(".acc-num"), [{transform: "scale(1)"}, {transform: "scale(1.05)"}, {transform: "scale(1)"}], {duration: 300, easing: EASE_P2_OUT});
-    const rows = [...panel.querySelectorAll(".dim")];
-    rows.forEach((row, i) => {   // Panel size, Challenge, Journey: text rises, then its accent bar draws down
-      const at = 90 + i * 45;
-      run(row, [{opacity: 0, transform: "translateY(7px)"}, {opacity: 1, transform: "none"}], {duration: 240, delay: at, easing: EASE_P2_OUT, fill: "backwards"});
-      run(row.querySelector(".dim-bar"), [{transform: "scaleY(0)"}, {transform: "scaleY(1)"}], {duration: 260, delay: at, easing: EASE_P2_OUT, fill: "backwards"});
-    });
-    const sum = panel.querySelector(".acc-sum");
-    if (sum) run(sum, [{opacity: 0, transform: "translateY(6px)"}, {opacity: 1, transform: "none"}], {duration: 240, delay: 90 + rows.length * 45, easing: EASE_P2_OUT, fill: "backwards"});
-  } else {
-    const h = panel.offsetHeight;
-    const a = run(panel, [{height: h + "px", opacity: 1}, {height: "0px", opacity: 0}], {duration: 230, easing: EASE_P2_INOUT, fill: "forwards"});
-    a.finished.then(() => { if (btn.getAttribute("aria-expanded") !== "true") panel.hidden = true; a.cancel(); }, () => {});
-  }
-}
 // The journey window: a native modal dialog (focus stays inside, Esc closes, background is inert,
 // focus returns to the link). Only the visuals are animated.
 let jrClosing = false;
@@ -2599,17 +2504,8 @@ function goStage(id, {focus = true} = {}) {
 }
 document.querySelectorAll("[data-stage-go]").forEach(b => b.addEventListener("click", () => goStage(b.dataset.stageGo)));
 
-$("acc").addEventListener("click", e => {
-  const btn = e.target.closest(".acc-btn");
-  if (!btn) return;
-  const item = btn.closest(".acc-item"), willOpen = btn.getAttribute("aria-expanded") !== "true";
-  if (willOpen) document.querySelectorAll(".acc-item.is-open").forEach(o => { if (o !== item) accSet(o, false); });
-  accSet(item, willOpen);
-});
-
-// ---------- Spotlight tour: where things are in Build ----------
-// Three stops, advanced only by Next/Back; nothing has to be done to the sample. It reads the page, never changes it,
-// so it can run over the sample or over a person's own project (a replay from the refresher) with nothing to undo.
+// ---------- Spotlight tour: where things are in the builder (run on Try it) ----------
+// Three stops, advanced only by Next/Back; nothing has to be done to the example. It reads the page, never changes it.
 // The card is a modal <dialog>: the rest of the page is inert while it is open, and Esc ends it.
 const SPOT = [
   {target: () => $("arch"), title: "Choose a perspective", where: "Highlighted: the six archetype choices.",
@@ -2617,14 +2513,14 @@ const SPOT = [
   {target: () => ($("editor").hidden ? $("preview") : $("editor")), title: "Shape the test", where: "Highlighted: the Challenge and Journey settings for the selected person.",
     text: "Challenge changes how demanding the test conditions are. Journey changes the path the person takes. You can adjust either without changing who the person is."},
   {target: () => $("preview-card"), title: "See the preview", where: "Highlighted: the persona preview.",
-    text: "This is where the test takes shape. As you adjust the settings, the preview shows how this person would behave and move through the experience."}];
+    text: "This is where the test takes shape. As you adjust the settings, the preview shows how this person would behave and move through the experience. Open \u201CSee what this becomes\u201D below to read the test it turns into."}];
 let spot = null;   // {i}: the stop on screen; null when no tour is running
 function spotStart() {
   // Make sure the settings stop has something to show: preview an archetype that can still be added.
   if (candidate(cand) < 0) { const a = LENSES.findIndex((l, i) => candidate(i) >= 0); if (a >= 0) cand = a; }
-  goStage("build", {focus: false});
+  if (!demo) goStage("build", {focus: false});
   spot = {i: 0};
-  $("tool").getAnimations({subtree: true}).forEach(x => x.finish());   // measure the settled layout, not a slide in progress
+  document.getAnimations().forEach(x => x.finish());   // measure the settled layout, not a slide in progress
   document.documentElement.style.overflow = "hidden";
   $("spot").hidden = false;
   $("tourcard").showModal();
@@ -2670,7 +2566,7 @@ function spotPlace(first) {
   if (!first && motionOK() && from.width) sp.animate([from, to], {duration: 220, easing: EASE_P2_OUT});
   if (motionOK()) card.animate([{opacity: 0, transform: "translateY(6px)"}, {opacity: 1, transform: "none"}], {duration: 180, easing: EASE_P2_OUT});
 }
-function spotEnd() {
+function spotEnd({quiet = false} = {}) {
   if (!spot) return;
   spot = null;
   if ($("tourcard").open) $("tourcard").close();
@@ -2678,6 +2574,7 @@ function spotEnd() {
   $("spot").style.cssText = "";
   document.documentElement.style.overflow = "";
   // Back to the workspace, on its first control: the archetype that is chosen.
+  if (quiet) return;
   const r = document.querySelector('#arch-list input:checked') || $("build-h");
   r.focus({preventScroll: true});
   r.scrollIntoView({block: "center"});
@@ -2687,6 +2584,39 @@ $("tc-back").addEventListener("click", () => { if (spot.i > 0) { spot.i--; spotS
 $("tc-skip").addEventListener("click", spotEnd);
 $("tourcard").addEventListener("cancel", e => { e.preventDefault(); spotEnd(); });   // Esc
 window.addEventListener("resize", () => spotPlace());
+
+// ---------- Try it: the intro borrows the real builder ----------
+// One enter and one exit, used by every way in and out (Next, Back, Skip, Build my own panel, the refresher, the
+// landing links). Entering sets the person's own state aside and loads the sample; exiting puts back exactly what was
+// there (project, panel, settings, selection, chosen archetype, stage) and returns the builder to Build.
+let demo = null;
+function demoEnter() {
+  if (demo) return;
+  const grid = document.querySelector(".build-grid");
+  demo = {snap: {current, entries, memo, selectedIid, cand, nextIid, stage: stageNow()}, home: grid.parentNode, next: grid.nextSibling};
+  parkEditor();
+  current = SAMPLE_PANEL; entries = []; memo = {}; selectedIid = null; cand = 0;
+  $("demo-home").appendChild(grid);
+  $("demo-brief").open = false;
+  render();
+}
+function demoExit() {
+  if (!demo) return;
+  if (spot) spotEnd({quiet: true});
+  const {snap, home, next} = demo;
+  demo = null;
+  parkEditor();
+  home.insertBefore(document.querySelector(".build-grid"), next);
+  ({current, entries, memo, selectedIid, cand, nextIid} = snap);
+  $("tool").dataset.stage = snap.stage;
+  for (const st of STAGES) $("st-" + st).setAttribute("aria-current", st === snap.stage ? "step" : "false");
+  render();
+}
+// "See what this becomes": the real export function, for the person being previewed.
+function renderDemoBrief() {
+  const pi = candidate(cand);
+  if (pi >= 0) $("demo-brief-text").textContent = buildBrief(current, [{iid: "demo", p: pi, a: cand, ...settingsFor(pi)}]);
+}
 
 // ---------- Onboarding: landing → orientation → tool ----------
 // Screens are shown one at a time; focus moves to each screen's heading so
@@ -2703,15 +2633,20 @@ function showStep(n) {
   if (from) ghostOut(from.el, -28 * dir, 0);
   $("onboard").hidden = false;
   $("tool").hidden = true;
+  if (n === 3) demoEnter(); else demoExit();
+  $("onboard").classList.toggle("wide", n === 3);
   obScreens.forEach(s => { s.hidden = +s.dataset.step !== n; });
   const screen = obScreens.find(s => +s.dataset.step === n);
   screen.querySelector("h1, h2").focus();
   window.scrollTo(0, 0);
   if (from) revealIn([screen], {dx: 28 * dir, dy: 0});
+  if (n === 3) spotStart();                                  // entering Try it is the explicit choice that starts the tour
 }
 function enterTool() {
   const from = currentView();
   if (from) ghostOut(from.el, -28, 0);
+  demoExit();
+  $("onboard").classList.remove("wide");
   $("onboard").hidden = true;
   $("tool").hidden = false;
   reservePillWidths();
@@ -2724,7 +2659,7 @@ function enterTool() {
 $("onboard").addEventListener("click", e => {
   const go = e.target.closest("[data-go]");
   if (!go) return;
-  if (go.dataset.go === "tour") { enterTool(); spotStart(); return; }
+  if (go.dataset.go === "own") { enterTool(); goStage("project", {focus: false}); openByos($("own"), false); return; }
   go.dataset.go === "tool" ? enterTool() : showStep(+go.dataset.go);
 });
 $("refresher").addEventListener("click", () => {
@@ -2732,6 +2667,7 @@ $("refresher").addEventListener("click", () => {
   showStep(1);
 });
 
+for (const id of ["byos", "jr-dialog", "spot", "tourcard"]) document.body.appendChild($(id));
 setupStatic();
 mountPanel();
 render();
