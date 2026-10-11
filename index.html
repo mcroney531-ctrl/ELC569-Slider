@@ -937,9 +937,9 @@
   .byos form { display: grid; gap: 14px; }
   .fsec { background: rgba(255, 255, 255, .6); border: 1px solid rgba(190, 208, 232, .6); border-radius: 20px; padding: 22px 22px 24px; }
   .fsec-head { display: flex; align-items: center; gap: 18px; margin-bottom: 20px; }
-  .fsec-ic { flex: none; display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; color: #35D6BE;
-    background: radial-gradient(circle at 32% 26%, #0F5A52 0%, #073631 72%);
-    box-shadow: inset 0 0 0 1px rgba(45, 212, 191, .38), inset 0 0 16px rgba(45, 212, 191, .22), 0 6px 14px rgba(7, 54, 49, .32); }
+  /* Same as the active step number in the stepper: teal disc, dark glyph. */
+  .fsec-ic { flex: none; display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; color: #062C35;
+    background: #25D6C4; box-shadow: 0 6px 14px rgba(7, 54, 49, .22); }
   .fsec-ic svg { width: 32px; height: 32px; }
   .fsec-h { margin: 0; color: #0F2347; font-size: 1.375rem; font-weight: 800; line-height: 1.2; }
   .fsec-d { margin: 5px 0 0; color: #5B6F93; font-size: .9375rem; line-height: 1.4; }
@@ -959,10 +959,8 @@
   .byos .actions { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 12px; margin-top: 16px; }
   .byos .byos-error { grid-column: 1 / -1; margin: 0; }
   .byos #build, .byos #cancel { min-height: 54px; border-radius: 14px; font-size: 1.0625rem; font-weight: 800; }
-  .byos #build { color: #fff; border: 1px solid rgba(45, 212, 191, .42);
-    background: linear-gradient(135deg, #06283A 0%, #073631 55%, #0C5A55 125%);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12), inset 0 0 0 1px rgba(45, 212, 191, .12), 0 8px 18px rgba(4, 40, 50, .3); }
-  .byos #build:hover { background: linear-gradient(135deg, #06283A 0%, #073631 55%, #0C5A55 125%); filter: brightness(1.14); }
+  .byos #build { color: #fff; border: 1px solid var(--navy); background: var(--navy); box-shadow: 0 8px 18px rgba(27, 42, 74, .28); }
+  .byos #build:hover { background: var(--navy-2); border-color: var(--navy-2); }
   .byos #cancel { color: #1B2A4A; background: rgba(255, 255, 255, .75); border: 2px solid #1B2A4A; }
   .byos #cancel:hover { background: #fff; }
   .byos :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }

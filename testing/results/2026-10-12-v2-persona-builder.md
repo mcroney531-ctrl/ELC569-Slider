@@ -163,3 +163,6 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
   - Mint `#E6FBF7` with a 2px navy `#0B2F3A` outline, a thin teal ring and a soft shadow.
   - A navy tag, and a navy "Build my own panel" button with white text.
   - Contrast: text 9.9:1, tag 10.8:1, button 14.2:1. Forced colors: plain outline.
+- **Project form:**
+  - The section icons ("Describe your project", "Map the journey") now match the active step number in the stepper: teal `#25D6C4` disc with a dark glyph (8.1:1).
+  - "Build my panel" is solid navy (`--navy`, white text 14.2:1; hover `--navy-2`, 8.7:1), matching the Cancel button's navy outline.
