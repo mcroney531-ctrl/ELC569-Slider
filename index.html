@@ -193,15 +193,7 @@
   /* ---------- Intro, panel bar, own-project form ---------- */
   .intro { margin-bottom: 18px; }
   .lead { margin-bottom: 14px; }
-  .steps { list-style: none; padding: 0; display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); counter-reset: step; }
-  .steps li { counter-increment: step; display: flex; gap: 10px; align-items: flex-start; font-size: .9375rem; color: var(--muted); }
-  .steps li::before { content: counter(step) / ""; flex: none; display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--navy); color: #fff; font-size: .8125rem; font-weight: 700; margin-top: 1px; }
-  .steps strong { color: var(--ink); }
-  .panel-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; border: 1px solid var(--line); border-left: 4px solid var(--navy); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 14px; background: #fff; }
-  .panel-bar .what { flex: 1 1 280px; min-width: 0; }
   .panel-id { display: inline-block; font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--navy); background: var(--soft); border-radius: 6px; padding: 1px 8px; margin-bottom: 4px; }
-  .panel-bar h2 { font-size: 1rem; font-weight: 600; color: var(--ink); }
-  .panel-bar .for { color: var(--muted); font-size: .875rem; }
   .sugg { display: inline-block; font-size: .6875rem; font-weight: 700; letter-spacing: .02em; color: var(--muted); border: 1px dashed currentColor; border-radius: 999px; padding: 0 7px; margin-left: 4px; vertical-align: 1px; }
   .suggested-note { color: var(--muted); font-size: .8125rem; text-align: center; margin-top: 6px; }
   .suggested-note .sugg { margin: 0 4px 0 0; }
@@ -390,21 +382,10 @@
     .controls .thumb::before { transition: opacity .16s ease-out, transform .16s ease-out; }
   }
 
-  /* ---------- Instrument deck (dark): intro, readout, panel bar, form, controls ---------- */
+  /* ---------- Workspace chrome: sticky read-out ---------- */
   html { scroll-padding-top: 96px; } /* keep focused controls clear of the sticky read-out */
-  .dk { background: var(--deck); color: var(--deck-text); padding-left: 22px; padding-right: 22px; }
-  .dk :focus-visible { outline-color: #5EE7F5; }
-  .intro.dk { margin: 0; padding-top: 20px; padding-bottom: 16px; border-radius: 22px 22px 0 0;
-    background: radial-gradient(circle at 94% 0%, rgba(45, 212, 191, .24), transparent 40%), radial-gradient(circle at 0% 100%, rgba(56, 189, 248, .10), transparent 40%), var(--deck); }
-  .intro.dk h1 { color: #fff; }
-  .intro.dk .lead { color: var(--deck-muted); margin-bottom: 14px; }
-  .intro.dk .steps li { color: var(--deck-muted); }
-  .intro.dk .steps strong { color: #fff; }
-  .intro.dk .steps li::before { background: transparent; border: 1.5px solid var(--teal); color: var(--teal); }
-  .intro.dk .refresher { color: #fff; }
-  .intro.dk .refresher:hover { background: rgba(255, 255, 255, .1); }
 
-  .readout-bar { position: sticky; top: 0; z-index: 5; padding-top: 4px; padding-bottom: 12px; }
+  .readout-bar { pointer-events: none; position: sticky; top: 0; z-index: 5; padding: 6px 0 12px; background: linear-gradient(180deg, #062335 72%, rgba(6, 35, 53, 0)); }
   .readout { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; align-items: center; background: #06131D; border: 1px solid var(--deck-line); border-radius: 14px; padding: 10px 4px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04); }
   .readout .s-panel { --acc: #2DD4BF; }
   .readout .s-challenge { --acc: #A78BFA; }
@@ -417,19 +398,7 @@
   .ro-v { grid-area: v; font-size: .9375rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .ro-id { padding: 0 16px; font: 600 .75rem ui-monospace, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--deck-muted); white-space: nowrap; }
 
-  .panel-bar.dk { margin: 0; border: 0; border-radius: 0; padding-top: 2px; padding-bottom: 18px; }
-  .panel-bar.dk .panel-id { background: rgba(45, 212, 191, .14); color: #5EE7F5; }
-  .panel-bar.dk h2 { color: #fff; font-size: 1.0625rem; }
-  .panel-bar.dk .for, .panel-bar.dk .sugg { color: var(--deck-muted); }
-  .panel-bar.dk button, .controls.dk button { background: transparent; color: #fff; border-color: rgba(245, 250, 253, .55); }
-  .panel-bar.dk button:hover, .controls.dk button:hover { background: rgba(255, 255, 255, .1); }
-  .panel-bar.dk button.primary, .controls.dk button.primary { background: linear-gradient(90deg, #23D4C4, #2EE6C1); color: #062C35; border-color: transparent; }
-  .panel-bar.dk button.primary:hover, .controls.dk button.primary:hover { background: linear-gradient(90deg, #3ADCCD, #4AEDCB); }
-  .build-status.dk { margin: 0; border: 0; border-radius: 0; background: var(--deck); color: #fff; padding-top: 0; padding-bottom: 16px; }
-  .build-status.dk::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 8px; border-radius: 50%; background: var(--teal); vertical-align: 1px; }
-  .byos.dk { margin: 0; border: 0; border-radius: 0; box-shadow: none; padding-top: 0; padding-bottom: 18px; color: var(--ink); }
 
-  .controls.dk { position: static; margin: 0; border: 0; border-top: 1px solid var(--deck-line); border-radius: 0 0 22px 22px; box-shadow: 0 14px 34px rgba(7, 24, 39, .22); background: var(--deck); padding-top: 16px; padding-bottom: 20px; }
   .controls-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; margin-bottom: 12px; }
   .controls h2 { color: var(--pqa-text); font-size: 1.125rem; }
   .controls-head .hint-line { margin: 0; }
@@ -468,12 +437,6 @@
 
   @media (max-width: 839.98px) {
     main { padding: 12px 10px 28px; }
-    .dk { padding-left: 14px; padding-right: 14px; }
-    .intro.dk { padding-top: 14px; border-radius: 18px 18px 0 0; }
-    .intro.dk .lead { font-size: .9375rem; }
-    .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-    .steps li { flex-direction: column; gap: 4px; font-size: .8125rem; line-height: 1.25; }
-    .step-more { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
     .readout { grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 8px 0; border-radius: 12px; }
     .ro { grid-template-columns: minmax(0, 1fr); grid-template-areas: "k" "d" "v"; justify-items: center; text-align: center; row-gap: 2px; padding: 0 6px; }
     .ro-d { font-size: 1.375rem; }
@@ -481,8 +444,6 @@
     .ro-v { font-size: .75rem; max-width: 100%; white-space: normal; line-height: 1.2; }
     .ro-id { display: none; }
     html { scroll-padding-top: 104px; }
-    .panel-bar.dk button { flex: 1 1 100%; }
-    .controls.dk { border-radius: 0 0 18px 18px; padding-top: 14px; }
     .stage { margin-top: 14px; }
   }
 
@@ -682,6 +643,111 @@
   @media (max-width: 520px) { .jr-banner { padding: 16px 12px 16px 18px; } .jr-content { padding: 16px 18px 20px; } .jr-strip { gap: 8px 2px; } .jr-chip { padding: 6px 12px; font-size: .9375rem; gap: 6px; } .jr-strip li:not(:last-child)::after { margin: 0 1px 0 4px; font-size: 1rem; } }
   @media (forced-colors: active) { .jr-dialog { border: 2px solid CanvasText; } }
 
+  /* ---------- Segmented workspace: four sections on one dark page ----------
+     Your project, Shape your panel, Test personas, Review and export. Pale surfaces (form sheet, seats, persona cards,
+     export document) sit inside them; teal marks the active controls. */
+  body:has(#tool:not([hidden])) { background: radial-gradient(80% 46% at 96% 0%, rgba(0, 222, 216, .20), transparent 62%), radial-gradient(60% 40% at 0% 100%, rgba(56, 189, 248, .08), transparent 60%), #062335; background-attachment: fixed; }
+  #tool { color: #F5F7FF; --ws-border: #236077; --ws-surface: #031b2a; --ws-muted: #B9D7E7; --ws-cyan: #00DED8; }
+  #tool :focus-visible { outline-color: #5EE7F5; }
+  .intro { margin: 0 0 4px; }
+  .intro h1 { color: #fff; }
+  .intro .lead { color: var(--ws-muted); margin-bottom: 8px; }
+  .intro .refresher { color: #fff; }
+  .intro .refresher:hover { background: rgba(255, 255, 255, .1); }
+  html { scroll-padding-top: 96px; }
+
+  .sec { position: relative; margin: 0 0 14px; background: linear-gradient(180deg, rgba(8, 44, 66, .9), var(--ws-surface)); border: 1px solid var(--ws-border); border-radius: 22px; color: #F5F7FF;
+    box-shadow: 0 14px 34px rgba(0, 10, 20, .32), inset 0 1px 0 rgba(255, 255, 255, .05); }
+  .sec-h { margin: 0; font-size: inherit; line-height: inherit; color: inherit; }
+  .sec-head { display: flex; align-items: center; gap: 16px; padding: 18px 20px; }
+  .sec-ic { flex: none; display: grid; place-items: center; width: 56px; height: 56px; border-radius: 16px; color: var(--ws-cyan);
+    background: linear-gradient(145deg, rgba(0, 222, 216, .18), rgba(0, 222, 216, .05)); border: 1px solid rgba(0, 222, 216, .36); box-shadow: inset 0 0 14px rgba(0, 222, 216, .12); }
+  .sec-ic svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .sec-t { min-width: 0; flex: 1 1 auto; }
+  .sec-title { display: block; color: #fff; font-size: 1.3125rem; font-weight: 800; line-height: 1.2; }
+  .sec-sub { display: block; margin-top: 3px; color: var(--ws-muted); font-size: .9375rem; line-height: 1.4; font-weight: 400; }
+  .sec-btn { display: flex; align-items: center; gap: 16px; width: 100%; min-height: 72px; padding: 16px 20px; border: 0; border-radius: 22px; background: none; color: #fff; font: inherit; font-weight: 400; text-align: left; cursor: pointer; }
+  .sec-btn:hover { background: rgba(255, 255, 255, .04); }
+  .sec-btn:focus-visible { outline-offset: -4px; }
+  .sec-chev { flex: none; width: 24px; height: 24px; color: #CFE8F2; }
+  .sec-btn[aria-expanded="true"] .sec-chev { transform: rotate(180deg); }
+  .sec-btn[aria-expanded="true"] .sub-closed, .sec-btn[aria-expanded="false"] .sub-open { display: none; }
+  .sec-panel { border-radius: 0 0 22px 22px; }
+  .sec-body { padding: 0 20px 20px; }
+
+  /* Your project */
+  .sec-project .sec-head { align-items: flex-start; }
+  .sec-project .sec-title { font-size: 1.3125rem; }
+  .sec-project .panel-id { display: inline-block; margin: 6px 0 4px; background: rgba(0, 222, 216, .14); color: #5EE7F5; }
+  .sec-project .proj-h { margin: 0; color: #fff; font-size: 1.0625rem; font-weight: 700; line-height: 1.35; }
+  .sec-project .for { margin-top: 2px; color: var(--ws-muted); font-size: .9375rem; }
+  .sec-project .sugg { color: var(--ws-muted); }
+  .sec-act { flex: none; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; align-self: center; }
+  .sec-act button, .controls button:not(.sec-btn) { background: transparent; color: #fff; border-color: rgba(245, 250, 253, .55); }
+  .sec-act button:hover, .controls button:not(.sec-btn):hover { background: rgba(255, 255, 255, .1); }
+  .sec-act button.primary, .controls button.primary { background: linear-gradient(90deg, #23D4C4, #2EE6C1); color: #062C35; border-color: transparent; }
+  .sec-act button.primary:hover, .controls button.primary:hover { background: linear-gradient(90deg, #3ADCCD, #4AEDCB); }
+  .sec .build-status { margin: 0 20px 14px; padding: 10px 14px; border: 1px solid rgba(45, 212, 191, .3); border-left: 4px solid #2DD4BF; border-radius: 12px; background: rgba(255, 255, 255, .06); color: #fff; }
+  .sec-project .byos { margin: 0; padding: 0 14px 14px; color: var(--ink); }
+
+  /* Shape your panel */
+  .sec.controls { padding: 0; border: 1px solid var(--ws-border); border-top: 1px solid var(--ws-border); }
+  .controls .sec-body { padding-top: 2px; }
+  .controls-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; margin-bottom: 12px; }
+  .controls-head .hint-line { margin: 0; }
+  .controls-head .next-cue { order: 3; flex: 1 1 100%; margin: 6px 0 0; }
+
+  /* Test personas */
+  .sec-personas .stage { margin: 0; }
+  .sec-personas .tier-line { color: var(--ws-muted); }
+  .sec-personas .tier-line strong { color: #fff; }
+  .sec-personas .zone { color: var(--ink); }
+  .sec-personas .zone-cards { padding: 4px 0 0; }
+  .zone-head h3 { color: var(--navy); font-size: 1.0625rem; font-weight: 700; }
+  .card { color: var(--ink); }
+
+  /* Review and export */
+  .review.sec { margin-top: 0; padding: 0 0 22px; overflow: visible; border: 1px solid var(--ws-border); }
+  .review .review-head { margin: 0; padding: 18px 20px 16px; background: none; justify-content: flex-start; gap: 12px 16px; }
+  .review .review-head h2 { color: #fff; font-size: 1.3125rem; font-weight: 800; flex: 1 1 auto; margin: 0; }
+  .review .review-head .format { margin-left: auto; }
+  .review > * { margin-left: 20px; margin-right: 20px; }
+  .review > .review-head { margin-left: 0; margin-right: 0; }
+  .review .format-role { color: var(--navy); }
+  .review .help-line { color: var(--muted); }
+  .review .hint { color: #8FF3E6; }
+  .review .persona-copy-label { color: #fff; }
+  .review .persona-copy { border-top-color: rgba(185, 215, 231, .25); }
+  .review .note.honesty { color: var(--ws-muted); }
+  .review .doc { color: var(--ink); }
+  .review .actions button:not(.primary) { background: #fff; color: var(--navy); border-color: var(--navy); }
+
+  @media (min-width: 901px) {
+    #sliders { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    #sliders > .actions { grid-column: 1 / -1; margin-top: 2px; justify-content: flex-end; }
+    #lock { width: auto; min-width: 260px; }
+  }
+  @media (max-width: 620px) {
+    .sec { border-radius: 18px; margin-bottom: 12px; }
+    .sec-head { flex-wrap: wrap; gap: 12px; padding: 14px; }
+    .sec-btn { padding: 14px; gap: 12px; min-height: 68px; border-radius: 18px; }
+    .sec-ic { width: 44px; height: 44px; border-radius: 13px; }
+    .sec-ic svg { width: 24px; height: 24px; }
+    .sec-title { font-size: 1.125rem; }
+    .sec-sub { font-size: .875rem; }
+    .sec-act { flex: 1 1 100%; justify-content: stretch; }
+    .sec-act button { flex: 1 1 100%; }
+    .sec-body { padding: 0 14px 16px; }
+    .sec .build-status { margin: 0 14px 12px; }
+    .sec-project .byos { padding: 0 10px 10px; }
+    .review > * { margin-left: 14px; margin-right: 14px; }
+    .review .review-head { padding: 14px 14px 12px; }
+    .review .review-head .format { margin-left: 0; width: 100%; }
+    html { scroll-padding-top: 76px; }
+  }
+  @media (prefers-reduced-motion: no-preference) { .sec-chev { transition: transform .24s cubic-bezier(.33, 1, .68, 1); } }
+  @media (forced-colors: active) { .sec { border: 2px solid CanvasText; box-shadow: none; } }
+
   /* ---------- Project form: a pale frosted surface on the dark deck, two grouped sections ---------- */
   .byos .sheet { background: linear-gradient(180deg, #F6FAFF 0%, #EAF1FA 100%); border: 1px solid rgba(255, 255, 255, .9); border-radius: 26px; padding: 14px;
     box-shadow: 0 18px 40px rgba(2, 12, 24, .38), inset 0 1px 0 #fff; }
@@ -759,6 +825,8 @@
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="s-doc" viewBox="0 0 24 24"><path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="s-sliders" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="15" cy="6" r="2.2" fill="#031b2a"/><circle cx="8" cy="12" r="2.2" fill="#031b2a"/><circle cx="13" cy="18" r="2.2" fill="#031b2a"/></symbol>
   <symbol id="i-panel" viewBox="0 0 24 24"><circle cx="7" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><path d="M2 20c0-3 2.2-5 5-5s5 2 5 5M12 20c0-3 2.2-5 5-5s5 2 5 5"/></symbol>
   <symbol id="i-stress" viewBox="0 0 24 24"><path d="M2 12h4l2-3 2 7 3-12 3 14 2-6h4"/></symbol>
   <symbol id="r-panel" viewBox="0 0 64 64"><circle cx="32" cy="21" r="8"/><path d="M18 50c1-10 6-15 14-15s13 5 14 15"/><circle cx="13" cy="25" r="5"/><path d="M4 47c.7-7 4-11 9-11"/><circle cx="51" cy="25" r="5"/><path d="M60 47c-.7-7-4-11-9-11"/></symbol>
@@ -958,20 +1026,15 @@
   </div>
 
   <div id="tool" hidden>
-  <div class="intro dk">
+  <div class="intro">
     <div class="intro-top">
       <h1 id="tool-h" tabindex="-1">Build a test panel for your project</h1>
       <button type="button" class="refresher" id="refresher">Need a refresher?</button>
     </div>
     <p class="lead">Describe what you're testing. Build a panel of test personas. Use them to stress-test your experience before real users do.</p>
-    <ol class="steps">
-      <li><span><strong>Describe it.</strong> <span class="step-more">One sentence about what you're building and who it's for.</span></span></li>
-      <li><span><strong>Shape the panel.</strong> <span class="step-more">How many people, how hard they test it, and how they move through it.</span></span></li>
-      <li><span><strong>Take it to your build.</strong> <span class="step-more">Export a persona for each test pass, with what to watch for.</span></span></li>
-    </ol>
   </div>
 
-  <div class="readout-bar dk" aria-hidden="true">
+  <div class="readout-bar" aria-hidden="true">
     <div class="readout">
       <div class="ro s-panel"><span class="ro-k">Panel</span><span class="ro-d" id="ro-panel">P3</span><span class="ro-v" id="ro-panel-v"></span></div>
       <div class="ro s-challenge"><span class="ro-k">Challenge</span><span class="ro-d" id="ro-challenge">C1</span><span class="ro-v" id="ro-challenge-v"></span></div>
@@ -980,19 +1043,23 @@
     </div>
   </div>
 
-  <section class="panel-bar dk" aria-labelledby="panel-h">
-    <div class="what">
-      <span class="panel-id" id="panel-id"></span>
-      <h2 id="panel-h" tabindex="-1"></h2>
-      <p class="for" id="panel-for"></p>
+  <section class="sec sec-project" aria-labelledby="sec-project-h">
+    <div class="sec-head">
+      <span class="sec-ic" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#s-doc"/></svg></span>
+      <div class="sec-t">
+        <h2 class="sec-title" id="sec-project-h">Your project</h2>
+        <span class="panel-id" id="panel-id"></span>
+        <h3 class="proj-h" id="panel-h" tabindex="-1"></h3>
+        <p class="for" id="panel-for"></p>
+      </div>
+      <div class="sec-act">
+        <button type="button" class="primary" id="own" aria-expanded="false" aria-controls="byos">Try it with your own project</button>
+        <button type="button" id="fresh" aria-expanded="false" aria-controls="byos" hidden>Build a new panel</button>
+      </div>
     </div>
-    <button type="button" class="primary" id="own" aria-expanded="false" aria-controls="byos">Try it with your own project</button>
-    <button type="button" id="fresh" aria-expanded="false" aria-controls="byos" hidden>Build a new panel</button>
-  </section>
+    <p class="build-status" id="build-status" hidden aria-hidden="true"></p>
 
-  <p class="build-status dk" id="build-status" hidden aria-hidden="true"></p>
-
-  <section class="byos dk" id="byos" hidden aria-labelledby="byos-h">
+  <section class="byos" id="byos" hidden aria-labelledby="byos-h">
     <div class="sheet">
     <h2 id="byos-h" class="sr-only">Your project</h2>
     <form id="byos-form" novalidate>
@@ -1048,9 +1115,17 @@
     </form>
     </div>
   </section>
+  </section>
 
-  <section class="controls dk" aria-labelledby="controls-h">
-    <div class="controls-head"><h2 id="controls-h">Shape your panel</h2>
+  <section class="sec controls" id="sec-shape" aria-labelledby="controls-h">
+    <h2 class="sec-h" id="controls-h"><button type="button" class="sec-btn" id="shape-btn" aria-expanded="true" aria-controls="shape-panel">
+      <span class="sec-ic" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#s-sliders"/></svg></span>
+      <span class="sec-t"><span class="sec-title">Shape your panel</span>
+        <span class="sec-sub"><span class="sub-open">Customize the size, challenge level, and journey for your test panel.</span><span class="sub-closed" id="shape-sum"></span></span></span>
+      <svg class="sec-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button></h2>
+    <div class="sec-panel" id="shape-panel" role="region" aria-labelledby="shape-btn"><div class="sec-body">
+    <div class="controls-head">
     <p class="next-cue" id="next-cue" hidden>Your panel is ready. Adjust who's included, the challenge, and their journey. Then review and export your test.</p>
     <p class="hint-line" id="controls-hint">Drag a marker, or use the arrow keys.</p></div>
     <div id="sliders">
@@ -1097,23 +1172,35 @@
       <p class="code" id="code"></p>
       <div class="actions"><button type="button" id="edit">Adjust panel</button></div>
     </div>
+    </div></div>
   </section>
 
+  <section class="sec sec-personas" id="sec-personas" aria-labelledby="personas-h">
+    <h2 class="sec-h" id="personas-h"><button type="button" class="sec-btn" id="personas-btn" aria-expanded="true" aria-controls="personas-panel">
+      <span class="sec-ic" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#i-panel"/></svg></span>
+      <span class="sec-t"><span class="sec-title">Test personas</span>
+        <span class="sec-sub"><span class="sub-open" id="personas-open-sum"></span><span class="sub-closed" id="personas-sum"></span></span></span>
+      <svg class="sec-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button></h2>
+    <div class="sec-panel" id="personas-panel" role="region" aria-labelledby="personas-btn"><div class="sec-body">
   <div class="stage">
     <section class="zone zone-seats" id="zone-seats" aria-labelledby="seats-h">
-      <div class="zone-head"><svg class="icon" aria-hidden="true"><use href="#i-panel"/></svg><h2 id="seats-h">Seats</h2><div class="zone-tools"><p class="caption" id="seats-caption"></p><button type="button" class="jr-link" id="jr-link" aria-haspopup="dialog">View journey</button></div></div>
+      <div class="zone-head"><svg class="icon" aria-hidden="true"><use href="#i-panel"/></svg><h3 id="seats-h">Seats</h3><div class="zone-tools"><p class="caption" id="seats-caption"></p><button type="button" class="jr-link" id="jr-link" aria-haspopup="dialog">View journey</button></div></div>
       <ul class="seats" id="seats"></ul>
     </section>
 
     <section class="zone zone-cards" id="zone-cards" aria-labelledby="cards-h">
-      <div class="zone-head"><svg class="icon" aria-hidden="true"><use href="#i-stress"/></svg><h2 id="cards-h">Personas</h2></div>
+      <div class="zone-head sr-only"><h3 id="cards-h">Personas</h3></div>
       <p class="tier-line" id="tier-caption"></p>
       <ul class="cards" id="cards"></ul>
     </section>
   </div>
+    </div></div>
+  </section>
 
-  <section class="review" id="review" hidden aria-labelledby="brief-h">
+  <section class="review sec" id="review" hidden aria-labelledby="brief-h">
     <div class="review-head">
+      <span class="sec-ic" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#s-doc"/></svg></span>
       <h2 id="brief-h" tabindex="-1">Review and export</h2>
       <fieldset class="format">
         <legend>Export as</legend>
@@ -1498,7 +1585,7 @@ function routePath(ys) {
 }
 // Each value pill keeps the width of its longest value, so changing a value never reflows the row.
 function reservePillWidths() {
-  if ($("tool").hidden) return;           // measured once the tool is on screen
+  if ($("tool").hidden || $("shape-panel").hidden) return;           // measured once the tool and its panel are on screen
   const labels = {
     panel: [1, 2, 3, 4, 5, 6].map(n => `${n} persona${n === 1 ? "" : "s"}`),
     challenge: LEVELS.map(l => l.label),
@@ -1661,6 +1748,10 @@ function render() {
   $("challenge-state").textContent = STATE_HELP.challenge[v.challenge - 1];
   $("journey-state").textContent = STATE_HELP.journey[v.journey - 1];
   setMotifs();
+  // Section summaries: shown only while a section is collapsed. Plain text, not announced.
+  $("shape-sum").textContent = [$("panel-val").textContent, $("challenge-val").textContent, $("journey-val").textContent].join(" \u00B7 ");
+  $("personas-sum").textContent = $("panel-val").textContent;
+  $("personas-open-sum").textContent = `Here ${v.panel === 1 ? "is 1 persona" : "are " + v.panel + " personas"} based on your current settings.`;
 
   // Panel owns WHO: seats and cards
   $("seats-caption").textContent = `Panel of ${v.panel}`;
@@ -2084,6 +2175,37 @@ $("jr-dialog").addEventListener("close", () => {
   $("jr-dialog").getAnimations().forEach(a => a.cancel());
   $("jr-link").focus();
 });
+// ---------- Workspace sections: Shape your panel and Test personas open and close independently ----------
+// Closing never leaves focus inside hidden content (the trigger takes it first); the content stays mounted, inert while
+// it leaves, then hidden. Opening during a close cancels the pending hide. The disclosure state is separate from all data.
+function secSet(btn, open) {
+  const panel = $(btn.getAttribute("aria-controls"));
+  if ((btn.getAttribute("aria-expanded") === "true") === open) return;
+  btn.setAttribute("aria-expanded", String(open));
+  (panel._anims || []).forEach(a => a.cancel());
+  panel._anims = [];
+  const tok = panel._tok = {};
+  if (!open && panel.contains(document.activeElement)) btn.focus();
+  if (!motionOK()) { panel.inert = false; panel.hidden = !open; if (open) reservePillWidths(); return; }
+  if (open) {
+    panel.hidden = false; panel.inert = false;
+    reservePillWidths();
+    const h = panel.scrollHeight;
+    panel.style.overflow = "hidden";
+    const a = panel.animate([{height: "0px"}, {height: h + "px"}], {duration: 260, easing: EASE_P2_OUT});
+    panel._anims.push(a);
+    a.finished.then(() => { if (panel._tok === tok) panel.style.overflow = ""; }, () => {});
+  } else {
+    panel.inert = true;
+    const h = panel.offsetHeight;
+    panel.style.overflow = "hidden";
+    const a = panel.animate([{height: h + "px"}, {height: "0px"}], {duration: 230, easing: EASE_P2_INOUT, fill: "forwards"});
+    panel._anims.push(a);
+    a.finished.then(() => { if (panel._tok === tok) { panel.hidden = true; panel.inert = false; panel.style.overflow = ""; a.cancel(); } }, () => {});
+  }
+}
+for (const id of ["shape-btn", "personas-btn"]) $(id).addEventListener("click", () => secSet($(id), $(id).getAttribute("aria-expanded") !== "true"));
+
 $("acc").addEventListener("click", e => {
   const btn = e.target.closest(".acc-btn");
   if (!btn) return;
@@ -2123,7 +2245,7 @@ function enterTool() {
   // Back from a refresher: return to the button that opened it.
   (obReturnFocus || $("tool-h")).focus();
   obReturnFocus = null;
-  revealIn([".intro", ".readout-bar", ".panel-bar", ".controls", ".stage"].map(q => document.querySelector(q)), {dy: 18, stagger: 70});
+  revealIn([".intro", ".readout-bar", ".sec-project", ".controls", ".sec-personas"].map(q => document.querySelector(q)), {dy: 18, stagger: 70});
 }
 $("onboard").addEventListener("click", e => {
   const go = e.target.closest("[data-go]");
