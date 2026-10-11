@@ -385,7 +385,7 @@
   /* ---------- Workspace chrome: sticky read-out ---------- */
   html { scroll-padding-top: 96px; } /* keep focused controls clear of the sticky read-out */
 
-  .readout-bar { pointer-events: none; position: sticky; top: 0; z-index: 5; padding: 6px 0 12px; background: linear-gradient(180deg, #062335 72%, rgba(6, 35, 53, 0)); }
+  .readout-bar { pointer-events: none; position: sticky; top: 0; z-index: 5; padding: 6px 0 12px; background: linear-gradient(180deg, #EEF2F6 72%, rgba(238, 242, 246, 0)); }
   .readout { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; align-items: center; background: #06131D; border: 1px solid var(--deck-line); border-radius: 14px; padding: 10px 4px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04); }
   .readout .s-panel { --acc: #2DD4BF; }
   .readout .s-challenge { --acc: #A78BFA; }
@@ -646,18 +646,19 @@
   /* ---------- Segmented workspace: four sections on one dark page ----------
      Your project, Shape your panel, Test personas, Review and export. Pale surfaces (form sheet, seats, persona cards,
      export document) sit inside them; teal marks the active controls. */
-  body:has(#tool:not([hidden])) { background: radial-gradient(80% 46% at 96% 0%, rgba(0, 222, 216, .20), transparent 62%), radial-gradient(60% 40% at 0% 100%, rgba(56, 189, 248, .08), transparent 60%), #062335; background-attachment: fixed; }
+  body:has(#tool:not([hidden])) { background: #EEF2F6; }
   #tool { color: #F5F7FF; --ws-border: #236077; --ws-surface: #031b2a; --ws-muted: #B9D7E7; --ws-cyan: #00DED8; }
   #tool :focus-visible { outline-color: #5EE7F5; }
   .intro { margin: 0 0 4px; }
-  .intro h1 { color: #fff; }
-  .intro .lead { color: var(--ws-muted); margin-bottom: 8px; }
-  .intro .refresher { color: #fff; }
-  .intro .refresher:hover { background: rgba(255, 255, 255, .1); }
+  .intro h1 { color: var(--navy); }
+  .intro .lead { color: var(--muted); margin-bottom: 8px; }
+  .intro .refresher { color: var(--navy); }
+  .intro .refresher:hover { background: var(--soft); }
+  .intro :focus-visible { outline-color: var(--focus); }
   html { scroll-padding-top: 96px; }
 
   .sec { position: relative; margin: 0 0 14px; background: linear-gradient(180deg, rgba(8, 44, 66, .9), var(--ws-surface)); border: 1px solid var(--ws-border); border-radius: 22px; color: #F5F7FF;
-    box-shadow: 0 14px 34px rgba(0, 10, 20, .32), inset 0 1px 0 rgba(255, 255, 255, .05); }
+    box-shadow: 0 10px 26px rgba(27, 42, 74, .22), inset 0 1px 0 rgba(255, 255, 255, .05); }
   .sec-h { margin: 0; font-size: inherit; line-height: inherit; color: inherit; }
   .sec-head { display: flex; align-items: center; gap: 16px; padding: 18px 20px; }
   .sec-ic { flex: none; display: grid; place-items: center; width: 56px; height: 56px; border-radius: 16px; color: var(--ws-cyan);
