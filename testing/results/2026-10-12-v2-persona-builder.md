@@ -102,3 +102,8 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
 - The Challenge icon sits on a glossy purple tile. Journey uses the approved glossy tile artwork (`design/icons/journey-tile.png` master; a 96px WebP of about 4 KB is embedded). In forced-colors mode the line icon returns.
 - A gentle accent glow on the slider thumb and fill. No animation was added.
 - Contrast on the tinted cards: muted text at least 4.7:1 (hover 5.0:1 or more); white at least 8.6:1.
+
+## Route folded into the cards (2026-10-12)
+- Persona cards (Build preview and Your panel) replace the Route chip row with a "View route" link. Screen readers hear it as "View route for [name]".
+- The link opens the existing Journey window for that card's person. Focus returns to the link that opened it. The route stays in both exports.
+- v2-test checks every journey pattern through the card link against the export.
