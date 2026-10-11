@@ -96,3 +96,9 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
   - Long names wrap at 360, 900 and 1280px, with no sideways scroll.
   - Text contrast on the new surfaces is 6.3:1 to 11.9:1.
 - **Unchanged:** no logic, slider, export or stage changes.
+
+## Control cards (approved treatment, 2026-10-12)
+- Challenge and Journey cards are tinted from the top-left corner in their accent (purple, blue), with an accent border, an inner top highlight and a soft shadow.
+- The Challenge icon sits on a glossy purple tile. Journey uses the approved glossy tile artwork (`design/icons/journey-tile.png` master; a 96px WebP of about 4 KB is embedded). In forced-colors mode the line icon returns.
+- A gentle accent glow on the slider thumb and fill. No animation was added.
+- Contrast on the tinted cards: muted text at least 4.7:1 (hover 5.0:1 or more); white at least 8.6:1.
