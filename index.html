@@ -815,10 +815,27 @@
   .build-left { min-width: 0; display: grid; gap: 14px; align-content: start; }
   .build-sum { margin: 0; flex-direction: column; align-items: flex-start; gap: 8px; }
   .build-sum .live-av { flex-wrap: wrap; }
-  .editor.controls { padding: 14px; border-radius: 16px; border: 1px solid var(--ws-border); border-top: 3px solid #2DD4BF; box-shadow: none; }
+  /* The configuration surface: one step lighter than the Build workspace, so "configure this person" reads as its own place.
+     Its two control cards sit a step darker again; the white Preview below stays the strongest surface. */
+  .editor.controls { padding: 16px; border-radius: 18px; background: linear-gradient(180deg, #17485C, #133B50); border: 1px solid rgba(94, 231, 245, .26); border-top: 3px solid #22D6CC;
+    box-shadow: 0 12px 26px rgba(2, 12, 24, .34), inset 0 1px 0 rgba(255, 255, 255, .06); }
+  .editor .slider, .editor .slider + .slider { background: #102B41; border: 1px solid color-mix(in srgb, var(--acc) 42%, transparent); box-shadow: 0 6px 14px rgba(2, 12, 24, .28); }
+  .editor .slider:hover, .editor .slider:focus-within { background: #12324A; border-color: color-mix(in srgb, var(--acc) 80%, transparent); }
   .editor[hidden] { display: none; }
-  .editor-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; margin-bottom: 4px; }
-  .editor-h { margin: 0; font-weight: 800; color: #fff; }
+  .editor-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 4px 14px; margin-bottom: 10px; }
+  .editor-head #editor-av { width: 56px; height: 56px; }
+  .editor-id { min-width: 0; }
+  .editor-kicker { margin: 0; font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #9FD8E4; }
+  .editor-h { margin: 2px 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; color: #fff; }
+  .editor-name { font-size: 1.25rem; font-weight: 800; line-height: 1.25; overflow-wrap: anywhere; }
+  .editor-lens { padding: 2px 10px; border-radius: 999px; border: 1px solid rgba(94, 231, 245, .55); background: rgba(0, 222, 216, .1); color: #CFF7F7; font-size: .8125rem; font-weight: 700; }
+  .editor-hint { margin: 4px 0 0; color: #C3D9E4; font-size: .9375rem; }
+  @media (max-width: 620px) {
+    .editor-head { grid-template-columns: auto minmax(0, 1fr); }
+    .editor-head #editor-av { width: 44px; height: 44px; }
+    .editor-head .jr-link { grid-column: 1 / -1; justify-self: start; }
+    .editor.controls { padding: 12px; }
+  }
   .editor .jr-link { color: #5EE7F5; background: none; border: 0; padding: 4px 0; font: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; min-height: 44px; }
   .editor .hint-line { margin: 0 0 10px; }
   @container pqa (min-width: 620px) { #sliders { grid-template-columns: repeat(2, minmax(0, 1fr)); } #sliders .slider + .slider { margin-top: 0; } }
@@ -1261,8 +1278,16 @@
     <div class="st-actions" id="panel-actions"><button type="button" id="clear-panel">Clear panel</button><button type="button" id="add-more" data-stage-go="build">Add a persona</button><button type="button" class="primary" id="lock" data-stage-go="export">Review &amp; export</button></div>
   </section>
 
-  <div class="editor controls" id="editor" role="group" aria-labelledby="editor-h" hidden>
-    <div class="editor-head"><p class="editor-h" id="editor-h"></p><button type="button" class="jr-link" id="jr-link" aria-haspopup="dialog">View journey</button></div>
+  <div class="editor controls" id="editor" role="group" aria-labelledby="editor-kicker editor-h" hidden>
+    <div class="editor-head">
+      <span class="av" id="editor-av" aria-hidden="true"></span>
+      <div class="editor-id">
+        <p class="editor-kicker" id="editor-kicker">Configuring persona</p>
+        <p class="editor-h" id="editor-h"><span class="editor-name" id="editor-name"></span> <span class="editor-lens" id="editor-lens"></span></p>
+        <p class="editor-hint" id="editor-hint"></p>
+      </div>
+      <button type="button" class="jr-link" id="jr-link" aria-haspopup="dialog">View journey</button>
+    </div>
     <p class="hint-line" id="controls-hint">Drag a marker, or use the arrow keys.</p>
     <div id="sliders">
       <div class="slider s-challenge">
@@ -1952,7 +1977,11 @@ function renderEditor() {
   if (ed.parentNode !== home) home.appendChild(ed);
   ed.hidden = false;
   const p = current.personas[t.p], level = LEVELS[t.challenge - 1], pattern = PATTERNS[t.journey - 1];
-  $("editor-h").textContent = `Test settings for ${p.name}`;
+  // The header names whose settings these are: same person and archetype as the preview below.
+  $("editor-av").className = `av av-${ARCHETYPE_CLASS[LENSES[t.a]]}`;
+  $("editor-name").textContent = p.name;
+  $("editor-lens").textContent = LENSES[t.a];
+  $("editor-hint").textContent = LENS_HINT[t.a] + ".";
   for (const id of ["challenge", "journey"]) {
     const inp = inputs[id];
     inp.value = t[id];

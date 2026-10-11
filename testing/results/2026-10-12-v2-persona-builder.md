@@ -82,3 +82,17 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
 - Removed "Start with the recommended three" and the "Suggested next" tag. The panel summary moved up under the archetype choices.
 - After an add, the choice still moves to the next archetype not yet covered, in the tool's coverage order. This is silent, with no tag or announcement.
 - The test settings sit above the preview.
+
+## Settings-surface visual hierarchy (approved handoff, 2026-10-12)
+- **Editor (the configuration surface):**
+  - One step lighter than the Build workspace (#17485C → #133B50), with a thin teal top accent, a subtle border and a soft shadow.
+  - The Challenge and Journey cards sit a step darker (#102B41), with borders tinted by their own purple or blue accent.
+  - The white Preview is unchanged.
+- **Header:**
+  - The archetype icon (decorative), a "Configuring persona" kicker, the person's real name, an archetype pill, and the existing archetype hint.
+  - View journey stays in the header.
+  - The group is labelled "Configuring persona [name] [archetype]". No new tab stops.
+- **Responsive and contrast checks:**
+  - Long names wrap at 360, 900 and 1280px, with no sideways scroll.
+  - Text contrast on the new surfaces is 6.3:1 to 11.9:1.
+- **Unchanged:** no logic, slider, export or stage changes.
