@@ -13,7 +13,7 @@ Sections 2 and 3 are independent (any of the four open/closed combinations; noth
 separate from all data; collapsing never resets values.
 
 ## Preservation
-- All 119 element IDs from before are present exactly once afterwards (ledger check in the test run). Nothing was cloned, replaced or re-ID'd.
+- All element IDs from before are present exactly once afterwards (112; the 7 belonging to the removed pinned read-out are gone on purpose) (ledger check in the test run). Nothing was cloned, replaced or re-ID'd.
 - Moved in the static markup only (before script runs): the project summary now sits inside the Your project section and the
   stage inside the Test personas section. Control order is unchanged apart from the two new disclosure buttons.
 - Handlers, state, validation, exports and prompts untouched.
@@ -29,5 +29,8 @@ separate from all data; collapsing never resets values.
 ## Accessibility notes
 - Disclosure is a real button inside the section heading; icons and chevrons are aria-hidden.
 - Closing a section with focus inside moves focus to its button first, marks the content inert while it leaves, then hides it.
-- The sticky read-out is aria-hidden and does not intercept clicks (found by a flaky click in testing).
 - Collapsed summary text ("3 personas · Typical · Straight through") is plain text, not a live region.
+
+## Update: pinned P/C/J read-out removed
+The sticky strip at the top is gone (markup, styles and the code that filled it). The same values remain visible in the three
+slider pills and, when Shape your panel is folded, in its header summary. Its IDs (ro-*) no longer exist.

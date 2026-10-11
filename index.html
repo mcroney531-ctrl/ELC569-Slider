@@ -47,7 +47,7 @@
   .icon { width: 20px; height: 20px; flex: none; fill: none; stroke: var(--navy); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
   /* ---------- Layout: a dark instrument deck on top, light reading surfaces below ----------
-     DOM order = visual order = focus order: intro, readout, panel bar, form, controls, stage, review. */
+     DOM order = visual order = focus order: intro, project, controls, personas, review. */
   #tool { --deck: #0A1F2E; --deck-line: rgba(150, 190, 215, .22); --deck-text: #F5FAFD; --deck-muted: #AFC2D0; --teal: #2DD4BF; }
   body:has(#tool:not([hidden])) { background: #EEF2F6; }
   .stage { display: grid; gap: 14px; margin-top: 18px; grid-template-areas: "seats" "cards"; }
@@ -383,20 +383,7 @@
   }
 
   /* ---------- Workspace chrome: sticky read-out ---------- */
-  html { scroll-padding-top: 96px; } /* keep focused controls clear of the sticky read-out */
 
-  .readout-bar { pointer-events: none; position: sticky; top: 0; z-index: 5; padding: 6px 0 12px; background: linear-gradient(180deg, #EEF2F6 72%, rgba(238, 242, 246, 0)); }
-  .readout { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; align-items: center; background: #06131D; border: 1px solid var(--deck-line); border-radius: 14px; padding: 10px 4px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04); }
-  .readout .s-panel { --acc: #2DD4BF; }
-  .readout .s-challenge { --acc: #A78BFA; }
-  .readout .s-journey { --acc: #38BDF8; }
-  .ro { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "d k" "d v"; column-gap: 12px; padding: 0 16px; border-left: 1px solid var(--deck-line); }
-  .ro:first-child { border-left: 0; }
-  .ro-d { grid-area: d; align-self: center; font: 700 1.875rem/1 ui-monospace, "Cascadia Mono", Consolas, monospace; color: #fff; }
-  .ro-d::first-letter { color: var(--acc); }
-  .ro-k { grid-area: k; font-size: .6875rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--deck-muted); }
-  .ro-v { grid-area: v; font-size: .9375rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .ro-id { padding: 0 16px; font: 600 .75rem ui-monospace, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--deck-muted); white-space: nowrap; }
 
 
   .controls-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; margin-bottom: 12px; }
@@ -437,13 +424,6 @@
 
   @media (max-width: 839.98px) {
     main { padding: 12px 10px 28px; }
-    .readout { grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 8px 0; border-radius: 12px; }
-    .ro { grid-template-columns: minmax(0, 1fr); grid-template-areas: "k" "d" "v"; justify-items: center; text-align: center; row-gap: 2px; padding: 0 6px; }
-    .ro-d { font-size: 1.375rem; }
-    .ro-k { font-size: .625rem; letter-spacing: .06em; }
-    .ro-v { font-size: .75rem; max-width: 100%; white-space: normal; line-height: 1.2; }
-    .ro-id { display: none; }
-    html { scroll-padding-top: 104px; }
     .stage { margin-top: 14px; }
   }
 
@@ -504,13 +484,6 @@
     .doc textarea { min-height: 280px; }
     .doc .actions button { flex: 1 1 0; padding-left: 10px; padding-right: 10px; }
     /* Read-out: one line per instrument, so it stays small while pinned */
-    .readout-bar { padding-top: 0; padding-bottom: 8px; }
-    .readout { padding: 6px 0; }
-    .ro { grid-template-areas: "d v"; grid-template-columns: auto minmax(0, 1fr); justify-items: start; text-align: left; align-items: center; column-gap: 6px; padding: 0 8px; }
-    .ro-k { display: none; }
-    .ro-d { font-size: 1.0625rem; }
-    .ro-v { font-size: .6875rem; }
-    html { scroll-padding-top: 76px; }
   }
 
   /* ---------- Step 3 accordion: one outer box when open, plain text inside ---------- */
@@ -655,7 +628,6 @@
   .intro .refresher { color: var(--navy); }
   .intro .refresher:hover { background: var(--soft); }
   .intro :focus-visible { outline-color: var(--focus); }
-  html { scroll-padding-top: 96px; }
 
   .sec { position: relative; margin: 0 0 14px; background: linear-gradient(180deg, rgba(8, 44, 66, .9), var(--ws-surface)); border: 1px solid var(--ws-border); border-radius: 22px; color: #F5F7FF;
     box-shadow: 0 10px 26px rgba(27, 42, 74, .22), inset 0 1px 0 rgba(255, 255, 255, .05); }
@@ -744,7 +716,6 @@
     .review > * { margin-left: 14px; margin-right: 14px; }
     .review .review-head { padding: 14px 14px 12px; }
     .review .review-head .format { margin-left: 0; width: 100%; }
-    html { scroll-padding-top: 76px; }
   }
   @media (prefers-reduced-motion: no-preference) { .sec-chev { transition: transform .24s cubic-bezier(.33, 1, .68, 1); } }
   @media (forced-colors: active) { .sec { border: 2px solid CanvasText; box-shadow: none; } }
@@ -1033,15 +1004,6 @@
       <button type="button" class="refresher" id="refresher">Need a refresher?</button>
     </div>
     <p class="lead">Describe what you're testing. Build a panel of test personas. Use them to stress-test your experience before real users do.</p>
-  </div>
-
-  <div class="readout-bar" aria-hidden="true">
-    <div class="readout">
-      <div class="ro s-panel"><span class="ro-k">Panel</span><span class="ro-d" id="ro-panel">P3</span><span class="ro-v" id="ro-panel-v"></span></div>
-      <div class="ro s-challenge"><span class="ro-k">Challenge</span><span class="ro-d" id="ro-challenge">C1</span><span class="ro-v" id="ro-challenge-v"></span></div>
-      <div class="ro s-journey"><span class="ro-k">Journey</span><span class="ro-d" id="ro-journey">J1</span><span class="ro-v" id="ro-journey-v"></span></div>
-      <span class="ro-id" id="ro-id"></span>
-    </div>
   </div>
 
   <section class="sec sec-project" aria-labelledby="sec-project-h">
@@ -1700,7 +1662,6 @@ function mountPanel() {
   $("moments-note").innerHTML = picked.length ? `<span class="jr-dot" aria-hidden="true"></span><strong>Suggested by the tool:</strong> ${picked.length === 4 ? "all four key moments" : esc(picked.join(", "))}. Use Edit project details to name your own.` : "";
   $("own").textContent = sample ? "Try it with your own project" : "Edit project details";
   $("own").classList.toggle("primary", sample); // after a build, Review & export is the next step
-  $("ro-id").textContent = sample ? "Sample panel" : `Panel ${current.id}`;
   $("fresh").hidden = sample;
   updateCue();
 }
@@ -1738,11 +1699,6 @@ function render() {
   $("panel-val").textContent = `${v.panel} persona${v.panel === 1 ? "" : "s"}`;
   $("challenge-val").textContent = v.level.label;
   $("journey-val").textContent = v.pattern.label;
-  // Read-out: the same three values as the pills, as one instrument line (hidden from assistive tech).
-  for (const [id, n] of [["panel", "P" + v.panel], ["challenge", "C" + v.challenge], ["journey", "J" + v.journey]]) {
-    $("ro-" + id).textContent = n;
-    $("ro-" + id + "-v").textContent = $(id + "-val").textContent;
-  }
   for (const id of ["panel", "challenge", "journey"])
     $(id + "-wrap").querySelectorAll(".tick").forEach((t, i) => t.classList.toggle("on", i < state[id] - 1));
   $("panel-state").textContent = STATE_HELP.panel[v.panel - 1];
@@ -2246,7 +2202,7 @@ function enterTool() {
   // Back from a refresher: return to the button that opened it.
   (obReturnFocus || $("tool-h")).focus();
   obReturnFocus = null;
-  revealIn([".intro", ".readout-bar", ".sec-project", ".controls", ".sec-personas"].map(q => document.querySelector(q)), {dy: 18, stagger: 70});
+  revealIn([".intro", ".sec-project", ".controls", ".sec-personas"].map(q => document.querySelector(q)), {dy: 18, stagger: 70});
 }
 $("onboard").addEventListener("click", e => {
   const go = e.target.closest("[data-go]");
