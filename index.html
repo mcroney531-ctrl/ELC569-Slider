@@ -885,20 +885,30 @@
   .stale p { margin: 0 0 8px; }
   .stale button { background: #fff; color: var(--navy); border: 1.5px solid var(--navy); }
   .sec-build .next-cue { margin: 0 0 16px; background: rgba(255, 255, 255, .06); color: #F5FAFD; border: 1px solid rgba(45, 212, 191, .3); border-left: 4px solid #2DD4BF; }
-  /* Guided example: an inline step in the page, in reading order. No overlay, no pulsing. */
-  .tour { margin: 0 0 16px; padding: 14px 16px; border-radius: 14px; background: #E8FBF8; color: #0B2F3A; border: 1px solid #8EE3D6; border-left: 6px solid #14B8A6; }
-  .tour[hidden] { display: none; }
-  #review > .tour { margin: 0 20px 16px; }
-  .tour-count { margin: 0; font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #0F766E; }
-  .tour-h { margin: 2px 0 4px; font-size: 1.125rem; font-weight: 800; color: #0B2F3A; }
-  .tour-h:focus { outline: none; }
-  .tour-h:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
-  .tour-t { margin: 0 0 10px; }
-  .tour-btns { display: flex; flex-wrap: wrap; gap: 8px; }
-  .tour-btns button { min-height: 44px; padding: 0 16px; border-radius: 12px; font: inherit; font-weight: 700; background: #fff; color: var(--navy); border: 1.5px solid var(--navy); }
-  .tour-btns button.primary { background: var(--navy); color: #fff; }
-  .tour-btns button[hidden] { display: none; }
-  @media (max-width: 620px) { #review > .tour { margin: 0 14px 14px; } }
+  /* Spotlight tour: the page dims around one region; a compact card explains it. */
+  .spot { position: fixed; z-index: 1000; pointer-events: none; border-radius: 18px; outline: 2px solid #5EE7F5; outline-offset: 0;
+    box-shadow: 0 0 0 4px rgba(94, 231, 245, .18), 0 0 0 9999px rgba(2, 10, 18, .58); }
+  .spot[hidden] { display: none; }
+  dialog.tourcard { position: fixed; margin: 0; width: min(340px, calc(100vw - 24px)); max-height: min(70dvh, 420px); overflow: auto; padding: 16px 16px 14px;
+    border-radius: 16px; border: 1px solid rgba(94, 231, 245, .45); border-top: 3px solid #22D6CC; background: #0E2A3E; color: #F5FAFD;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, .45); }
+  dialog.tourcard::backdrop { background: transparent; }
+  .tc-body:focus { outline: none; }
+  .tc-body:focus-visible { outline: 3px solid #5EE7F5; outline-offset: 4px; border-radius: 6px; }
+  .tc-count { margin: 0; font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #9FD8E4; }
+  .tc-title { margin: 2px 0 6px; font-size: 1.125rem; font-weight: 800; color: #fff; }
+  .tc-where { margin: 0 0 6px; font-size: .8125rem; font-weight: 700; color: #9FD8E4; }
+  .tc-text { margin: 0 0 14px; line-height: 1.45; color: #DCEAF2; }
+  .tc-btns { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+  .tc-nav { display: flex; gap: 8px; margin-left: auto; }
+  .tc-btns button { min-height: 44px; padding: 0 16px; border-radius: 12px; font: inherit; font-weight: 700; background: transparent; color: #fff; border: 1.5px solid rgba(245, 250, 253, .55); }
+  .tc-btns button:hover { background: rgba(255, 255, 255, .1); }
+  .tc-btns button.primary { background: linear-gradient(90deg, #23D4C4, #2EE6C1); color: #062C35; border-color: transparent; }
+  .tc-btns .tc-skip { border-color: transparent; text-decoration: underline; text-underline-offset: 3px; padding: 0 6px; }
+  .tc-btns button[hidden] { display: none; }
+  .tc-btns :focus-visible { outline: 3px solid #5EE7F5; outline-offset: 2px; }
+  @media (max-width: 620px) { dialog.tourcard { max-height: 46dvh; } }
+  @media (forced-colors: active) { .spot { outline: 3px solid Highlight; box-shadow: none; } dialog.tourcard { border: 2px solid CanvasText; } }
   .replace-note { margin: 10px 0 0; padding: 10px 12px; border-left: 4px solid #B45309; border-radius: 10px; background: #FFF6EA; color: #5A3200; font-weight: 600; }
   .replace-note[hidden] { display: none; }
 
@@ -1150,11 +1160,11 @@
         <p class="ob-count">Step 4 of 4</p>
         <h2 id="ob-h4" tabindex="-1">Try it with an example</h2>
       </div>
-      <p>Take a quick guided run through the real tool with a sample project: a short learning module for new managers. Three actions, about a minute.</p>
+      <p>A 20-second tour of the builder, then try it yourself with a sample project: a short learning module for new managers.</p>
       <ol class="ob-list">
-        <li>Choose a perspective and add that person.</li>
-        <li>Change their challenge and watch their behavior change.</li>
-        <li>See them turned into a test you can run.</li>
+        <li>Choose a perspective.</li>
+        <li>Shape the test with Challenge and Journey.</li>
+        <li>See the preview of the person you're testing as.</li>
       </ol>
       <p class="ob-key">The person stays the same person. Only the test conditions change around them.</p>
       <details class="ob-more">
@@ -1317,12 +1327,18 @@
     <div class="st-actions" id="panel-actions"><button type="button" id="clear-panel">Clear panel</button><button type="button" id="add-more" data-stage-go="build">Add a persona</button><button type="button" class="primary" id="lock" data-stage-go="export">Review &amp; export</button></div>
   </section>
 
-  <div class="tour" id="tour" role="region" aria-labelledby="tour-h" hidden>
-    <p class="tour-count" id="tour-count"></p>
-    <h3 class="tour-h" id="tour-h" tabindex="-1"></h3>
-    <p class="tour-t" id="tour-t"></p>
-    <div class="tour-btns"><button type="button" class="primary" id="tour-next" hidden></button><button type="button" id="tour-skip">Skip the example</button></div>
-  </div>
+  <!-- Spotlight tour: three stops over Build. The card is a modal dialog, so the dimmed page can't be reached by
+       keyboard or pointer while it is open; the spotlight itself is decoration. -->
+  <div class="spot" id="spot" aria-hidden="true" hidden></div>
+  <dialog class="tourcard" id="tourcard" aria-labelledby="tc-title" aria-describedby="tc-where tc-text">
+    <div class="tc-body" id="tc-body" tabindex="-1" role="group" aria-labelledby="tc-count tc-title" aria-describedby="tc-where tc-text">
+      <p class="tc-count" id="tc-count"></p>
+      <h2 class="tc-title" id="tc-title"></h2>
+      <p class="tc-where" id="tc-where"></p>
+      <p class="tc-text" id="tc-text"></p>
+    </div>
+    <div class="tc-btns"><button type="button" class="tc-skip" id="tc-skip">Skip tour</button><span class="tc-nav"><button type="button" id="tc-back">Back</button><button type="button" class="primary" id="tc-next">Next</button></span></div>
+  </dialog>
 
   <div class="editor controls" id="editor" role="group" aria-labelledby="editor-kicker editor-h" hidden>
     <div class="editor-head">
@@ -1948,7 +1964,7 @@ function render() {
   renderPanel();
   renderEditor();
   const sample = current.id === "SAMPLE";
-  $("next-cue").hidden = (!sample && entries.length > 0) || !!tour;
+  $("next-cue").hidden = !sample && entries.length > 0;
   $("next-cue").textContent = sample
     ? `You're exploring the sample project: ${current.experience.summary} Nothing here is sent anywhere.`
     : "Six people are ready for your project, one for each archetype. Choose who to test first.";
@@ -2099,7 +2115,6 @@ $("add").addEventListener("click", () => {
   if (motionOK() && av) av.animate([{opacity: 0, transform: "scale(.6)"}, {opacity: 1, transform: "none"}], {duration: 300, easing: EASE_P2_OUT});
   document.querySelector(`#arch-list input[value="${cand}"]`).focus();
   announce(`Added ${x.p.name}, ${x.lens}: ${x.level.label}, ${x.pattern.label}. ${plural(entries.length)} in your panel.`);
-  tourAdvance();
 });
 $("added-go").addEventListener("click", () => {
   const e = inLens(cand)[0];
@@ -2199,7 +2214,6 @@ for (const id of ["challenge", "journey"]) {
     else { t[id] = v; memo[t.p] = {challenge: t.challenge, journey: t.journey}; changed(); }
     render();
     animateRow(id, prev, v);
-    tourAdvance();
   });
 }
 
@@ -2438,7 +2452,6 @@ $("byos-form").addEventListener("submit", async e => {
     if (!audience) panel.experience.audienceSuggested = true;
     panel.id = makePanelId();
     panel.lens = [0, 1, 2, 3, 4, 5];
-    if (tour) tourEnd({restore: false});
     current = panel;
     resetPanel();
     mountPanel();
@@ -2554,9 +2567,7 @@ function goStage(id, {focus = true} = {}) {
     revealIn([$(STAGE_BOX[id])], {dx: 16 * dir, dy: 0, delay: 0, duration: 260});
   }
   if (focus) { $(STAGE_HEAD[id]).focus({preventScroll: true}); window.scrollTo(0, 0); }
-  if (tour && !tourAdvancing) { tourAdvancing = true; tourAdvance(); tourAdvancing = false; }
 }
-let tourAdvancing = false;
 document.querySelectorAll("[data-stage-go]").forEach(b => b.addEventListener("click", () => goStage(b.dataset.stageGo)));
 
 $("acc").addEventListener("click", e => {
@@ -2567,78 +2578,86 @@ $("acc").addEventListener("click", e => {
   accSet(item, willOpen);
 });
 
-// ---------- Guided example: three actions in the real workspace, on a throwaway copy of the sample ----------
-// The person's own state (project, panel, settings) is set aside and put back untouched when the example ends,
-// however it ends: finishing, Skip, or Esc. Normal interactions advance it; nothing has to be set exactly.
-let tour = null;
-const TOUR = {
-  1: () => ({stage: "build", h: "Choose a perspective", t: "Pick an archetype, look at their preview, then add them to your panel. Newcomer is a good one to try."}),
-  2: () => ({stage: "panel", h: "Change the test conditions", t: `Move ${firstName(current.personas[entries[0].p])}'s Challenge level off Typical. Watch their behavior change: who they are stays the same. Journey works the same way.`}),
-  3: () => ({stage: "panel", h: "See the resulting test", t: "Open Export to see this persona turned into a test you can run.", next: "Open Export"}),
-  4: () => ({stage: "export", h: "That's the whole loop", t: "Each persona becomes a walkthrough brief you play yourself, or a prompt for an AI assistant. Next, try it with your own project.", next: "Go to my project"})};
-function tourStart() {
-  tour = {step: 1, snap: {current, entries, memo, selectedIid, cand, nextIid, format}};
-  parkEditor();
-  cardEls.forEach(el => el.remove()); cardEls.clear();
-  current = SAMPLE_PANEL; entries = []; memo = {}; selectedIid = null; cand = 0;
-  briefEdited = false; draftVersion = -1; changed();
-  mountPanel();
-  tourShow(true);
+// ---------- Spotlight tour: where things are in Build ----------
+// Three stops, advanced only by Next/Back; nothing has to be done to the sample. It reads the page, never changes it,
+// so it can run over the sample or over a person's own project (a replay from the refresher) with nothing to undo.
+// The card is a modal <dialog>: the rest of the page is inert while it is open, and Esc ends it.
+const SPOT = [
+  {target: () => $("arch"), title: "Choose a perspective", where: "Highlighted: the six archetype choices.",
+    text: "Each archetype represents a different testing perspective. Choose one to see how that person might experience your project."},
+  {target: () => ($("editor").hidden ? $("preview") : $("editor")), title: "Shape the test", where: "Highlighted: the Challenge and Journey settings for the selected person.",
+    text: "Challenge changes how demanding the test conditions are. Journey changes the path the person takes. You can adjust either without changing who the person is."},
+  {target: () => $("preview-card"), title: "See the preview", where: "Highlighted: the persona preview.",
+    text: "This is where the test takes shape. As you adjust the settings, the preview shows how this person would behave and move through the experience."}];
+let spot = null;   // {i}: the stop on screen; null when no tour is running
+function spotStart() {
+  // Make sure the settings stop has something to show: preview an archetype that can still be added.
+  if (candidate(cand) < 0) { const a = LENSES.findIndex((l, i) => candidate(i) >= 0); if (a >= 0) cand = a; }
+  goStage("build", {focus: false});
+  spot = {i: 0};
+  $("tool").getAnimations({subtree: true}).forEach(x => x.finish());   // measure the settled layout, not a slide in progress
+  document.documentElement.style.overflow = "hidden";
+  $("spot").hidden = false;
+  $("tourcard").showModal();
+  spotShow(true);
 }
-function tourShow(move) {
-  const s = TOUR[tour.step](), el = $("tour");
-  $("tour-count").textContent = tour.step < 4 ? `Guided example \u00B7 Step ${tour.step} of 3` : "Guided example \u00B7 Done";
-  $("tour-h").textContent = s.h;
-  $("tour-t").textContent = s.t;
-  $("tour-next").hidden = !s.next;
-  $("tour-next").textContent = s.next || "";
-  $("tour-skip").hidden = tour.step === 4;             // at the end, "Go to my project" is the way out
-  const box = $(STAGE_BOX[s.stage]), at = s.stage === "export" ? box.querySelector(".review-head").nextSibling : box.querySelector(".sec-body").firstChild;
-  at.parentNode.insertBefore(el, at);
-  el.hidden = false;
-  if (move) {
-    if (stageNow() !== s.stage) goStage(s.stage, {focus: false});
-    $("tour-h").focus({preventScroll: true});
-    el.scrollIntoView({block: "start"});
-  } else announce(`Step ${tour.step} of 3. ${s.h}. ${s.t}`);
+function spotShow(first) {
+  const st = SPOT[spot.i], n = spot.i + 1;
+  $("tc-count").textContent = `Step ${n} of 3`;
+  $("tc-title").textContent = st.title;
+  $("tc-where").textContent = st.where;
+  $("tc-text").textContent = st.text;
+  $("tc-back").hidden = n === 1;
+  $("tc-next").textContent = n === 3 ? "Start exploring" : "Next";
+  spotPlace(first);
+  $("tc-body").focus({preventScroll: true});        // read once: step, title, what is highlighted, the explanation
 }
-// Called after anything that can complete a step.
-function tourAdvance() {
-  if (!tour) return;
-  if (tour.step === 1 && entries.length) {
-    tour.step = 2;
-    selectedIid = entries[0].iid;
-    render();
-    tourShow(true);
-  } else if (tour.step === 2 && entries.some(e => e.challenge > 1)) {
-    tour.step = 3;
-    tourShow(false);                                   // focus stays on the slider being used
-  } else if (tour.step === 3 && stageNow() === "export") {
-    tour.step = 4;
-    tourShow(true);
+function spotPlace(first) {
+  if (!spot) return;
+  const el = SPOT[spot.i].target(), card = $("tourcard"), sp = $("spot"), phone = innerWidth <= 620, gap = 12;
+  // Bring the region into view first. On a phone the card sits at the bottom, so the region starts near the top.
+  const r0 = el.getBoundingClientRect();
+  window.scrollBy(0, phone ? r0.top - 76 : r0.top - Math.max(16, (innerHeight - Math.min(r0.height, innerHeight - 32)) / 2));
+  const r = el.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = innerHeight;
+  let top, left, box = {left: r.left - 6, top: r.top - 6, width: r.width + 12, height: r.height + 12};
+  if (phone) {
+    card.style.cssText = "left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); top: auto; width: auto;";
+    // The spotlight stops above the card, so the card never covers what it explains.
+    const limit = vh - card.offsetHeight - 24;
+    box.top = Math.max(box.top, 8); box.height = Math.max(48, Math.min(box.top + box.height, limit) - box.top);
+  } else {
+    const cw = card.offsetWidth, ch = card.offsetHeight;
+    if (r.right + gap + cw <= vw - 16) { left = r.right + gap + 6; top = r.top; }
+    else if (r.left - gap - cw >= 16) { left = r.left - gap - cw - 6; top = r.top; }
+    else if (r.bottom + gap + ch <= vh - 16) { left = r.left; top = r.bottom + gap + 6; }
+    else { left = r.left; top = r.top - gap - ch - 6; }
+    top = Math.min(Math.max(16, top), vh - ch - 16); left = Math.min(Math.max(16, left), vw - cw - 16);
+    card.style.cssText = `left: ${left}px; top: ${top}px; right: auto; bottom: auto;`;
+    box.top = Math.max(box.top, 8); box.height = Math.min(box.height, vh - 16 - box.top);
   }
+  const to = {left: box.left + "px", top: box.top + "px", width: box.width + "px", height: box.height + "px"};
+  const from = {left: sp.style.left, top: sp.style.top, width: sp.style.width, height: sp.style.height};
+  Object.assign(sp.style, to);
+  if (!first && motionOK() && from.width) sp.animate([from, to], {duration: 220, easing: EASE_P2_OUT});
+  if (motionOK()) card.animate([{opacity: 0, transform: "translateY(6px)"}, {opacity: 1, transform: "none"}], {duration: 180, easing: EASE_P2_OUT});
 }
-function tourEnd({restore = true} = {}) {
-  if (!tour) return;
-  const snap = tour.snap;
-  tour = null;
-  $("tour").hidden = true;
-  $("tool").appendChild($("tour"));
-  if (restore) {
-    parkEditor();
-    cardEls.forEach(el => el.remove()); cardEls.clear();
-    ({current, entries, memo, selectedIid, cand, nextIid} = snap);
-    if (format !== snap.format) document.querySelector(`input[name="format"][value="${snap.format}"]`).click();
-    briefEdited = false; draftVersion = -1; changed();
-    mountPanel();
-  }
-  goStage("project");
+function spotEnd() {
+  if (!spot) return;
+  spot = null;
+  if ($("tourcard").open) $("tourcard").close();
+  $("spot").hidden = true;
+  $("spot").style.cssText = "";
+  document.documentElement.style.overflow = "";
+  // Back to the workspace, on its first control: the archetype that is chosen.
+  const r = document.querySelector('#arch-list input:checked') || $("build-h");
+  r.focus({preventScroll: true});
+  r.scrollIntoView({block: "center"});
 }
-$("tour-skip").addEventListener("click", () => tourEnd());
-$("tour-next").addEventListener("click", () => { if (tour && tour.step === 3) goStage("export"); else tourEnd(); });
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape" && tour && !document.querySelector("dialog[open]")) { e.preventDefault(); tourEnd(); }
-});
+$("tc-next").addEventListener("click", () => { if (spot.i < 2) { spot.i++; spotShow(); } else spotEnd(); });
+$("tc-back").addEventListener("click", () => { if (spot.i > 0) { spot.i--; spotShow(); } });
+$("tc-skip").addEventListener("click", spotEnd);
+$("tourcard").addEventListener("cancel", e => { e.preventDefault(); spotEnd(); });   // Esc
+window.addEventListener("resize", () => spotPlace());
 
 // ---------- Onboarding: landing → orientation → tool ----------
 // Screens are shown one at a time; focus moves to each screen's heading so
@@ -2676,7 +2695,7 @@ function enterTool() {
 $("onboard").addEventListener("click", e => {
   const go = e.target.closest("[data-go]");
   if (!go) return;
-  if (go.dataset.go === "tour") { enterTool(); tourStart(); return; }
+  if (go.dataset.go === "tour") { enterTool(); spotStart(); return; }
   go.dataset.go === "tool" ? enterTool() : showStep(+go.dataset.go);
 });
 $("refresher").addEventListener("click", () => {

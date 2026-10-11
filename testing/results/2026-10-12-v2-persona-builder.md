@@ -124,3 +124,19 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
   - A real build during the example ends it without restoring the sample.
 - **Project stage with no project:** "No project yet", a 40-second expectation, "Try it with your own project" as the primary action, and "Explore the sample" as the secondary one. On Build, the sample is labelled as the sample.
 - **Tests:** `tour-test.js` (new, 1200px and 360px with reduced motion). Updated wording in `v2-test` and `onboard-test`.
+
+## Spotlight tour replaces the three guided tasks (2026-10-12)
+- **Consolidation (flagged before building):** the earlier guided example had its own three task steps, an inline banner and a throwaway copy of the sample. The spotlight replaces all of it, so there is no second step counter.
+  - The spotlight only reads the page, so it runs over whatever Build shows: the sample with no project, or the person's own project on a replay. There is nothing to restore.
+- **Three stops**, moved only by Next and Back: the archetype list, the Challenge/Journey settings, the white preview. "Start exploring" ends it.
+  - Skip tour and Esc exit at once. Ending puts focus on the chosen archetype.
+  - It starts only from "Start the guided example" (intro step 4, also reached from the refresher). It never starts on entering the tool, moving between stages or after a build. No tracking is stored.
+- **Card:** a modal `<dialog>`, so the dimmed page is inert. It is a group named "Step X of 3 [title]" and described by "Highlighted: …" plus the explanation; focus moves to it on each step.
+  - Desktop: placed beside, above or below the region, never over it.
+  - Phone: anchored at the bottom with the safe-area inset. The highlight stops above the card, so the tall settings area is never covered and Next/Back/Skip stay on screen.
+- **Highlight:** a fixed outline plus a dimming shadow. Web Animations: 220ms between stops, 180ms card fade, none under reduced motion. Forced colors: a Highlight outline and a bordered card.
+- **Tests:** `tour-test.js` rewritten (1200px, 390px, and 360px with reduced motion). It covers:
+  - Never auto-starting.
+  - Each stop's text, focus and accessible name, no overlap with the highlight, and buttons on screen.
+  - Tab confined to the card. Next, Back, Skip, Esc and completion.
+  - No state change and no request, and the sample usable afterwards. Replay over a real project leaves it untouched.
