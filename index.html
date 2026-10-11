@@ -792,6 +792,8 @@
   .rec3 button { width: 100%; min-height: 48px; border-radius: 14px; font: inherit; font-weight: 700; background: transparent; color: #fff; border: 1.5px solid rgba(245, 250, 253, .55); }
   .rec3 button:hover { background: rgba(255, 255, 255, .1); }
   .rec3-note { margin: 6px 2px 0; font-size: .8125rem; color: var(--ws-muted); }
+  .build-col { min-width: 0; display: grid; gap: 14px; }
+  .editor-home:empty { display: none; }
   .preview { min-width: 0; display: grid; gap: 12px; color: var(--ink); }
   .preview-h { margin: 0; color: #fff; font-size: 1.0625rem; font-weight: 800; }
   .preview-card .card { margin: 0; }
@@ -1230,6 +1232,8 @@
           <div class="arch-list" id="arch-list"></div>
           <div class="rec3"><button type="button" id="rec3">Start with the recommended three</button><p class="rec3-note" id="rec3-note">Core user, Newcomer and Experienced user, at Typical and Straight through.</p></div>
         </fieldset>
+        <div class="build-col">
+          <div class="editor-home" id="editor-home"></div>
         <div class="preview" id="preview" aria-labelledby="preview-h" role="region">
           <h3 class="preview-h" id="preview-h" tabindex="-1">Preview</h3>
           <div class="preview-card" id="preview-card"></div>
@@ -1238,8 +1242,8 @@
             <p class="another-status" id="another-status" aria-hidden="true" hidden></p>
           </div>
           <p class="another-error" id="another-error"></p>
-          <div class="editor-home" id="editor-home"></div>
           <div class="add-row" id="add-row"><button type="button" class="primary" id="add">Add to your panel</button></div>
+        </div>
         </div>
       </div>
       <div class="build-sum" id="build-sum"><span class="live-av" id="build-sum-av" aria-hidden="true"></span><p class="live-t" id="build-sum-t"></p></div>
