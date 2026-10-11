@@ -207,3 +207,9 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
   - 360×740: stop 2 is 20–346 vs 422; stop 3 is 20–346 vs 418.
 - Tests: try-test adds checks at every stop and viewport that the buttons are visible and that the region fits above the card on a phone. It also checks that the phone sections scroll, that desktop and the workspace have no inner scrolling, and that the tab stop and the bottom room are cleaned up. try, split, onboard, v2, v21 and jr all pass.
 - Caveat: phone scrollbars are overlay and only appear while scrolling, so the cue is content cut off mid-line at the box edge.
+
+## Try it on phones: archetypes scroll too; a bottom fade shows there is more
+
+- The archetype list in Try it on phones is capped at min(40svh, 260px) and scrolls inside its box. The cap ends partway through the fourth archetype, so the cut is visible. Stop 1 now fits above the tour card at 390px and 360px (region bottom 307 vs card top 569 and 465).
+- Bottom fade: the archetypes, settings and preview boxes each get a soft 32px fade while there is more below. It goes away at the end of the box and comes back when scrolled up. A ResizeObserver plus `render()` keep it current, because the boxes are first measured while Try it is still hidden. It only applies inside Try it, and nothing in the workspace or on desktop is affected.
+- Tests: try-test checks that the archetypes scroll on phones, that all three boxes fade while more is below, that the fade clears at the end of the list and comes back at the top, that desktop shows no fades, and that the workspace shows no fades and no boxed archetypes. try, split, onboard, v2, v21 and jr all pass.

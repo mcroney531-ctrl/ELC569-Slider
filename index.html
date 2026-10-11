@@ -242,11 +242,15 @@
     font: .8125rem/1.5 ui-monospace, Consolas, monospace; white-space: pre-wrap; color: var(--ink); }
   .demo-brief-text:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
   @media (max-width: 620px) { .demo-stage { padding: 12px; margin: 4px -6px 8px; border-radius: 18px; }
-    /* On a phone the settings and the preview each scroll inside their own box, so either fits on screen above the tour card. */
+    /* On a phone the archetypes, the settings and the preview each scroll inside their own box, so each fits on screen above the tour card. */
+    .demo-stage #arch-list { max-height: min(40svh, 260px); overflow-y: auto; overscroll-behavior: contain; padding: 4px; margin: -4px;
+      scrollbar-width: thin; scrollbar-color: rgba(94, 231, 245, .75) rgba(255, 255, 255, .08); }
     .demo-stage #editor, .demo-stage #preview-card { max-height: 44svh; overflow-y: auto; overscroll-behavior: contain;
       scrollbar-width: thin; scrollbar-color: rgba(94, 231, 245, .75) rgba(255, 255, 255, .08); }
-    .demo-stage #editor::-webkit-scrollbar, .demo-stage #preview-card::-webkit-scrollbar { width: 6px; }
-    .demo-stage #editor::-webkit-scrollbar-thumb, .demo-stage #preview-card::-webkit-scrollbar-thumb { background: rgba(94, 231, 245, .75); border-radius: 3px; }
+    .demo-stage :is(#arch-list, #editor, #preview-card)::-webkit-scrollbar { width: 6px; }
+    .demo-stage :is(#arch-list, #editor, #preview-card)::-webkit-scrollbar-thumb { background: rgba(94, 231, 245, .75); border-radius: 3px; }
+    /* A soft fade at the bottom says there is more, since phone scrollbars only show while scrolling. */
+    .demo-stage .has-more { -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to bottom, #000 calc(100% - 32px), transparent); }
     .demo-stage #preview-card:focus-visible { outline: 3px solid #5EE7F5; outline-offset: 2px; } }
   /* No project yet: every workspace stage shows the same short start, never the sample. */
   .no-project { padding: 18px; border: 1px dashed var(--ws-border); border-radius: 14px; color: #F5F7FF; margin: 0 0 4px; }
@@ -1938,7 +1942,7 @@ function render() {
   renderPanel();
   renderEditor();
   $("next-cue").hidden = !hasProject() || entries.length > 0;
-  if (demo) renderDemoBrief();
+  if (demo) { renderDemoBrief(); moreCue(); }
 }
 
 function renderBuild() {
@@ -2627,11 +2631,20 @@ function demoExit() {
   parkEditor();
   home.insertBefore(document.querySelector(".build-grid"), next);
   $("preview-card").removeAttribute("tabindex"); $("preview-card").removeAttribute("aria-label");
+  moreCue();
   ({current, entries, memo, selectedIid, cand, nextIid} = snap);
   $("tool").dataset.stage = snap.stage;
   for (const st of STAGES) $("st-" + st).setAttribute("aria-current", st === snap.stage ? "step" : "false");
   render();
 }
+// Try it on a phone: the archetypes, settings and preview scroll in their own boxes; fade the bottom while more is below.
+const MORE_BOXES = ["arch-list", "editor", "preview-card"];
+function moreCue() {
+  for (const id of MORE_BOXES) { const el = $(id); el.classList.toggle("has-more", !!demo && el.scrollHeight - el.scrollTop - el.clientHeight > 2); }
+}
+for (const id of MORE_BOXES) $(id).addEventListener("scroll", moreCue, {passive: true});
+// Re-check when a box appears, changes size or gets new content (it is measured hidden when Try it opens).
+if (window.ResizeObserver) { const ro = new ResizeObserver(() => moreCue()); for (const id of MORE_BOXES) { ro.observe($(id)); if ($(id).firstElementChild) ro.observe($(id).firstElementChild); } }
 // "See what this becomes": the real export function, for the person being previewed.
 function renderDemoBrief() {
   const pi = candidate(cand);
