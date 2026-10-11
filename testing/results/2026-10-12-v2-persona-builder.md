@@ -112,3 +112,15 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
 - "View route" now sits on its own line. On Inconsistent and Edge case it used to run straight into the challenge tag.
 - Removed the Edge case "irregular top rule" (a short purple dashed mark at the card's top-left). The rounded corner clipped it, so it read as a stray artifact. The "Unexpected request" tag still marks Edge case in text.
 - Challenge uses the approved glossy tile artwork (`design/icons/challenge-tile.png` master; a 96px WebP of about 3 KB is embedded). The faint speckle row above the tile was cleared in the small version. The line icon returns in forced-colors mode.
+
+## Guided example replaces the worked example (2026-10-12)
+- **Intro step 4, "Try it with an example":** three-line preview, the "same person, different conditions" point, and Key terms kept as an optional closed `<details>`. Actions: "Start the guided example" and "Skip to my project". Priya removed. Step 3 no longer describes seats or the Panel size slider.
+- **Guided example:** runs in the real workspace on a throwaway copy of the sample. The person's own project, panel, settings and export format are set aside, then restored exactly on Skip, Esc or finish.
+  - Step 1: Build, add any archetype.
+  - Step 2: Your panel, with that person open; any Challenge other than Typical completes it, and focus stays on the slider.
+  - Step 3: open Export, by the step's button or the stage nav.
+  - Done: "Go to my project" leads to the Project stage. The form is never opened automatically.
+  - Steps are inline regions in reading order, not overlays. Focus moves to a step's heading only when the step moves stage.
+  - A real build during the example ends it without restoring the sample.
+- **Project stage with no project:** "No project yet", a 40-second expectation, "Try it with your own project" as the primary action, and "Explore the sample" as the secondary one. On Build, the sample is labelled as the sample.
+- **Tests:** `tour-test.js` (new, 1200px and 360px with reduced motion). Updated wording in `v2-test` and `onboard-test`.
