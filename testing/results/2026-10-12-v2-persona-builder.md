@@ -52,3 +52,28 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
   - `onboard-test.js`: the onboarding sections of the V1 suite.
 - Unchanged and passing: `acc-test.js`, `form-check.js`, `equiv-test.js` (checkpoint 1, run against its own commit).
 - Retired with the V1 interface: `verify2.js` (slider panel, shared route), `stage-test.js` (three stages), `av-test.js` (fixed seats). What they checked that still applies is covered in `v2-test.js`.
+
+## Checkpoint 4: another person per archetype, up to 10 (V2.1)
+- **Worker `mode: "one"`** (`byos-endpoint`). It covers:
+  - The request: the archetype, the project as built, and everyone already generated for it. Only same-archetype people send their profiles.
+  - The prompt: it reuses the build's persona rules plus the difference rule (at least two of role or situation, starting point and working style; never difficulty, protected characteristics or overlay material).
+  - Response and names: a single-persona schema, one retry on a repeated name, and a separate per-IP allowance (`ONE_PER_IP_PER_HOUR`, default 12).
+  - Limits: it counts toward the daily ceiling and has a `ONE_MAX_TOKENS` cap.
+  - Tests: 7 new Worker tests in `test/one.test.js`; 26 pass in total.
+  - Needs a deploy (staging first) before the page's "Create another" works anywhere live.
+- **Page:**
+  - **The pool:** every person generated for the project, each with an archetype. Build previews the first person of the chosen archetype who isn't in the panel. When there is none, it explains why and offers "Create another [archetype]".
+  - **While creating:** the button shows progress (`aria-busy`, a timer) and the result is announced once. Focus moves to the preview, and the new person starts at Typical / Straight through.
+  - **Pool reuse:** removed people go back to the pool and are offered again without a call.
+  - **Sample mode:** it says "Want another Newcomer? Build a panel for your own project to create additional people." and makes no request.
+  - **Caps:** 10 people per panel and 16 generated per project. A full panel says so.
+  - **Rebuilds:** a person requested for a project that was rebuilt meanwhile is dropped, never mixed in.
+  - **Names:** the page checks again that the new person repeats no first name or surname.
+- **Tests:** `v21-test.js` (new, 1200px and 360px with reduced motion). It covers:
+  - The sample explanation, and the request contents.
+  - Progress, and a double press making one request.
+  - Default settings for the new person, and two distinct Newcomers with independent settings.
+  - Re-offering from the pool without a call.
+  - Error and repeated-name rejections.
+  - Ten distinct people, the full-panel state, and a ten-person export.
+  - A rebuild during creation.

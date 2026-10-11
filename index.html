@@ -801,6 +801,15 @@
   .added-note button, .entry-foot button, .apply button, .panel-empty button, .review-empty button, .stale button { min-height: 44px; padding: 0 16px; border-radius: 12px; font: inherit; font-weight: 700; }
   .added-note button, .apply button { background: transparent; color: #fff; border: 1.5px solid rgba(245, 250, 253, .55); }
   .add-row { display: flex; justify-content: flex-end; }
+  .added-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+  .added-btns button[hidden] { display: none; }
+  .added-note .make { background: linear-gradient(90deg, #23D4C4, #2EE6C1); color: #062C35; border: 0; }
+  .added-note .make:hover { background: linear-gradient(90deg, #3ADCCD, #4AEDCB); }
+  .added-note .make[aria-disabled="true"] { opacity: .75; cursor: progress; }
+  .another-status { margin: 8px 0 0; font-size: .875rem; color: var(--ws-muted); }
+  .another-status[hidden] { display: none; }
+  .another-error { margin: 0; color: #FFB4A8; font-weight: 600; }
+  .another-error:empty { display: none; }
   .add-row[hidden], .added-note[hidden], .apply[hidden], .panel-empty[hidden], .review-empty[hidden], .stale[hidden], .review-body[hidden] { display: none; }
   .add-row button { min-height: 52px; padding: 0 24px; border-radius: 14px; font: inherit; font-weight: 800; background: linear-gradient(90deg, #23D4C4, #2EE6C1); color: #062C35; border: 0; }
   .add-row button:hover, .panel-empty button:hover, .review-empty button:hover { background: linear-gradient(90deg, #3ADCCD, #4AEDCB); color: #062C35; }
@@ -1222,9 +1231,13 @@
           <div class="rec3"><button type="button" id="rec3">Start with the recommended three</button><p class="rec3-note" id="rec3-note">Core user, Newcomer and Experienced user, at Typical and Straight through.</p></div>
         </fieldset>
         <div class="preview" id="preview" aria-labelledby="preview-h" role="region">
-          <h3 class="preview-h" id="preview-h">Preview</h3>
+          <h3 class="preview-h" id="preview-h" tabindex="-1">Preview</h3>
           <div class="preview-card" id="preview-card"></div>
-          <div class="added-note" id="added-note" hidden><p id="added-text"></p><button type="button" id="added-go">Change their settings in Your panel</button></div>
+          <div class="added-note" id="added-note" hidden><p id="added-text"></p>
+            <div class="added-btns"><button type="button" class="make" id="another"></button><button type="button" id="added-go">Change their settings in Your panel</button></div>
+            <p class="another-status" id="another-status" aria-hidden="true" hidden></p>
+          </div>
+          <p class="another-error" id="another-error"></p>
           <div class="editor-home" id="editor-home"></div>
           <div class="add-row" id="add-row"><button type="button" class="primary" id="add">Add to your panel</button></div>
         </div>
@@ -1469,20 +1482,21 @@ function validatePanel(raw) {
       summary: cleanText(ex.summary, 300),
       audience: typeof ex.audience === "string" && ex.audience.trim() ? cleanText(ex.audience, 200) : "",
       moments: ex.moments.map(m => ({short: cleanText(m && m.short, 24), full: cleanText(m && m.full, 80)}))},
-    personas: raw.personas.map(p => {
-      if (!p || !Array.isArray(p.overlays) || p.overlays.length !== 3) throw new Error("need 3 overlays");
-      const out = {};
-      CORE_FIELDS.forEach(f => { out[f] = cleanText(p[f], f === "name" ? 60 : 260); });
-      // The page adds its own quote marks, so drop one pair wrapped around the whole question.
-      const q = out.judgesBy.match(/^(?:"([^"“”]+)"|“([^"“”]+)”)$/);
-      if (q) out.judgesBy = (q[1] || q[2]).trim();
-      out.overlays = p.overlays.map(o => {
-        const c = {};
-        OVERLAY_FIELDS.forEach(f => { c[f] = cleanText(o && o[f], 260); });
-        return c;
-      });
-      return out;
-    })};
+    personas: raw.personas.map(validatePersona)};
+}
+function validatePersona(p) {
+  if (!p || !Array.isArray(p.overlays) || p.overlays.length !== 3) throw new Error("need 3 overlays");
+  const out = {};
+  CORE_FIELDS.forEach(f => { out[f] = cleanText(p[f], f === "name" ? 60 : 260); });
+  // The page adds its own quote marks, so drop one pair wrapped around the whole question.
+  const q = out.judgesBy.match(/^(?:"([^"“”]+)"|“([^"“”]+)”)$/);
+  if (q) out.judgesBy = (q[1] || q[2]).trim();
+  out.overlays = p.overlays.map(o => {
+    const c = {};
+    OVERLAY_FIELDS.forEach(f => { c[f] = cleanText(o && o[f], 260); });
+    return c;
+  });
+  return out;
 }
 function makePanelId() {
   const A = "ABCDEFGHJKMNPQRSTUVWXYZ23456789", b = new Uint32Array(4);
@@ -1504,7 +1518,7 @@ const routeSentence = (seq, names) => routeParts(seq, names).join(" -> ");
 // A panel is an ordered list of entries. Each entry points at one generated person (by archetype index into
 // current.personas) and owns its own challenge and journey. Everything on screen and in the export derives from these.
 function deriveEntry(panel, e) {
-  const p = panel.personas[e.a], level = LEVELS[e.challenge - 1], pattern = PATTERNS[e.journey - 1];
+  const p = panel.personas[e.p ?? e.a], level = LEVELS[e.challenge - 1], pattern = PATTERNS[e.journey - 1];
   const m = panel.experience.moments, o = e.challenge > 1 ? p.overlays[e.challenge - 2] : null;   // challenge owns behavior
   return {
     e, i: e.a, p, lens: LENSES[e.a], level, pattern, challenge: e.challenge, journey: e.journey,
@@ -1728,22 +1742,29 @@ function revealIn(els, {dx = 0, dy = 16, delay = 90, stagger = 0, duration = 560
 // ---------- Panel state ----------
 // current: the project and the people generated for it, one per archetype in coverage order.
 // entries: the panel, in the order people were added. Each entry owns its challenge and journey; nothing is shared.
+// current.personas holds every person generated for this project (the pool); current.lens[i] is person i's archetype.
+// The first six are the build's one-per-archetype people; "Create another" adds more for a lens already in use.
+const MAX_PANEL = 10, MAX_PEOPLE = 16;
 let current = SAMPLE_PANEL;
-let entries = [], nextIid = 1, selectedIid = null, cand = 0, panelVersion = 0, memo = {};
+SAMPLE_PANEL.lens = [0, 1, 2, 3, 4, 5];
+// cand is the archetype chosen in Build; the person previewed is the first of that archetype not yet in the panel.
+let entries = [], nextIid = 1, selectedIid = null, cand = 0, panelVersion = 0, memo = {}, creating = null;
 let briefEdited = false, buildTimer = null;
 const cardEls = new Map();
 const LENS_HINT = ["Who it was designed for", "Less background than you assumed", "Brings habits from what already works",
   "Short on time or attention", "Unsure, or not very motivated", "A real situation you may not have planned for"];
-const settingsFor = a => memo[a] || {challenge: 1, journey: 1};      // a removed person comes back as they were
-const entryOf = a => entries.find(e => e.a === a);
+const settingsFor = pi => memo[pi] || {challenge: 1, journey: 1};    // a removed person comes back as they were
+const inLens = a => entries.filter(e => e.a === a);
+const candidate = a => current.lens.findIndex((l, pi) => l === a && !entries.some(e => e.p === pi));
 const selected = () => entries.find(e => e.iid === selectedIid) || null;
-const suggestedNext = () => LENSES.findIndex((l, i) => !entryOf(i)); // the tool's coverage order, never a new ranking
+const suggestedNext = () => LENSES.findIndex((l, i) => !inLens(i).length); // the tool's coverage order, never a new ranking
 const stageNow = () => $("tool").dataset.stage;
 function changed() { panelVersion++; }
 // The one editor works on the previewed person while building, or on the selected entry in Your panel.
 function target() {
   if (stageNow() === "panel") return selected();
-  if (stageNow() === "build" && !entryOf(cand)) return {cand: true, a: cand, ...settingsFor(cand)};
+  const pi = candidate(cand);
+  if (stageNow() === "build" && pi >= 0 && entries.length < MAX_PANEL) return {cand: true, p: pi, a: cand, ...settingsFor(pi)};
   return null;
 }
 
@@ -1780,7 +1801,7 @@ function mountPanel() {
   $("fresh").hidden = sample;
 }
 function resetPanel() {
-  entries = []; memo = {}; selectedIid = null; cand = 0;
+  entries = []; memo = {}; selectedIid = null; cand = 0; creating = null;
   parkEditor();
   cardEls.forEach(el => el.remove()); cardEls.clear();
   changed();
@@ -1837,7 +1858,7 @@ function fillCard(el, x) {
   el.dataset.who = p.name;
 }
 function makeEntry(e) {
-  const li = document.createElement("li"), name = current.personas[e.a].name;
+  const li = document.createElement("li"), name = current.personas[e.p].name;
   li.className = "entry";
   li.dataset.iid = e.iid;
   const card = makeCard(e.a);
@@ -1859,31 +1880,46 @@ function render() {
 }
 
 function renderBuild() {
-  const sug = suggestedNext();
+  const sug = suggestedNext(), full = entries.length >= MAX_PANEL;
   document.querySelectorAll(".arch-opt").forEach(o => {
-    const i = +o.dataset.a, inPanel = !!entryOf(i);
+    const i = +o.dataset.a, n = inLens(i).length;
     o.querySelector("input").checked = i === cand;
-    o.classList.toggle("is-added", inPanel);
+    o.classList.toggle("is-added", n > 0);
     o.classList.toggle("is-sugg", i === sug);
-    o.querySelector(".arch-badge").textContent = inPanel ? "In your panel" : i === sug ? "Suggested next" : "";
+    o.querySelector(".arch-badge").textContent = n > 1 ? `${n} in your panel` : n ? "In your panel" : i === sug ? "Suggested next" : "";
   });
-  const inPanel = entryOf(cand), p = current.personas[cand];
-  fillCard($("preview-card").firstChild, deriveEntry(current, inPanel || {a: cand, ...settingsFor(cand)}));
-  $("added-note").hidden = !inPanel;
-  if (inPanel) $("added-text").textContent = `${p.name} is already in your panel. For now, each archetype can be added once.`;
-  $("add-row").hidden = !!inPanel;
-  $("add").textContent = `Add ${firstName(p)} to your panel`;
-  $("rec3").parentNode.hidden = [0, 1, 2].every(a => entryOf(a));
-  $("build-sum-av").innerHTML = entries.map(e => avatarHTML(e.a)).join("");
+  const pi = candidate(cand), shown = pi >= 0 ? pi : inLens(cand)[0].p, lens = LENSES[cand];
+  const e = entries.find(x => x.p === shown);
+  fillCard($("preview-card").firstChild, deriveEntry(current, e || {p: shown, a: cand, ...settingsFor(shown)}));
+  // Explain whenever this archetype can't simply be added: panel full, or everyone generated for it is already in.
+  const sample = current.id === "SAMPLE", busy = creating !== null;
+  let note = "";
+  if (full) note = `Your panel is full: ${MAX_PANEL} personas. Remove someone to add another.`;
+  else if (pi < 0) note = `${current.personas[shown].name} is already in your panel.` + (sample
+    ? ` Want another ${lens}? Build a panel for your own project to create additional people.`
+    : ` You can create another ${lens}: a different person with the same perspective.`);
+  $("added-note").hidden = !note;
+  $("added-text").textContent = note;
+  const canCreate = !full && pi < 0 && !sample && current.personas.length < MAX_PEOPLE;
+  $("another").hidden = !canCreate;
+  $("another").textContent = busy && creating === cand ? `Creating another ${lens}\u2026` : `Create another ${lens}`;
+  $("another").setAttribute("aria-disabled", String(busy));
+  $("another").toggleAttribute("aria-busy", busy && creating === cand);
+  $("another-status").hidden = !(busy && creating === cand);
+  $("added-go").hidden = !inLens(cand).length;
+  $("add-row").hidden = full || pi < 0;
+  if (pi >= 0) $("add").textContent = `Add ${firstName(current.personas[pi])} to your panel`;
+  $("rec3").parentNode.hidden = [0, 1, 2].every(x => inLens(x).length) || entries.length > MAX_PANEL - 3;
+  $("build-sum-av").innerHTML = entries.map(x => avatarHTML(x.a)).join("");
   $("build-sum-t").textContent = entries.length
-    ? `Your panel: ${entries.map(e => firstName(current.personas[e.a])).join(", ")}`
+    ? `Your panel: ${entries.map(x => firstName(current.personas[x.p])).join(", ")}`
     : "Your panel is empty.";
 }
 
 function renderPanel() {
   const n = entries.length;
   $("panel-sub").textContent = n
-    ? `${plural(n)}, in the order you added them. Each one has their own challenge and journey.`
+    ? `${n} of up to ${MAX_PANEL} personas, in the order you added them. Each one has their own challenge and journey.`
     : "No personas yet.";
   $("panel-empty").hidden = n > 0;
   $("clear-panel").hidden = n === 0;
@@ -1915,7 +1951,7 @@ function renderEditor() {
   if (!home) { parkEditor(); return; }
   if (ed.parentNode !== home) home.appendChild(ed);
   ed.hidden = false;
-  const p = current.personas[t.a], level = LEVELS[t.challenge - 1], pattern = PATTERNS[t.journey - 1];
+  const p = current.personas[t.p], level = LEVELS[t.challenge - 1], pattern = PATTERNS[t.journey - 1];
   $("editor-h").textContent = `Test settings for ${p.name}`;
   for (const id of ["challenge", "journey"]) {
     const inp = inputs[id];
@@ -1943,9 +1979,9 @@ function renderEditor() {
 }
 
 // ---------- Panel actions ----------
-function addEntry(a) {
-  if (entryOf(a) || entries.length >= LENSES.length) return null;
-  const s = settingsFor(a), e = {iid: "e" + nextIid++, a, challenge: s.challenge, journey: s.journey};
+function addEntry(pi) {
+  if (pi < 0 || entries.some(e => e.p === pi) || entries.length >= MAX_PANEL) return null;
+  const s = settingsFor(pi), e = {iid: "e" + nextIid++, p: pi, a: current.lens[pi], challenge: s.challenge, journey: s.journey};
   entries.push(e);
   changed();
   return e;
@@ -1957,8 +1993,8 @@ function selectEntry(iid) {
 function removeEntry(iid) {
   const k = entries.findIndex(e => e.iid === iid);
   if (k < 0) return;
-  const e = entries[k], p = current.personas[e.a], el = cardEls.get(iid);
-  memo[e.a] = {challenge: e.challenge, journey: e.journey};
+  const e = entries[k], p = current.personas[e.p], el = cardEls.get(iid);
+  memo[e.p] = {challenge: e.challenge, journey: e.journey};
   entries.splice(k, 1);
   changed();
   if (selectedIid === iid) selectedIid = null;
@@ -1977,7 +2013,7 @@ function removeEntry(iid) {
   announce(`Removed ${p.name}. ${entries.length ? plural(entries.length) + " in your panel." : "Your panel is empty."}`);
 }
 $("add").addEventListener("click", () => {
-  const e = addEntry(cand);
+  const e = addEntry(candidate(cand));
   if (!e) return;
   const x = deriveEntry(current, e), sug = suggestedNext();
   if (sug >= 0) cand = sug;
@@ -1989,22 +2025,22 @@ $("add").addEventListener("click", () => {
     (sug >= 0 ? ` Suggested next: ${LENSES[sug]}.` : " All six archetypes are in your panel."));
 });
 $("rec3").addEventListener("click", () => {
-  const added = [0, 1, 2].map(a => addEntry(a)).filter(Boolean);
+  const added = [0, 1, 2].filter(a => !inLens(a).length).map(a => addEntry(candidate(a))).filter(Boolean);
   if (!added.length) return;
   const sug = suggestedNext();
   if (sug >= 0) cand = sug;
   goStage("panel");
-  announce(`Added ${added.map(e => current.personas[e.a].name).join(", ")}. ${plural(entries.length)} in your panel.`);
+  announce(`Added ${added.map(e => current.personas[e.p].name).join(", ")}. ${plural(entries.length)} in your panel.`);
 });
 $("added-go").addEventListener("click", () => {
-  const e = entryOf(cand);
+  const e = inLens(cand)[0];
   selectedIid = e.iid;
   goStage("panel", {focus: false});
   cardEls.get(e.iid).querySelector(".entry-edit").focus();
 });
 $("clear-panel").addEventListener("click", () => {
   if (!confirm(`Remove all ${plural(entries.length)} from your panel? Their settings are kept if you add them again.`)) return;
-  entries.forEach(e => { memo[e.a] = {challenge: e.challenge, journey: e.journey}; });
+  entries.forEach(e => { memo[e.p] = {challenge: e.challenge, journey: e.journey}; });
   parkEditor();
   entries = []; selectedIid = null;
   cardEls.forEach(el => el.remove()); cardEls.clear();
@@ -2016,7 +2052,7 @@ $("clear-panel").addEventListener("click", () => {
 function applyAll(dim) {
   const t = selected(), btn = $(dim === "challenge" ? "apply-c" : "apply-j");
   if (!t || btn.getAttribute("aria-disabled") === "true") return;
-  entries.forEach(e => { e[dim] = t[dim]; memo[e.a] = {challenge: e.challenge, journey: e.journey}; });
+  entries.forEach(e => { e[dim] = t[dim]; memo[e.p] = {challenge: e.challenge, journey: e.journey}; });
   changed();
   render();
   const label = dim === "challenge" ? LEVELS[t.challenge - 1].label : PATTERNS[t.journey - 1].label;
@@ -2024,6 +2060,57 @@ function applyAll(dim) {
 }
 $("apply-c").addEventListener("click", () => applyAll("challenge"));
 $("apply-j").addEventListener("click", () => applyAll("journey"));
+
+// ---------- Another person for an archetype already in the panel (V2.1) ----------
+// One small Worker call (mode "one"). It sends the project as built and everyone generated for it, so the new person
+// differs from the others of the same archetype and shares no name. Nothing else changes while it runs.
+let anotherTimer = null;
+async function createAnother(a) {
+  if (creating !== null || current.id === "SAMPLE") return;
+  const project = current, lens = LENSES[a], started = Date.now();
+  if (!ENDPOINT) { announce("Creating more people isn't set up on this copy of the page."); return; }
+  creating = a;
+  render();
+  const tick = () => { $("another-status").textContent = `Creating another ${lens}\u2026 ${Math.round((Date.now() - started) / 1000)}s.`; };
+  tick(); anotherTimer = setInterval(tick, 1000);
+  announce(`Creating another ${lens}. This can take a little while.`);
+  let msg;
+  try {
+    const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 60000);
+    let data = null, res;
+    try {
+      res = await fetch(ENDPOINT, {method: "POST", headers: {"Content-Type": "application/json"}, signal: ctrl.signal, body: JSON.stringify({
+        mode: "one", archetype: a,
+        experience: {summary: project.experience.summary, audience: project.experience.audience,
+          moments: project.experience.moments.map(m => ({short: m.short, full: m.full}))},
+        exclude: project.personas.map((p, pi) => project.lens[pi] === a
+          ? {name: p.name, sameLens: true, whoTheyAre: p.whoTheyAre, startingPoint: p.startingPoint, workingStyle: p.workingStyle}
+          : {name: p.name})})});
+      try { data = await res.json(); } catch (e) { /* handled below */ }
+    } finally { clearTimeout(timer); }
+    if (!res.ok) throw new Error((data && data.error) || "The panel builder is unavailable right now.");
+    let person;
+    try { person = validatePersona(data && data.persona); } catch (e) { throw new Error("The new person came back incomplete."); }
+    const used = new Set(project.personas.flatMap(p => p.name.toLowerCase().split(/\s+/)));
+    if (person.name.toLowerCase().split(/\s+/).some(w => used.has(w))) throw new Error("The new person's name repeats someone already here.");
+    if (project !== current) return;                  // the project was rebuilt meanwhile: this person belongs to the old one
+    current.personas.push(person);
+    current.lens.push(a);
+    cand = a;
+    msg = `Another ${lens} is ready: ${person.name}. Review them, then add them to your panel.`;
+  } catch (err) {
+    if (project !== current) return;
+    msg = `Couldn't create another ${lens}. ${err && err.name === "AbortError" ? "It took too long." : (err && err.message) || "Something went wrong."} Try again in a moment.`;
+    $("another-error").textContent = msg;
+  } finally {
+    clearInterval(anotherTimer);
+    if (project === current) { creating = null; render(); }
+  }
+  if (!msg) return;
+  if (candidate(a) >= 0 && stageNow() === "build" && cand === a) { $("another-error").textContent = ""; $("preview-h").focus(); }
+  announce(msg);
+}
+$("another").addEventListener("click", () => { if ($("another").getAttribute("aria-disabled") !== "true") { $("another-error").textContent = ""; createAnother(cand); } });
 
 // ---------- Status line: only for results with no native announcement ----------
 // Slider changes are announced by the focused range's own aria-valuetext.
@@ -2039,8 +2126,8 @@ for (const id of ["challenge", "journey"]) {
     const t = target();
     if (!t) return;
     const prev = t[id], v = +ev.target.value;
-    if (t.cand) memo[t.a] = {...settingsFor(t.a), [id]: v};
-    else { t[id] = v; memo[t.a] = {challenge: t.challenge, journey: t.journey}; changed(); }
+    if (t.cand) memo[t.p] = {...settingsFor(t.p), [id]: v};
+    else { t[id] = v; memo[t.p] = {challenge: t.challenge, journey: t.journey}; changed(); }
     render();
     animateRow(id, prev, v);
   });
@@ -2093,7 +2180,7 @@ function fillPersonaCopy() {
   const row = $("persona-copy-row");
   row.innerHTML = "";
   entries.forEach((e, k) => {
-    const p = current.personas[e.a], b = document.createElement("button");
+    const p = current.personas[e.p], b = document.createElement("button");
     b.type = "button";
     b.innerHTML = avatarHTML(e.a, "pc-token") + `<span>${esc(firstName(p))}</span>`;
     b.setAttribute("aria-label", `Copy the ${format === "brief" ? "brief" : "prompt"} for ${p.name}, ${LENSES[e.a]}`);
@@ -2102,7 +2189,7 @@ function fillPersonaCopy() {
   });
 }
 async function copyPersona(k) {
-  const text = (format === "brief" ? buildBrief : buildPrompt)(current, entries, k), name = current.personas[entries[k].a].name;
+  const text = (format === "brief" ? buildBrief : buildPrompt)(current, entries, k), name = current.personas[entries[k].p].name;
   try {
     if (!navigator.clipboard || !window.isSecureContext) throw new Error("no clipboard");
     await navigator.clipboard.writeText(text);
@@ -2280,6 +2367,7 @@ $("byos-form").addEventListener("submit", async e => {
     // An audience the person left blank was filled in by the tool.
     if (!audience) panel.experience.audienceSuggested = true;
     panel.id = makePanelId();
+    panel.lens = [0, 1, 2, 3, 4, 5];
     current = panel;
     resetPanel();
     mountPanel();
@@ -2343,8 +2431,8 @@ function fillJourney(t) {
     spoken.push(shorts[n - 1] + (again ? " again" : ""));
     return `<li><span class="jr-chip${again ? " again" : ""}${ms[n - 1].suggested ? " pick" : ""}">${esc(shorts[n - 1])}${again ? ' again<span aria-hidden="true"> \u21BA</span>' : ""}</span></li>`;
   }).join("");
-  const name = current.personas[t.a].name;
-  $("jr-title").textContent = `${firstName(current.personas[t.a])}'s journey`;
+  const name = current.personas[t.p].name;
+  $("jr-title").textContent = `${firstName(current.personas[t.p])}'s journey`;
   $("jr-sr").textContent = `${name}'s journey: ${pattern.label}. ${spoken.join(", ")}.`;
   $("jr-pattern").textContent = pattern.label;
 }

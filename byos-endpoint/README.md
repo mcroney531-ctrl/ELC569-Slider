@@ -75,6 +75,25 @@ Success returns `{ "panel": { experience, personas } }`:
 
 Errors return `{ "error": "..." }` with a 4xx or 5xx status. The page shows that message and keeps the current panel.
 
+### Another person for an archetype (`mode: "one"`, V2.1)
+
+The page calls this when someone asks for a second (or third) person of an archetype that is already in their panel. It is one small call for one persona; the project is not inferred again.
+
+`POST` with:
+
+```json
+{ "mode": "one", "archetype": 1,
+  "experience": { "summary": "...", "audience": "...", "moments": [{ "short": "...", "full": "..." }, "... 4 in all"] },
+  "exclude": [ { "name": "Tomás Reyes", "sameLens": true, "whoTheyAre": "...", "startingPoint": "...", "workingStyle": "..." },
+               { "name": "Dana Okafor" } ] }
+```
+
+- `archetype` is the lens index, 0 to 5, in the panel's coverage order.
+- `exclude` lists everyone already generated for this project. It must include at least one person of the same archetype, and those people send their situation fields so the new person can differ from them.
+- The prompt reuses the full build's persona rules word for word. It adds this requirement: the new person keeps the lens and differs in at least two of role or situation, starting point and working style. The difference may never be difficulty, protected characteristics, or anything that belongs in a challenge overlay.
+- Success returns `{ "persona": {...} }`, the same shape as one entry of `personas`.
+- If the new first name or surname repeats anyone in `exclude`, the Worker asks once more, then returns a 502. The page checks names again.
+
 ## Protection
 
 The endpoint is public and credentialless. It doesn't use Origin checks, because a packaged Storyline web object can send `null` and an allowlist wouldn't stop scripted abuse anyway.
@@ -83,11 +102,11 @@ The endpoint is public and credentialless. It doesn't use Origin checks, because
 |---|---|
 | Spend | Workspace spend limit in the Anthropic Console (required, the hard stop) |
 | CORS | `Access-Control-Allow-Origin: *`, POST only, no cookies |
-| Input caps | 2,000-byte body; situation 300 chars, audience 120, moments 24 each |
-| Per-IP throttle | `PER_IP_PER_HOUR` (default 5) |
+| Input caps | 2,000-byte body for a build; 12,000 bytes for `mode: "one"` (at most 15 excluded people). Situation 300 chars, audience 120, moments 24 each |
+| Per-IP throttle | `PER_IP_PER_HOUR` (default 5) for builds; `ONE_PER_IP_PER_HOUR` (default 12) for `mode: "one"`, counted separately so a full panel never uses up the build allowance |
 | Concurrency | `MAX_CONCURRENT` (default 3) |
-| Daily ceiling | `DAILY_LIMIT` (100 production, 50 staging). Enforced only when the `BYOS_KV` namespace is bound; without it the setting does nothing. |
-| Output cap | `MAX_TOKENS` (default 8,000; tighten from the bakeoff) |
+| Daily ceiling | `DAILY_LIMIT` (100 production, 50 staging), counting builds and `mode: "one"` calls together. Enforced only when the `BYOS_KV` namespace is bound; without it the setting does nothing. |
+| Output cap | `MAX_TOKENS` (default 8,000; tighten from the bakeoff); `ONE_MAX_TOKENS` (default 2,000) for one persona |
 | Refusal fallbacks | `FALLBACKS` (`"default"` or `"off"`); decide for production after the bakeoff |
 | Timeout | `TIMEOUT_MS` (default 80,000); the page gives up at 90 seconds |
 | Validation | Request fields before the call; response shape after the call (structured outputs + the same checks the page runs) |
