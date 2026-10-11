@@ -890,23 +890,24 @@
     box-shadow: 0 0 0 4px rgba(94, 231, 245, .18), 0 0 0 9999px rgba(2, 10, 18, .58); }
   .spot[hidden] { display: none; }
   dialog.tourcard { position: fixed; margin: 0; width: min(340px, calc(100vw - 24px)); max-height: min(70dvh, 420px); overflow: auto; padding: 16px 16px 14px;
-    border-radius: 16px; border: 1px solid rgba(94, 231, 245, .45); border-top: 3px solid #22D6CC; background: #0E2A3E; color: #F5FAFD;
+    border-radius: 16px; border: 1px solid #8EE3D6; border-top: 3px solid #14B8A6; background: #E6FBF7; color: #0B2F3A;
     box-shadow: 0 18px 40px rgba(0, 0, 0, .45); }
   dialog.tourcard::backdrop { background: transparent; }
   .tc-body:focus { outline: none; }
-  .tc-body:focus-visible { outline: 3px solid #5EE7F5; outline-offset: 4px; border-radius: 6px; }
-  .tc-count { margin: 0; font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #9FD8E4; }
-  .tc-title { margin: 2px 0 6px; font-size: 1.125rem; font-weight: 800; color: #fff; }
-  .tc-where { margin: 0 0 6px; font-size: .8125rem; font-weight: 700; color: #9FD8E4; }
-  .tc-text { margin: 0 0 14px; line-height: 1.45; color: #DCEAF2; }
+  .tc-body:focus-visible { outline: 3px solid #0B6E8C; outline-offset: 4px; border-radius: 6px; }
+  .tc-count { margin: 0; font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #0F766E; }
+  .tc-title { margin: 2px 0 6px; font-size: 1.125rem; font-weight: 800; color: #0B2F3A; }
+  .tc-where { margin: 0 0 6px; font-size: .8125rem; font-weight: 700; color: #0F766E; }
+  .tc-text { margin: 0 0 14px; line-height: 1.45; color: #23424F; }
   .tc-btns { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
   .tc-nav { display: flex; gap: 8px; margin-left: auto; }
-  .tc-btns button { min-height: 44px; padding: 0 16px; border-radius: 12px; font: inherit; font-weight: 700; background: transparent; color: #fff; border: 1.5px solid rgba(245, 250, 253, .55); }
-  .tc-btns button:hover { background: rgba(255, 255, 255, .1); }
-  .tc-btns button.primary { background: linear-gradient(90deg, #23D4C4, #2EE6C1); color: #062C35; border-color: transparent; }
+  .tc-btns button { min-height: 44px; padding: 0 16px; border-radius: 12px; font: inherit; font-weight: 700; background: transparent; color: #0B2F3A; border: 1.5px solid #0B2F3A; }
+  .tc-btns button:hover { background: rgba(11, 47, 58, .06); }
+  .tc-btns button.primary { background: #14B8A6; color: #062C35; border-color: transparent; }
+  .tc-btns button.primary:hover { background: #12A796; }
   .tc-btns .tc-skip { border-color: transparent; text-decoration: underline; text-underline-offset: 3px; padding: 0 6px; }
   .tc-btns button[hidden] { display: none; }
-  .tc-btns :focus-visible { outline: 3px solid #5EE7F5; outline-offset: 2px; }
+  .tc-btns :focus-visible { outline: 3px solid #0B6E8C; outline-offset: 2px; }
   @media (max-width: 620px) { dialog.tourcard { max-height: 46dvh; } }
   @media (forced-colors: active) { .spot { outline: 3px solid Highlight; box-shadow: none; } dialog.tourcard { border: 2px solid CanvasText; } }
   .replace-note { margin: 10px 0 0; padding: 10px 12px; border-left: 4px solid #B45309; border-radius: 10px; background: #FFF6EA; color: #5A3200; font-weight: 600; }

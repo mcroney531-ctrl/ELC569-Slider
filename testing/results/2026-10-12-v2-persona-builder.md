@@ -140,3 +140,6 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
   - Each stop's text, focus and accessible name, no overlap with the highlight, and buttons on screen.
   - Tab confined to the card. Next, Back, Skip, Esc and completion.
   - No state change and no request, and the sample usable afterwards. Replay over a real project leaves it untouched.
+- **Tour card colour (approved option A, soft mint):** `#E6FBF7` card, `#8EE3D6` border, `#14B8A6` top line and Next button, navy text.
+  - Contrast: title 13.2:1, body 9.9:1, teal labels 5.1:1, Next 5.9:1 (hover 4.9:1), focus ring 5.4:1.
+  - The card stays clear of the highlight at all three stops on desktop and phone (tested).
