@@ -885,6 +885,21 @@
   .stale p { margin: 0 0 8px; }
   .stale button { background: #fff; color: var(--navy); border: 1.5px solid var(--navy); }
   .sec-build .next-cue { margin: 0 0 16px; background: rgba(255, 255, 255, .06); color: #F5FAFD; border: 1px solid rgba(45, 212, 191, .3); border-left: 4px solid #2DD4BF; }
+  /* Sample mode: one compact line under the stepper. Plain text, never announced. */
+  .sample-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin: 0 0 14px; padding: 8px 10px 8px 16px;
+    border-radius: 14px; background: #0B3346; border: 1px solid rgba(94, 231, 245, .35); color: #DCEAF2; }
+  .sample-bar[hidden] { display: none; }
+  .sample-msg { margin: 0; flex: 1 1 320px; font-size: .9375rem; line-height: 1.4; }
+  .sample-tag { flex: none; display: inline-block; padding: 1px 8px; border-radius: 999px; background: rgba(0, 222, 216, .16); color: #5EE7F5;
+    font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+  .sample-cta { flex: none; min-height: 40px; padding: 0 16px; border-radius: 12px; font: inherit; font-weight: 800; background: linear-gradient(90deg, #23D4C4, #2EE6C1); color: #062C35; border: 0; }
+  .sample-cta:hover { background: linear-gradient(90deg, #3ADCCD, #4AEDCB); }
+  .sample-cta:focus-visible { outline: 3px solid #5EE7F5; outline-offset: 2px; }
+  /* Phone: tag and button share the first row, the sentence takes the second. */
+  @media (max-width: 620px) {
+    .sample-bar { display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: "tag . cta" "msg msg msg"; gap: 6px 8px; padding: 8px 10px 10px 12px; }
+    .sample-tag { grid-area: tag; justify-self: start; } .sample-cta { grid-area: cta; min-height: 44px; } .sample-msg { grid-area: msg; font-size: .875rem; }
+  }
   /* Spotlight tour: the page dims around one region; a compact card explains it. */
   .spot { position: fixed; z-index: 1000; pointer-events: none; border-radius: 18px; outline: 2px solid #5EE7F5; outline-offset: 0;
     box-shadow: 0 0 0 4px rgba(94, 231, 245, .18), 0 0 0 9999px rgba(2, 10, 18, .58); }
@@ -1205,6 +1220,11 @@
     <button type="button" class="st" id="st-panel" data-stage-go="panel"><span class="st-n" aria-hidden="true">3</span><span class="st-t">Your panel<small>Review and adjust</small></span></button>
     <button type="button" class="st" id="st-export" data-stage-go="export"><span class="st-n" aria-hidden="true">4</span><span class="st-t">Export<small>Brief or AI prompt</small></span></button>
   </nav>
+  <div class="sample-bar" id="sample-bar" hidden>
+    <span class="sample-tag">Sample mode</span>
+    <p class="sample-msg">You're exploring an example panel. Try the controls freely; no AI generation required.</p>
+    <button type="button" class="sample-cta" id="sample-build" aria-haspopup="dialog" aria-controls="byos">Build my own panel</button>
+  </div>
 
   <section class="sec sec-project" id="sec-project" aria-labelledby="sec-project-h">
     <div class="sec-head">
@@ -1216,10 +1236,61 @@
         <p class="for" id="panel-for"></p>
       </div>
       <div class="sec-act">
-        <button type="button" class="primary" id="own" aria-expanded="false" aria-haspopup="dialog" aria-controls="byos">Try it with your own project</button>
+        <button type="button" class="primary" id="own" aria-expanded="false" aria-haspopup="dialog" aria-controls="byos">Build my own panel</button>
         <button type="button" id="fresh" aria-expanded="false" aria-haspopup="dialog" aria-controls="byos" hidden>Build a new panel</button>
       </div>
     </div>
+  <div class="st-actions"><button type="button" class="primary" id="to-build" data-stage-go="build">Continue to Build</button></div>
+  </section>
+
+  <section class="sec sec-build" id="sec-build" aria-labelledby="build-h">
+    <h2 class="sec-h" id="build-h" tabindex="-1"><span class="sec-btn">
+      <span class="sec-ic" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#s-sliders"/></svg></span>
+      <span class="sec-t"><span class="sec-title">Build your panel</span>
+        <span class="sec-sub">Choose an archetype, set their challenge and journey, then add them. One persona is enough for a quick test.</span></span>
+    </span></h2>
+    <div class="sec-body">
+      <p class="next-cue" id="next-cue" hidden>Six people are ready for your project, one for each archetype. Choose who to test first.</p>
+      <div class="build-grid">
+        <div class="build-left">
+          <fieldset class="arch" id="arch">
+            <legend class="arch-legend">Choose an archetype</legend>
+            <div class="arch-list" id="arch-list"></div>
+          </fieldset>
+          <div class="live-sum build-sum" id="build-sum"><span class="live-av" id="build-sum-av" aria-hidden="true"></span><p class="live-t" id="build-sum-t"></p></div>
+        </div>
+        <div class="build-col">
+          <div class="editor-home" id="editor-home"></div>
+        <div class="preview" id="preview" aria-labelledby="preview-h" role="region">
+          <h3 class="preview-h" id="preview-h" tabindex="-1">Preview</h3>
+          <div class="preview-card" id="preview-card"></div>
+          <div class="added-note" id="added-note" hidden><p id="added-text"></p>
+            <div class="added-btns"><button type="button" class="make" id="another"></button><button type="button" id="added-go">Change their settings in Your panel</button></div>
+            <p class="another-status" id="another-status" aria-hidden="true" hidden></p>
+          </div>
+          <p class="another-error" id="another-error"></p>
+          <div class="add-row" id="add-row"><button type="button" class="primary" id="add">Add to your panel</button></div>
+        </div>
+        </div>
+      </div>
+    </div>
+    <div class="st-actions"><button type="button" data-stage-go="project">Back to Project</button><button type="button" class="primary" data-stage-go="panel">See your panel</button></div>
+  </section>
+
+  <section class="sec sec-personas" id="sec-panel" aria-labelledby="panel-stage-h">
+    <h2 class="sec-h" id="panel-stage-h" tabindex="-1"><span class="sec-btn">
+      <span class="sec-ic" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#i-panel"/></svg></span>
+      <span class="sec-t"><span class="sec-title">Your panel</span>
+        <span class="sec-sub" id="panel-sub"></span></span>
+    </span></h2>
+    <div class="sec-body">
+      <div class="panel-empty" id="panel-empty" hidden><p>Your panel is empty. Add a persona to start.</p><button type="button" class="primary" data-stage-go="build">Add a persona</button></div>
+      <ol class="cards entries" id="cards"></ol>
+    </div>
+    <div class="st-actions" id="panel-actions"><button type="button" id="clear-panel">Clear panel</button><button type="button" id="add-more" data-stage-go="build">Add a persona</button><button type="button" class="primary" id="lock" data-stage-go="export">Review &amp; export</button></div>
+  </section>
+
+  <!-- The project form lives outside the stages so it can open from any of them. -->
   <dialog class="byos" id="byos" aria-labelledby="byos-h">
     <div class="sheet">
     <h2 id="byos-h" class="sr-only">Your project</h2>
@@ -1278,55 +1349,6 @@
     </form>
     </div>
   </dialog>
-  <div class="st-actions"><button type="button" class="primary" id="to-build" data-stage-go="build">Continue to Build</button></div>
-  </section>
-
-  <section class="sec sec-build" id="sec-build" aria-labelledby="build-h">
-    <h2 class="sec-h" id="build-h" tabindex="-1"><span class="sec-btn">
-      <span class="sec-ic" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#s-sliders"/></svg></span>
-      <span class="sec-t"><span class="sec-title">Build your panel</span>
-        <span class="sec-sub">Choose an archetype, set their challenge and journey, then add them. One persona is enough for a quick test.</span></span>
-    </span></h2>
-    <div class="sec-body">
-      <p class="next-cue" id="next-cue" hidden>Six people are ready for your project, one for each archetype. Choose who to test first.</p>
-      <div class="build-grid">
-        <div class="build-left">
-          <fieldset class="arch" id="arch">
-            <legend class="arch-legend">Choose an archetype</legend>
-            <div class="arch-list" id="arch-list"></div>
-          </fieldset>
-          <div class="live-sum build-sum" id="build-sum"><span class="live-av" id="build-sum-av" aria-hidden="true"></span><p class="live-t" id="build-sum-t"></p></div>
-        </div>
-        <div class="build-col">
-          <div class="editor-home" id="editor-home"></div>
-        <div class="preview" id="preview" aria-labelledby="preview-h" role="region">
-          <h3 class="preview-h" id="preview-h" tabindex="-1">Preview</h3>
-          <div class="preview-card" id="preview-card"></div>
-          <div class="added-note" id="added-note" hidden><p id="added-text"></p>
-            <div class="added-btns"><button type="button" class="make" id="another"></button><button type="button" id="added-go">Change their settings in Your panel</button></div>
-            <p class="another-status" id="another-status" aria-hidden="true" hidden></p>
-          </div>
-          <p class="another-error" id="another-error"></p>
-          <div class="add-row" id="add-row"><button type="button" class="primary" id="add">Add to your panel</button></div>
-        </div>
-        </div>
-      </div>
-    </div>
-    <div class="st-actions"><button type="button" data-stage-go="project">Back to Project</button><button type="button" class="primary" data-stage-go="panel">See your panel</button></div>
-  </section>
-
-  <section class="sec sec-personas" id="sec-panel" aria-labelledby="panel-stage-h">
-    <h2 class="sec-h" id="panel-stage-h" tabindex="-1"><span class="sec-btn">
-      <span class="sec-ic" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#i-panel"/></svg></span>
-      <span class="sec-t"><span class="sec-title">Your panel</span>
-        <span class="sec-sub" id="panel-sub"></span></span>
-    </span></h2>
-    <div class="sec-body">
-      <div class="panel-empty" id="panel-empty" hidden><p>Your panel is empty. Add a persona to start.</p><button type="button" class="primary" data-stage-go="build">Add a persona</button></div>
-      <ol class="cards entries" id="cards"></ol>
-    </div>
-    <div class="st-actions" id="panel-actions"><button type="button" id="clear-panel">Clear panel</button><button type="button" id="add-more" data-stage-go="build">Add a persona</button><button type="button" class="primary" id="lock" data-stage-go="export">Review &amp; export</button></div>
-  </section>
 
   <!-- Spotlight tour: three stops over Build. The card is a modal dialog, so the dimmed page can't be reached by
        keyboard or pointer while it is open; the spotlight itself is decoration. -->
@@ -1415,7 +1437,7 @@
     </div>
     </div>
     <p class="note honesty">Test personas can help you find problems early. They don't replace testing or research with real people.</p>
-    <div class="st-actions"><button type="button" data-stage-go="panel">Back to Your panel</button></div>
+    <div class="st-actions"><button type="button" data-stage-go="panel">Back to Your panel</button><button type="button" class="primary" id="export-build" aria-haspopup="dialog" aria-controls="byos" hidden>Build my own panel</button></div>
   </section>
   </div>
 
@@ -1624,13 +1646,16 @@ const settingsCode = x => `C${x.challenge}-J${x.journey}`;
 const SUGG = " (suggested by the tool)";
 // Both exports cover the whole panel, or one entry when `only` is its index. Every persona section is self-contained:
 // it carries its own challenge, journey and route, because nothing is shared across the panel any more.
+// Sample exports say so in the text itself, so a copied or downloaded sample can't pass for a real test.
+const SAMPLE_MARK = "SAMPLE \u2014 Made with the built-in example project.";
+const sampleMark = panel => panel.id === "SAMPLE" ? [`**${SAMPLE_MARK}**`, ""] : [];
 function exportHead(panel, xs, only) {
   return `${panel.id === "SAMPLE" ? "Sample panel" : "Panel " + panel.id} \u00B7 ${only === null ? plural(xs.length) : xs[0].p.name}`;
 }
 function buildBrief(panel, list, only = null) {
   const xs = (only === null ? list : [list[only]]).map(e => deriveEntry(panel, e)), ex = panel.experience;
   const shorts = ex.moments.map(x => x.short);
-  const out = ["# Test Panel Brief", "", exportHead(panel, xs, only), "",
+  const out = ["# Test Panel Brief", "", ...sampleMark(panel), exportHead(panel, xs, only), "",
     `**Testing:** ${ex.summary}`];
   if (ex.audience) out.push(`**For:** ${ex.audience}${ex.audienceSuggested ? SUGG : ""}`);
   out.push("", "**Key moments:**", ...ex.moments.map((x, i) => `${i + 1}. ${x.short}: ${x.full}${x.suggested ? SUGG : ""}`), "",
@@ -1667,7 +1692,7 @@ function buildBrief(panel, list, only = null) {
 function buildPrompt(panel, list, only = null) {
   const xs = (only === null ? list : [list[only]]).map(e => deriveEntry(panel, e)), ex = panel.experience;
   const shorts = ex.moments.map(x => x.short), whole = only === null;
-  const out = ["# Persona test prompt", "",
+  const out = ["# Persona test prompt", "", ...sampleMark(panel),
     "You are helping me run an exploratory walkthrough of a digital experience I built, using test personas. You will play one persona at a time and react to the real project material I share with you: screenshots, storyboards, scripts, quiz questions or descriptions.", "",
     "## Project", "",
     exportHead(panel, xs, only),
@@ -1891,7 +1916,7 @@ function mountPanel() {
   $("moments-note").hidden = !picked.length;
   $("jr-key-sugg").hidden = !picked.length;
   $("moments-note").innerHTML = picked.length ? `<span class="jr-dot" aria-hidden="true"></span><strong>Suggested by the tool:</strong> ${picked.length === 4 ? "all four key moments" : esc(picked.join(", "))}. Use Edit project details to name your own.` : "";
-  $("own").textContent = sample ? "Try it with your own project" : "Edit project details";
+  $("own").textContent = sample ? "Build my own panel" : "Edit project details";
   $("own").classList.toggle("primary", sample);
   $("fresh").hidden = sample;
 }
@@ -1965,10 +1990,10 @@ function render() {
   renderPanel();
   renderEditor();
   const sample = current.id === "SAMPLE";
-  $("next-cue").hidden = !sample && entries.length > 0;
-  $("next-cue").textContent = sample
-    ? `You're exploring the sample project: ${current.experience.summary} Nothing here is sent anywhere.`
-    : "Six people are ready for your project, one for each archetype. Choose who to test first.";
+  $("next-cue").hidden = sample || entries.length > 0;
+  // Sample mode is named once, under the stepper, on every stage where you work with people (Project already says it).
+  $("sample-bar").hidden = !sample || stageNow() === "project";
+  $("export-build").hidden = !sample;
 }
 
 function renderBuild() {
@@ -1987,7 +2012,7 @@ function renderBuild() {
   let note = "";
   if (full) note = `Your panel is full: ${MAX_PANEL} personas. Remove someone to add another.`;
   else if (pi < 0) note = `${current.personas[shown].name} is already in your panel.` + (sample
-    ? ` Want another ${lens}? Build a panel for your own project to create additional people.`
+    ? ` Want another ${lens}? Use Build my own panel to create additional people for your project.`
     : ` You can create another ${lens}: a different person with the same perspective.`);
   $("added-note").hidden = !note;
   $("added-text").textContent = note;
@@ -2222,10 +2247,10 @@ for (const id of ["challenge", "journey"]) {
 // Two exports from the same panel. They are rebuilt when the panel has changed, unless the person edited the text:
 // then the edits stay on screen and updating is their explicit choice.
 const FORMATS = {
-  brief: {label: "Persona brief (editable)", copy: "Copy brief", done: "Brief", file: "test-panel-brief.md",
+  brief: {label: "Persona brief (editable)", copy: "Copy brief", done: "Brief", file: "brief.md",
     role: "You play each persona as you test your build.",
     help: "Each persona is a script for one test pass. Open your build, follow their route, and note where your experience helps, breaks, or lets them slip through."},
-  prompt: {label: "AI test prompt (editable)", copy: "Copy prompt", done: "Prompt", file: "test-panel-prompt.md",
+  prompt: {label: "AI test prompt (editable)", copy: "Copy prompt", done: "Prompt", file: "ai-prompt.md",
     role: "Your AI assistant plays each persona while you show it your build.",
     help: "Paste this into your AI assistant, then share your project material moment by moment. For the cleanest results, copy one persona below and give each their own fresh chat."}};
 let format = "brief", drafts = {}, draftVersion = -1;
@@ -2320,7 +2345,7 @@ $("download").addEventListener("click", () => {
   try {
     const url = URL.createObjectURL(new Blob([$("brief").value], {type: "text/markdown"}));
     const a = document.createElement("a");
-    a.href = url; a.download = FORMATS[format].file;
+    a.href = url; a.download = (current.id === "SAMPLE" ? "sample-panel-" : "") + FORMATS[format].file;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     // A sandboxed frame can block the file silently, so don't claim it arrived.
@@ -2377,7 +2402,7 @@ function openByos(opener, fresh) {
 }
 // Building replaces the panel, so say so before it happens, not after.
 function buildLabel() {
-  const n = entries.length;
+  const n = current.id === "SAMPLE" ? 0 : entries.length;       // clearing the sample is expected, not a loss
   $("replace-note").hidden = !n;
   $("replace-note").textContent = n ? `Building replaces your current panel of ${plural(n)}. Cancel keeps it.` : "";
   $("build").textContent = n ? "Build and replace my panel" : "Build my panel";
@@ -2392,6 +2417,8 @@ function closeByos(returnFocus, restore) {
 // The form is a modal dialog: Cancel, Esc and the opener all end up in closeByos. Cancelling while a build is
 // running also abandons that request, so the panel on screen is never replaced behind the person's back.
 $("own").addEventListener("click", () => openByos($("own"), false));
+// The same form from anywhere in sample mode; Cancel returns to the button that opened it, on the same stage.
+for (const id of ["sample-build", "export-build"]) $(id).addEventListener("click", () => openByos($(id), false));
 $("fresh").addEventListener("click", () => openByos($("fresh"), true));
 function cancelByos() { buildCancelled = true; if (buildCtrl) buildCtrl.abort(); closeByos(true, true); }
 $("cancel").addEventListener("click", cancelByos);

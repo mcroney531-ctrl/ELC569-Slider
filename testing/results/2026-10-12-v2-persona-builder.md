@@ -143,3 +143,19 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
 - **Tour card colour (approved option A, soft mint):** `#E6FBF7` card, `#8EE3D6` border, `#14B8A6` top line and Next button, navy text.
   - Contrast: title 13.2:1, body 9.9:1, teal labels 5.1:1, Next 5.9:1 (hover 4.9:1), focus ring 5.4:1.
   - The card stays clear of the highlight at all three stops on desktop and phone (tested).
+
+## Sample mode orientation (approved reduced scope, 2026-10-12)
+- **Banner:** a "Sample mode" strip under the stepper on Build, Your panel and Export, not Project, which already says "No project yet". It replaces Build's old sample note. It is plain text, never announced, and is two rows on a phone (tag and button, then the sentence).
+- **Export:** one "Build my own panel" button next to "Back to Your panel", in sample mode only.
+- **One label:** every button that opens the project form says "Build my own panel". That covers the Project card, the banner, Export, and the "another Newcomer" note.
+- **Form:** moved out of the Project stage so it opens from any stage. This fixed a real bug the new test caught: from the banner it opened invisibly, because Project was hidden.
+  - Cancel and Esc return focus to whichever button opened it, on the same stage.
+  - In sample mode there is no "replaces your panel" warning; a real panel still gets it.
+- **Exports:** sample briefs and prompts (whole and single) open with "SAMPLE — Made with the built-in example project." Downloads are `sample-panel-brief.md` and `sample-panel-ai-prompt.md`. Real projects get neither, and their files are `brief.md` and `ai-prompt.md`.
+- **Tests:** `sample-test.js` (new, 1200px and 360px with reduced motion). It covers:
+  - Banner placement and size, and the single label.
+  - Open, then Cancel or Esc, from Project, Build, Your panel and Export (twice), with focus and stage kept and sample data unchanged.
+  - A failed build keeping the sample and the draft, with Cancel returning to Export.
+  - Markers and file names, and a success ending sample mode.
+  - Real exports clean, and the real-panel warning kept.
+- Updated three V2/V2.1 assertions for the intended wording, file-name and warning changes.
