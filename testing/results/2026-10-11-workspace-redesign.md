@@ -34,3 +34,11 @@ separate from all data; collapsing never resets values.
 ## Update: pinned P/C/J read-out removed
 The sticky strip at the top is gone (markup, styles and the code that filled it). The same values remain visible in the three
 slider pills and, when Shape your panel is folded, in its header summary. Its IDs (ro-*) no longer exist.
+
+## Archetype avatars (added 2026-10-11)
+
+- Initial-letter shapes (`LOOKS`, `SHAPES`, `tokenSVG`, `outlineSVG`) removed. One central mapping, `ARCHETYPE_CLASS`, keys the six icons by coverage lens (Core user, Newcomer, Experienced user, Time-constrained, Low confidence, Context outlier), never by persona name, challenge, journey or panel size.
+- Seats: occupied = archetype icon; Open = same icon ghosted (opacity .3, grayscale). Persona cards use the same avatar (50px); roster 44–46px; copy chips 32px.
+- Icons are decorative `aria-hidden` spans (CSS backgrounds): no extra tab stops, roster announcements unchanged, nothing added to exports, no independent animation.
+- PNG masters in `design/avatars/`; runtime uses normalized 128px WebP data URIs (~32 KB total). The labeled reference sheet is not used at runtime.
+- Verified: full suites pass; mapping unchanged after generating a different panel and changing Panel Size / Challenge / Journey, at 1100px, 360px and reduced motion.
