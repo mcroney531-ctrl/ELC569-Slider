@@ -2659,7 +2659,8 @@ function enterTool() {
 $("onboard").addEventListener("click", e => {
   const go = e.target.closest("[data-go]");
   if (!go) return;
-  if (go.dataset.go === "own") { enterTool(); goStage("project", {focus: false}); openByos($("own"), false); return; }
+  // Build my own panel: land on Project first, so people see where they are before the form asks for details.
+  if (go.dataset.go === "own") { enterTool(); goStage("project"); return; }
   go.dataset.go === "tool" ? enterTool() : showStep(+go.dataset.go);
 });
 $("refresher").addEventListener("click", () => {
