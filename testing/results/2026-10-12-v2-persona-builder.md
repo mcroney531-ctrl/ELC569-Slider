@@ -9,10 +9,10 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
 ## Checkpoints 2 and 3: per-persona settings and the archetype builder
 - Stages: Project → Build → Your panel → Export. Navigation never changes the panel or calls the Worker.
 - **Build:**
-  - Six archetype choices as a native radio group: icon, lens name, one-line hint, and an "In your panel" or "Suggested next" badge in text.
+  - Six archetype choices as a native radio group: icon, lens name, one-line hint, and an "In your panel" badge in text.
   - A preview of the person, which needs no call because they already exist.
   - The shared editor (the same two native sliders and value text as V1).
-  - "Add [name] to your panel". "Start with the recommended three" adds the first three lenses.
+  - "Add [name] to your panel". The panel summary sits under the choices.
 - **Your panel:**
   - Cards in the order people were added, with settings shown as text on each card.
   - "Change settings" is a disclosure that opens the single editor under that person.
@@ -77,3 +77,8 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
   - Error and repeated-name rejections.
   - Ten distinct people, the full-panel state, and a ten-person export.
   - A rebuild during creation.
+
+## Simplified guidance (user review)
+- Removed "Start with the recommended three" and the "Suggested next" tag. The panel summary moved up under the archetype choices.
+- After an add, the choice still moves to the next archetype not yet covered, in the tool's coverage order. This is silent, with no tag or announcement.
+- The test settings sit above the preview.
