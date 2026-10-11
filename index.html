@@ -1433,11 +1433,24 @@ function routeParts(seq, names) {
 const routeSentence = (seq, names) => routeParts(seq, names).join(" -> ");
 const configCode = s => `P${s.panel}-C${s.challenge}-J${s.journey}`;
 
-// Everything on screen and in the export comes from the current panel and three integers.
-function deriveView(panel, {panel: n, challenge, journey}) {
-  const level = LEVELS[challenge - 1], pattern = PATTERNS[journey - 1];
-  const m = panel.experience.moments, shorts = m.map(x => x.short);
-  const jt = JOURNEY_TEXT[journey - 1](shorts);
+// A panel is an ordered list of entries. Each entry points at one generated person (by archetype index into
+// current.personas) and owns its own challenge and journey. Everything on screen and in the export derives from these.
+const entriesFor = s => Array.from({length: s.panel}, (_, i) => ({iid: "e" + i, a: i, challenge: s.challenge, journey: s.journey}));
+function deriveEntry(panel, e) {
+  const p = panel.personas[e.a], level = LEVELS[e.challenge - 1], pattern = PATTERNS[e.journey - 1];
+  const m = panel.experience.moments, o = e.challenge > 1 ? p.overlays[e.challenge - 2] : null;   // challenge owns behavior
+  return {
+    e, i: e.a, p, lens: LENSES[e.a], level, pattern, challenge: e.challenge, journey: e.journey,
+    journeyText: JOURNEY_TEXT[e.journey - 1](m.map(x => x.short)),
+    behavior: o ? o.behavior : BASELINE_BEHAVIOR,
+    saysOrDoes: o ? o.saysOrDoes : p.baselineSaysOrDoes,
+    levelRisk: o ? o.risk : null,
+    routeShort: routeParts(pattern.seq, m.map(x => x.short)),             // journey owns movement
+    route: routeSentence(pattern.seq, m.map(x => x.full))};
+}
+function deriveView(panel, s) {
+  const {panel: n, challenge, journey} = s, level = LEVELS[challenge - 1], pattern = PATTERNS[journey - 1];
+  const shorts = panel.experience.moments.map(x => x.short);
   return {
     panel: n, challenge, journey, level, pattern, id: panel.id, experience: panel.experience,
     summary: `Panel of ${n} · ${level.label} · ${pattern.label}`,
@@ -1445,17 +1458,8 @@ function deriveView(panel, {panel: n, challenge, journey}) {
     valueText: {
       panel: `${n} persona${n === 1 ? "" : "s"}: ${panel.personas.slice(0, n).map(firstName).join(", ")}`,
       challenge: level.aria, journey: pattern.aria},
-    journeyText: jt,
-    seated: panel.personas.slice(0, n).map((p, i) => {
-      const o = challenge > 1 ? p.overlays[challenge - 2] : null;   // challenge owns behavior
-      return {
-        i, p, lens: LENSES[i],
-        behavior: o ? o.behavior : BASELINE_BEHAVIOR,
-        saysOrDoes: o ? o.saysOrDoes : p.baselineSaysOrDoes,
-        levelRisk: o ? o.risk : null,
-        routeShort: routeParts(pattern.seq, shorts),                  // journey owns movement
-        route: routeSentence(pattern.seq, m.map(x => x.full))};
-    })};
+    journeyText: JOURNEY_TEXT[journey - 1](shorts),
+    seated: entriesFor(s).map(e => deriveEntry(panel, e))};
 }
 // Marks what the tool filled in, so it never reads as something the person said.
 const SUGG = " (suggested by the tool)";
