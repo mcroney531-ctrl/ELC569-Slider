@@ -319,3 +319,35 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
 - **Bug, copy:** on a first build, the form's build status says "The panel you have now is still the sample, not the result." Since the Intro/workspace split, the workspace never shows the sample. Replace it with something like "Your panel will appear here when it's ready." This is a one-line fix in the `tick()` message in the build handler (`wasSample` branch). Spotted during the validation run; held so the page doesn't change mid-test.
 - **Proposal, pending review:** a build loading screen, with a message, artwork, elapsed time, Cancel and possibly "while you wait" tips, to replace the status line during the ~40-second build.
 - **Proposal, deferred:** an "Additional notes" field. Superseded for now by the longer project description; revisit only if that proves insufficient.
+
+## Build loading view (branch `claude/build-loading-screen`, pending review, not merged)
+
+- Approved for development now and integration after the validation run. Not merged into `main`.
+- What it is: a presentation state of the existing project form, not a second workflow. The same request, Worker contract, abort controller and 90-second timeout are used. No Worker or generation changes.
+- Contents:
+  - "Building your panel" with an elapsed clock (mm:ss, read on demand, never announced).
+  - The landing's three-people illustration, cloned at runtime from the landing page, so no new image data. It is hidden from screen readers.
+  - The heading "Creating your test personas" and the line "We're building different testing perspectives around your project."
+  - A static "What's happening?" note: "Each persona gets a distinct perspective and behavior to help you explore your experience in new ways."
+  - "This usually takes about 40 seconds." and a Cancel button.
+  - No percentage, no progress bar, no rotating tips.
+- Honest slow state: at 75 seconds the expectation line changes once to "This is taking longer than usual. You can keep waiting or cancel." It is announced once.
+- Lifecycle:
+  - Start: the form is hidden, so its fields can't change mid-request. Focus goes to the heading once; there is no separate start announcement.
+  - Success: unchanged. The form closes on the new panel, at Build, with its heading focused and "ready" announced once.
+  - Failure: back to the form with the error and the draft, focus on Build my panel.
+  - Cancel or Esc: aborts the request and returns to the form with the draft, focus on Build my panel, announced once: "Building cancelled. Your details are still in the form." This changes the old behavior, where Cancel/Esc during a build closed the form; the request was abandoned in both versions.
+  - Repeated submits while building: still one request.
+- Motion: the wait view fades in; the three thought bubbles drift 5px, staggered (Web Animations API). Animations are cancelled when the wait ends. Reduced motion is fully still.
+- Phone: the sheet fills the screen, the clock stays at the top and the content is centered in the space below.
+- Removes the old build-status line, including its stale "still the sample" sentence.
+- Tests:
+  - wait-test.js (1280, and Pixel 7 with reduced motion) covers:
+    - the wait view and focus, the running clock, art reused and hidden, no live clock, no fake progress
+    - Cancel (draft kept, focus on Build, announced once, abandoned request never applied)
+    - Esc, failure, one request for repeated submits, success focus
+    - reopening shows the form, motion running and stopping, reduced motion still, no sideways scroll
+  - wait-slow.js: the clock past a minute, the slow note shown and announced once, and the next build reset.
+  - v2-test updated to the new Esc contract.
+  - All 11 page suites and 27 Worker tests pass.
+- Still to check: NVDA on the wait view (the heading read once on start, Cancel reachable, the cancel announcement) and a real phone.
