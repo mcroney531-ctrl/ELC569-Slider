@@ -343,3 +343,17 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
   3. **Archetype boundaries:** limit drift toward other lenses (Sam's phone and short bursts) without making lenses artificially exclusive.
   4. **Project-fact grounding:** keep imagined persona circumstances (devices, places) clearly separate from established facts about the experience.
 - Pending: the failure test (offline), Build 2 (instruction embedded in the description), cost, NVDA, the real phone check and the isolation regression.
+
+## Failure test (live, offline) and the message fix
+
+- Live result, with DevTools Network set to Offline and Create another Newcomer pressed:
+  - One request failed cleanly (status "(failed) net…").
+  - The panel was unchanged: all nine people still listed, nothing added or removed. The button stayed available.
+  - **Pass** on behavior.
+- Defect found: the message read "Couldn't create another Newcomer. Failed to fetch Try again in a moment." The browser's raw error leaked through and a full stop was missing. The full build had the same leak ("Couldn't build your panel. Failed to fetch Try rephrasing…").
+- Fix (V2 branch):
+  - Browser network failures are TypeErrors: Chrome's "Failed to fetch", Firefox's "NetworkError…", Safari's "Load failed". They now read:
+    - "Couldn't create another Newcomer: the panel builder couldn't be reached. Check your connection and try again."
+    - "Couldn't build your panel: the panel builder couldn't be reached. Check your connection and try again."
+  - The endpoint's own messages still pass through, and a new `failReason()` guarantees they end with a full stop.
+- Tests: offline-test.js simulates a dropped connection for both paths. It checks the plain messages, the absence of raw browser text, an unchanged panel, and endpoint messages passing through. All suites pass.

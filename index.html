@@ -2195,7 +2195,8 @@ async function createAnother(a) {
     msg = `Another ${lens} is ready: ${person.name}. Review them, then add them to your panel.`;
   } catch (err) {
     if (project !== current) return;
-    msg = `Couldn't create another ${lens}. ${err && err.name === "AbortError" ? "It took too long." : (err && err.message) || "Something went wrong."} Try again in a moment.`;
+    msg = err instanceof TypeError ? `Couldn't create another ${lens}: the panel builder couldn't be reached. Check your connection and try again.`
+      : `Couldn't create another ${lens}. ${failReason(err, "It took too long.")} Try again in a moment.`;
     $("another-error").textContent = msg;
   } finally {
     clearInterval(anotherTimer);
@@ -2427,6 +2428,13 @@ function byosFail(msg) {
   $("byos-error").textContent = msg;
   announce(msg);
 }
+// The reason a request failed, as one sentence ending in a full stop. (The browser's own network errors, "Failed to
+// fetch", "NetworkError…" or "Load failed", are TypeErrors; callers word those as "couldn't be reached".)
+function failReason(err, slow) {
+  if (err && err.name === "AbortError") return slow;
+  const m = ((err && err.message) || "Something went wrong.").trim();
+  return /[.!?]$/.test(m) ? m : m + ".";
+}
 async function requestPanel(body) {
   const ctrl = buildCtrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 90000);
   try {
@@ -2488,8 +2496,8 @@ $("byos-form").addEventListener("submit", async e => {
     announce(`Panel ${panel.id} is ready for ${panel.experience.summary}. Six people are ready to add, one for each archetype.`);
   } catch (err) {
     if (buildCancelled) return;
-    const msg = err && err.name === "AbortError" ? "Building took too long." : (err && err.message) || "Something went wrong.";
-    byosFail(`Couldn't build your panel. ${msg} Try rephrasing, or keep exploring this one.`);
+    byosFail(err instanceof TypeError ? "Couldn't build your panel: the panel builder couldn't be reached. Check your connection and try again."
+      : `Couldn't build your panel. ${failReason(err, "Building took too long.")} Try rephrasing, or keep exploring this one.`);
   } finally {
     building = false; buildCtrl = null;
     clearInterval(buildTimer);
