@@ -357,3 +357,10 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
     - "Couldn't build your panel: the panel builder couldn't be reached. Check your connection and try again."
   - The endpoint's own messages still pass through, and a new `failReason()` guarantees they end with a full stop.
 - Tests: offline-test.js simulates a dropped connection for both paths. It checks the plain messages, the absence of raw browser text, an unchanged panel, and endpoint messages passing through. All suites pass.
+
+## Stale "Create another" error (found during Build 2)
+
+- Live: after the offline failure test, the Build 2 rebuild succeeded, but the old message "Couldn't create another Newcomer. Failed to fetch…" stayed under the preview. It showed on the new panel and under a different archetype, so the build looked as if it had failed, and the operator rebuilt a second time.
+- Cause: `#another-error` was cleared only on a retry or a success.
+- Fix (V2 branch): each error records the panel and archetype it belongs to (`anotherErrFor`). `renderBuild()` clears it once either changes, which covers a rebuild, an archetype switch, and Try it.
+- Tests: offline-test.js now also checks that switching archetype clears the error, that a new attempt shows it again, and that a rebuild clears it. All suites pass.

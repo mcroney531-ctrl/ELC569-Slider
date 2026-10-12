@@ -1843,6 +1843,8 @@ SAMPLE_PANEL.lens = [0, 1, 2, 3, 4, 5];
 // cand is the archetype chosen in Build; the person previewed is the first of that archetype not yet in the panel.
 let entries = [], nextIid = 1, selectedIid = null, cand = 0, panelVersion = 0, memo = {}, creating = null;
 let briefEdited = false, buildTimer = null;
+// A failed "Create another" belongs to one panel and one archetype: it goes once either changes.
+let anotherErrFor = null;
 const cardEls = new Map();
 const LENS_HINT = ["Who it was designed for", "Less background than you assumed", "Brings habits from what already works",
   "Short on time or attention", "Unsure, or not very motivated", "A real situation you may not have planned for"];
@@ -1981,6 +1983,7 @@ function render() {
 }
 
 function renderBuild() {
+  if (anotherErrFor && (anotherErrFor.project !== current || anotherErrFor.a !== cand)) { $("another-error").textContent = ""; anotherErrFor = null; }
   if (!mayRender()) return;
   const full = entries.length >= MAX_PANEL;
   document.querySelectorAll(".arch-opt").forEach(o => {
@@ -2198,6 +2201,7 @@ async function createAnother(a) {
     msg = err instanceof TypeError ? `Couldn't create another ${lens}: the panel builder couldn't be reached. Check your connection and try again.`
       : `Couldn't create another ${lens}. ${failReason(err, "It took too long.")} Try again in a moment.`;
     $("another-error").textContent = msg;
+    anotherErrFor = {project: current, a};
   } finally {
     clearInterval(anotherTimer);
     if (project === current) { creating = null; render(); }
