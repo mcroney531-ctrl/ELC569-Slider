@@ -278,3 +278,13 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
   - No sideways scroll, and keyboard focus is visible.
   - Reduced motion runs no animations, and there are no errors.
 - All six suites pass.
+
+## Project form on phones: no keyboard until a field is tapped
+
+- Request: on a phone, opening the project form put focus in "What are you testing?", which raised the on-screen keyboard before the fields could be read.
+- Change: on touch screens (`(hover: none) and (pointer: coarse)`), the form opens on its visible heading, "Describe your project" (`#dp-h`, `tabindex="-1"`). That heading is given `autofocus`, so the dialog's own initial focus also skips the fields. Desktop still opens in the first field. Screen readers start at the top of the form either way. Cancel still returns focus to the button that opened the form.
+- kbd-test.js (Pixel 7 emulation and 1280 desktop):
+  - Phone: focus lands on the heading, and no field takes focus at any point while the form opens. Tapping the field focuses it.
+  - Desktop: focus lands in the first field, as before.
+  - Both: Cancel returns focus to Build my own panel.
+- All suites pass.
