@@ -226,3 +226,15 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
 - Refit: when the region changes size while live, `spotRefit()` re-measures the spotlight without scrolling or animating. The ResizeObserver from the fade cue triggers it.
 - The card has z-index 1001 because it is no longer in the top layer.
 - Tests: try-test checks that during the tour only the region and the card are live. On phones it checks that the archetype list scrolls on wheel at stop 1 and the page does not move. It also checks that Esc from inside the region ends the tour and leaves nothing inert. All six suites pass.
+
+## Release review: interactive-tour conditions
+
+- Review approved the live spotlight region, with conditions. Interacting with the region must never advance the tour. Focus must be moved out deliberately before a region becomes inert. Changes made during the tour must affect only the intro demo.
+- Fix: `spotShow()` now moves focus to the card text before `spotIsolate()` makes the old region inert. Before, focus moved after isolation. When a mouse user clicks Next in Safari, focus stays on the slider they last used, so that slider could be made inert while still holding focus.
+- Tests added to try-test at 1200, 390 and 360/reduced motion:
+  - Choosing archetypes during stop 1 does not advance the tour.
+  - Moving a slider repeatedly with the arrow keys during stop 2 does not advance the tour.
+  - Pressing Next with focus still on the slider moves focus to the card and leaves the old region inert.
+  - A sixth exit route: choose an archetype and move both sliders during the tour, then Skip tour, then Skip to the tool. The real project, panel, settings, selection and stage are restored exactly.
+- All six suites pass.
+- Not run here: the regression sequence against the deployed GitHub Pages build. github.io is blocked by this environment's network policy. Pages serves `index.html` from `main` byte for byte, so the local run covers the same code, but the manual pass on the live site still stands.

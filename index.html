@@ -2551,9 +2551,10 @@ function spotShow(first) {
   $("tc-text").textContent = st.text;
   $("tc-back").hidden = n === 1;
   $("tc-next").textContent = n === 3 ? "Start exploring" : "Next";
+  // Focus moves to the card before the old region goes inert (Safari leaves focus on a slider when a button is clicked).
+  $("tc-body").focus({preventScroll: true});        // read once: step, title, what is highlighted, the explanation
   spotIsolate(st.target());
   spotPlace(first);
-  $("tc-body").focus({preventScroll: true});        // read once: step, title, what is highlighted, the explanation
 }
 // Make the rest of the page inert: every sibling along the path from the region up to <body>, except the card and spotlight.
 function spotIsolate(target) {
