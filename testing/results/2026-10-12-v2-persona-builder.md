@@ -238,3 +238,13 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
   - A sixth exit route: choose an archetype and move both sliders during the tour, then Skip tour, then Skip to the tool. The real project, panel, settings, selection and stage are restored exactly.
 - All six suites pass.
 - Not run here: the regression sequence against the deployed GitHub Pages build. github.io is blocked by this environment's network policy. Pages serves `index.html` from `main` byte for byte, so the local run covers the same code, but the manual pass on the live site still stands.
+
+## One teal for buttons
+
+- Request: teal buttons used two different shades. All of them now match the tour card's Next button.
+- Change:
+  - The primary-button gradient `#23D4C4 → #2EE6C1` (hover `#3ADCCD → #4AEDCB`) is replaced everywhere by flat `#14B8A6` (hover `#12A796`), keeping the text colour `#062C35`.
+  - Buttons covered: intro Next, Build my own panel (Project and the empty states), Add, Create another, Review & export, Continue to Build, the panel/export empty-state buttons, and the selected state of the form's segmented choices.
+  - The decorative radial glow on the landing page is unchanged.
+- Contrast: `#062C35` text reads at 5.94:1 on `#14B8A6` and 4.93:1 on hover `#12A796`, both above the WCAG AA 4.5:1 minimum.
+- A computed-style scan across the landing page, intro, Try it and tour, the empty states, the form, Build, Your panel, Export and Project finds one teal, `#14B8A6`, plus `#12A796` on hover. All six suites pass.
