@@ -319,3 +319,11 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
 - **Bug, copy:** on a first build, the form's build status says "The panel you have now is still the sample, not the result." Since the Intro/workspace split, the workspace never shows the sample. Replace it with something like "Your panel will appear here when it's ready." This is a one-line fix in the `tick()` message in the build handler (`wasSample` branch). Spotted during the validation run; held so the page doesn't change mid-test.
 - **Proposal, pending review:** a build loading screen, with a message, artwork, elapsed time, Cancel and possibly "while you wait" tips, to replace the status line during the ~40-second build.
 - **Proposal, deferred:** an "Additional notes" field. Superseded for now by the longer project description; revisit only if that proves insufficient.
+
+## Post-validation fixes (V2 branch; to `main` after the validation run)
+
+- **Sample wording (defect):** a first build's status now says "Your panel will appear here when it's ready." instead of claiming the sample is still on screen. A rebuild says "The panel you have now is still your previous one, not the result."
+- **Export callout:** it shows the same lightbulb as the Intro takeaway. The icon is now a single `--bulb` custom property shared by both, so there is no second copy of the image data. The padding and size are adjusted for desktop and phone.
+- **"Prompt copied." readable:** the copy confirmations on the white copy row are now navy (they were mint `#8FF3E6`, meant for the dark surface).
+- **"(trial)" removed** from the "AI test prompt" option.
+- Tests: export-fix.js (1280 and 390) covers no sample wording on a first build, "(trial)" gone, the confirmation in navy, and the lightbulb present and clear of the callout text. All suites pass.
