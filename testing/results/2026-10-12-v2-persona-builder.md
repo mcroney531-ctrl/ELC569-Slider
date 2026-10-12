@@ -248,3 +248,33 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
   - The decorative radial glow on the landing page is unchanged.
 - Contrast: `#062C35` text reads at 5.94:1 on `#14B8A6` and 4.93:1 on hover `#12A796`, both above the WCAG AA 4.5:1 minimum.
 - A computed-style scan across the landing page, intro, Try it and tour, the empty states, the form, Build, Your panel, Export and Project finds one teal, `#14B8A6`, plus `#12A796` on hover. All six suites pass.
+
+## Intro reading screens: visual polish (approved mockup)
+
+- Scope: the Intro reading screens (steps 1 and 2), plus the shared header and progress on all three Intro steps. The builder, the tour, generation and app behaviour are unchanged. The shared callout styles used outside the Intro (`.role-callout`, `.nudge`) are untouched.
+- Header:
+  - A navy-to-teal linear gradient.
+  - The step label is cyan `#4FE3D6`.
+  - Progress has three equal 6px segments, about half the header width on desktop and full width on phones. The fill is a cyan-to-teal gradient sized to the actual step (`--n` 1–3). The leftover `data-step="4"` rule is removed. Before this, the bar showed four segments for three steps.
+- Reading area:
+  - A white surface that fades to `#F2F7FC` near the bottom.
+  - The "Does this work?" sentence (`.ob-ask`) has a 4px rounded teal bar.
+  - Bullets are indented further, with larger teal `::marker` dots, and keep their list semantics.
+- Takeaway callout (`.ob-key` only):
+  - A `#24476E` 1.5px border and a tight local shadow (no wide halo).
+  - The supplied lightbulb icon, embedded as a 112px WebP data URI. The master is `design/icons/lightbulb-callout.png`.
+  - On step 1 the lead sentence is bold and the second sentence follows inline at regular weight. The wording is unchanged.
+- Footer:
+  - A 1px `#DCE5EF` divider above the buttons.
+  - Back has a slate `#74859B` border (3.7:1 against white).
+  - Next keeps the flat `#14B8A6` that matches the tour's Next (an earlier request) rather than the mockup's gradient, and adds a slight shadow.
+  - Skip intro is unchanged.
+- Forced colors: the progress segments are drawn in Highlight/GrayText and the accent bar in CanvasText. The callout keeps its CanvasText border.
+- Checks (intro-a11y.js at 1280, 390, and 360 with reduced motion):
+  - Progress is 1/2/3 going forward and back to 1 going back.
+  - Heading, list semantics and heading focus are kept.
+  - The footer order and targets are unchanged.
+  - The callout text is unchanged, and the icon stays clear of the text.
+  - No sideways scroll, and keyboard focus is visible.
+  - Reduced motion runs no animations, and there are no errors.
+- All six suites pass.
