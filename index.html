@@ -995,6 +995,10 @@
   .byos input[type=text], .byos textarea { display: block; width: 100%; min-height: 50px; padding: 10px 14px; font: inherit; color: var(--ink); background: #fff;
     border: 1.5px solid #5A6E92; border-radius: 12px; box-shadow: inset 0 1px 2px rgba(15, 35, 71, .07); }
   .byos textarea { min-height: 96px; resize: vertical; }
+  .byos textarea.f-short { min-height: 76px; }
+  /* Character count: appears near the limit, and says so when the limit is reached (a paste past it is cut by the box). */
+  .fcount { margin: 4px 0 0; min-height: 1em; text-align: right; color: #5B6F93; font-size: .75rem; }
+  .fcount.is-full { color: #8A3A00; font-weight: 700; }
   @media (hover: hover) { .byos input[type=text]:hover, .byos textarea:hover { border-color: #33466D; } }
   .byos input[type=text]:focus-visible, .byos textarea:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-color: #33466D; }
   .byos fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
@@ -1275,13 +1279,15 @@
         </div>
         <div class="field">
           <label for="f-testing">What are you testing?</label>
-          <p class="help" id="f-testing-help">For example: A 20-minute Storyline course for new hires.</p>
-          <input type="text" id="f-testing" maxlength="98" aria-describedby="f-testing-help byos-error">
+          <p class="help" id="f-testing-help">Describe the experience you're testing. Include its purpose, important steps, or relevant constraints if helpful. For example: A 20-minute Storyline course for new hires.</p>
+          <textarea id="f-testing" class="f-short" rows="3" maxlength="500" aria-describedby="f-testing-help byos-error"></textarea>
+          <p class="fcount" data-for="f-testing"><span class="fcount-n" aria-hidden="true"></span><span class="sr-only" aria-live="polite"></span></p>
         </div>
         <div class="field">
           <label for="f-goal">What do people need to do or accomplish in it? <span class="opt">(optional)</span></label>
           <p class="help" id="f-goal-help">For example: Learn how to report a safety hazard, make a choice in a branching scenario, and pass a graded quiz.</p>
           <textarea id="f-goal" maxlength="198" aria-describedby="f-goal-help f-nudge"></textarea>
+          <p class="fcount" data-for="f-goal"><span class="fcount-n" aria-hidden="true"></span><span class="sr-only" aria-live="polite"></span></p>
           <p class="nudge" id="f-nudge" hidden>A little more detail will produce more specific test personas.</p>
         </div>
         <div class="field">
@@ -2346,6 +2352,15 @@ function updateNudge() {
   $("f-nudge").hidden = !($("f-testing").value.trim() && joinedDescription().length < 80);
 }
 $("f-testing").addEventListener("input", updateNudge);
+// Show the count from 80% of the limit; at the limit, say so (also to screen readers, once).
+function updateCount(box) {
+  const el = $(box.dataset.for), n = el.value.length, max = el.maxLength, full = n >= max;
+  box.querySelector(".fcount-n").textContent = n >= max * 0.8 ? `${n} / ${max}` : "";
+  box.classList.toggle("is-full", full);
+  const live = box.querySelector(".sr-only"), msg = full ? `Character limit reached: ${max}.` : "";
+  if (live.textContent !== msg) live.textContent = msg;
+}
+document.querySelectorAll(".fcount").forEach(box => { $(box.dataset.for).addEventListener("input", () => updateCount(box)); updateCount(box); });
 $("f-goal").addEventListener("input", updateNudge);
 
 // Two ways into the same form. "Edit project details" keeps what was typed. "Build a new panel"
@@ -2356,6 +2371,7 @@ function setExpanded(open) { ["own", "fresh"].forEach(id => $(id).setAttribute("
 function restoreStash() {
   if (!byosStash) return;
   FIELD_IDS.forEach((id, i) => { $(id).value = byosStash[i]; });
+  document.querySelectorAll(".fcount").forEach(updateCount);
   byosStash = null; updateNudge();
 }
 function openByos(opener, fresh) {
@@ -2366,6 +2382,7 @@ function openByos(opener, fresh) {
     updateNudge();
   }
   buildLabel();
+  document.querySelectorAll(".fcount").forEach(updateCount);
   // On a touch screen, start on the form's heading, not a field, so the keyboard waits until someone taps where they want to type.
   const touch = matchMedia("(hover: none) and (pointer: coarse)").matches;
   $("dp-h").autofocus = touch;

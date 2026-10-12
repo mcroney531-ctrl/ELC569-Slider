@@ -63,10 +63,20 @@ test("valid request returns a validated panel and one model call", async () => {
 test("preflight, method and size limits", async () => {
   assert.equal((await handle(new Request("https://x.test/", { method: "OPTIONS" }), E())).status, 204);
   assert.equal((await handle(req(null, { method: "GET" }), E())).status, 405);
-  assert.equal((await handle(req("x".repeat(3000)), E())).status, 413);
+  assert.equal((await handle(req("x".repeat(4000)), E())).status, 413);
   assert.equal((await handle(req("{not json"), E())).status, 400);
   assert.equal((await handle(req({ testing: "" }), E())).status, 400);
-  assert.equal((await handle(req({ testing: "x".repeat(301) }), E())).status, 400);
+  assert.equal((await handle(req({ testing: "x".repeat(721) }), E())).status, 400);
+});
+
+test("the longest description the page can send is accepted whole", async () => {
+  // 500 + ". " + 198, every character a quote so the JSON body is as large as it gets.
+  const testing = `${'"'.repeat(500)}. ${'"'.repeat(198)}`;
+  const seen = [];
+  const res = await handle(req({ testing, audience: '"'.repeat(120), moments: ['"'.repeat(24), "b", "c", "d"] }), E(), { client: fakeClient(ok, seen) });
+  assert.equal(res.status, 200);
+  assert.equal(validateRequest({ testing }).testing.length, 700);
+  assert.ok(seen[0].params.messages[0].content.includes(testing), "sent to the model without being cut");
 });
 
 test("angle brackets are stripped from input", () => {

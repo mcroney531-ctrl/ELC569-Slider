@@ -3,7 +3,8 @@
 // protection comes from caps and throttles rather than origin checks.
 import Anthropic from "@anthropic-ai/sdk";
 
-const LIMITS = { body: 2000, oneBody: 12000, testing: 300, audience: 120, moment: 24, exclude: 15 };
+// testing: the page joins "What are you testing?" (500) and "What do people need to do?" (198) with ". ", so 700 at most; 720 leaves room.
+const LIMITS = { body: 3000, oneBody: 12000, testing: 720, audience: 120, moment: 24, exclude: 15 };
 // MODEL has no default on purpose: pick it from the bakeoff (see bakeoff/README.md).
 const DEFAULTS = { MODEL: "", EFFORT: "low", FALLBACKS: "default", MAX_TOKENS: 8000, ONE_MAX_TOKENS: 2000, PER_IP_PER_HOUR: 5, ONE_PER_IP_PER_HOUR: 12, MAX_CONCURRENT: 3, DAILY_LIMIT: 200, TIMEOUT_MS: 80000 };
 const TEXT_SETTINGS = ["MODEL", "EFFORT", "FALLBACKS"];
