@@ -313,3 +313,9 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
   - Redeploy staging, then run one six-person build with a long description.
   - Regression case: a long description containing a behavioral instruction ("make every persona frustrated"). The archetypes must stay distinct and the instruction must be ignored.
   - Then the Create-another validation, against that same Worker version.
+
+## Queued for the next round (not in the frozen release candidate)
+
+- **Bug, copy:** on a first build, the form's build status says "The panel you have now is still the sample, not the result." Since the Intro/workspace split, the workspace never shows the sample. Replace it with something like "Your panel will appear here when it's ready." This is a one-line fix in the `tick()` message in the build handler (`wasSample` branch). Spotted during the validation run; held so the page doesn't change mid-test.
+- **Proposal, pending review:** a build loading screen, with a message, artwork, elapsed time, Cancel and possibly "while you wait" tips, to replace the status line during the ~40-second build.
+- **Proposal, deferred:** an "Additional notes" field. Superseded for now by the longer project description; revisit only if that proves insufficient.
