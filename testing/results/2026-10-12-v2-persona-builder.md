@@ -327,3 +327,19 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
 - **"Prompt copied." readable:** the copy confirmations on the white copy row are now navy (they were mint `#8FF3E6`, meant for the dark surface).
 - **"(trial)" removed** from the "AI test prompt" option.
 - Tests: export-fix.js (1280 and 390) covers no sample wording on a first build, "(trial)" gone, the confirmation in navy, and the lightbulb present and clear of the callout text. All suites pass.
+
+## Create-another validation: verdict
+
+- Build 1: a long description of more than 300 characters, so the new Worker is confirmed. The build took 36 seconds and the six archetypes are distinct.
+- Create another: six requests, each taking 7–10 seconds. Three extra Newcomers (Tom, Leah, Sam) plus the original (Priya).
+  - All four differ in starting point, working approach and core testing risk; with names and job titles removed, their walkthroughs still differ.
+  - Each is still a Newcomer.
+  - Challenge and Journey stay separate from identity.
+  - Add, configure, remove, re-add without a new request, and export all work. Both exports carry the same nine people, settings and routes.
+- Verdict: pass. Reviewed independently by Claude and GPT. "Create another" stays in V2.1, and fallback B is not used.
+- Follow-ups after launch, with no Worker change tonight:
+  1. **Core-risk diversity:** prefer a different primary risk for each extra person in the same archetype. Leah and Sam overlap on completion feedback.
+  2. **Writing consistency:** extra people should match the original six in length and voice. Their "Watch for" lines address the reader ("Your course may…").
+  3. **Archetype boundaries:** limit drift toward other lenses (Sam's phone and short bursts) without making lenses artificially exclusive.
+  4. **Project-fact grounding:** keep imagined persona circumstances (devices, places) clearly separate from established facts about the experience.
+- Pending: the failure test (offline), Build 2 (instruction embedded in the description), cost, NVDA, the real phone check and the isolation regression.
