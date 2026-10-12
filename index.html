@@ -765,6 +765,29 @@
   dialog.byos::backdrop { background: rgba(3, 21, 34, .8); }
   .byos .build-status { margin: 12px 0 0; color: #0F2347; background: #E3F6F3; border-color: rgba(15, 159, 143, .45); }
   .byos .build-status[hidden] { display: none; }
+  /* Build wait: the form steps aside; the landing's three people stand in while the panel is made. */
+  .bwait { padding: 22px 18px 20px; text-align: center; color: #0F2347; }
+  .bwait[hidden] { display: none; }
+  .bwait-top { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 6px; }
+  .bwait-k { font-size: .8125rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #0F766E; }
+  .bwait-t { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 1.125rem; color: #0F2347; }
+  .bwait-art { max-width: 300px; margin: 6px auto 12px; }
+  .bwait-art .lp-people { padding-top: 54px; }
+  .bwait-art .lp-bub { min-width: 34px; }
+  .bwait-h { margin: 0 0 6px; font-size: 1.5rem; font-weight: 800; color: #0F2347; }
+  .bwait-h:focus:not(:focus-visible) { outline: none; }
+  .bwait-d { margin: 0 auto 16px; max-width: 42ch; color: #34476B; }
+  .bwait-what { margin: 0 auto 14px; max-width: 46ch; padding: 12px 16px; text-align: left; background: #fff; border: 1px solid #D5E1EE; border-left: 4px solid #2DD4BF; border-radius: 12px; }
+  .bwait-wh { margin: 0 0 4px; font-size: .8125rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #0F766E; }
+  .bwait-what p { margin: 0; color: #23324F; }
+  .bwait-eta { margin: 0 0 16px; color: #5B6F93; font-size: .9375rem; }
+  .bwait-cancel { min-width: 140px; min-height: 48px; border-radius: 14px; color: #1B2A4A; background: rgba(255, 255, 255, .75); border: 2px solid #1B2A4A; font-weight: 800; }
+  .bwait-cancel:hover { background: #fff; }
+  @media (max-width: 620px) {
+    /* The sheet fills the phone: keep the clock at the top and centre the rest in the space below it. */
+    .bwait:not([hidden]) { display: flex; flex-direction: column; min-height: calc(100dvh - 40px); padding: 14px 6px 14px; }
+    .bwait-art { max-width: 230px; margin-top: auto; } .bwait-cancel { align-self: center; margin-bottom: auto; }
+    .bwait-h { font-size: 1.3125rem; } }
 
   /* Shape your panel */
   .sec.controls { padding: 0; border: 1px solid var(--ws-border); border-top: 1px solid var(--ws-border); }
@@ -1320,7 +1343,6 @@
         </fieldset>
         <p class="privacy">Sent when you build or rebuild your panel. Don't include confidential details.</p>
         <p class="replace-note" id="replace-note" hidden></p>
-        <p class="build-status" id="build-status" hidden aria-hidden="true"></p>
         <div class="actions">
           <button type="submit" class="primary" id="build" aria-describedby="replace-note">Build my panel</button>
           <button type="button" id="cancel">Cancel</button>
@@ -1328,6 +1350,19 @@
         </div>
       </div>
     </form>
+    <!-- While a panel builds, the form steps aside for this view: same request, same Cancel. -->
+    <section class="bwait" id="bwait" hidden aria-labelledby="bwait-h" aria-describedby="bwait-d bwait-eta">
+      <p class="bwait-top"><span class="bwait-k">Building your panel</span><span class="bwait-t"><span class="sr-only">Time elapsed: </span><span id="bwait-t">00:00</span></span></p>
+      <div class="bwait-art" id="bwait-art" aria-hidden="true"></div>
+      <h2 class="bwait-h" id="bwait-h" tabindex="-1">Creating your test personas</h2>
+      <p class="bwait-d" id="bwait-d">We're building different testing perspectives around your project.</p>
+      <div class="bwait-what">
+        <h3 class="bwait-wh">What's happening?</h3>
+        <p>Each persona gets a distinct perspective and behavior to help you explore your experience in new ways.</p>
+      </div>
+      <p class="bwait-eta" id="bwait-eta">This usually takes about 40 seconds.</p>
+      <button type="button" class="bwait-cancel" id="bwait-cancel">Cancel</button>
+    </section>
     </div>
   </dialog>
 
@@ -2425,8 +2460,55 @@ $("own").addEventListener("click", () => openByos($("own"), false));
 document.querySelectorAll(".np-build").forEach(b => b.addEventListener("click", () => openByos(b, false)));
 $("fresh").addEventListener("click", () => openByos($("fresh"), true));
 function cancelByos() { buildCancelled = true; if (buildCtrl) buildCtrl.abort(); closeByos(true, true); }
+function cancelBuild() { buildCancelled = true; if (buildCtrl) buildCtrl.abort(); }
 $("cancel").addEventListener("click", cancelByos);
-$("byos").addEventListener("cancel", e => { e.preventDefault(); cancelByos(); });
+$("bwait-cancel").addEventListener("click", cancelBuild);
+$("byos").addEventListener("cancel", e => { e.preventDefault(); if (building) cancelBuild(); else cancelByos(); });
+// ---------- Build wait ----------
+// The form steps aside (its fields can't change mid-request) and this view shows the elapsed time, honestly:
+// no progress bar, because the endpoint reports none. Focus goes to its heading once; the clock is not announced.
+let waitAnims = [], waitLate = false;
+const mmss = s => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+function waitStart() {
+  const art = $("bwait-art");
+  if (!art.firstChild) {
+    const people = document.querySelector(".lp-people").cloneNode(true);
+    people.removeAttribute("role"); people.removeAttribute("aria-label");
+    art.appendChild(people);
+  }
+  const started = Date.now();
+  waitLate = false;
+  $("bwait-eta").textContent = "This usually takes about 40 seconds.";
+  const tick = () => {
+    const s = Math.round((Date.now() - started) / 1000);
+    $("bwait-t").textContent = mmss(s);
+    if (s >= 75 && !waitLate) {   // honest about a slow build, said once
+      waitLate = true;
+      $("bwait-eta").textContent = "This is taking longer than usual. You can keep waiting or cancel.";
+      announce("This is taking longer than usual. You can keep waiting or cancel.");
+    }
+  };
+  tick();
+  buildTimer = setInterval(tick, 1000);
+  $("byos-form").hidden = true;
+  $("bwait").hidden = false;
+  $("bwait-h").focus({preventScroll: true});
+  $("byos").scrollTop = 0;
+  if (motionOK()) {
+    revealIn([$("bwait")], {dy: 10, delay: 0, duration: 260});
+    // A slow, small drift on the thought bubbles: enough to show the page is alive, nothing to watch.
+    waitAnims = [...art.querySelectorAll(".lp-bub")].map((b, i) => b.animate(
+      [{transform: "translateY(0)"}, {transform: "translateY(-5px)"}],
+      {duration: 1800, delay: i * 450, direction: "alternate", iterations: Infinity, easing: "ease-in-out"}));
+  }
+}
+function waitEnd() {
+  clearInterval(buildTimer);
+  waitAnims.forEach(a => a.cancel()); waitAnims = [];
+  if ($("bwait").hidden) return;
+  $("bwait").hidden = true;
+  $("byos-form").hidden = false;
+}
 
 function byosFail(msg) {
   $("byos-error").textContent = msg;
@@ -2472,15 +2554,8 @@ $("byos-form").addEventListener("submit", async e => {
   $("byos-error").textContent = "";
   $("byos-form").setAttribute("aria-busy", "true");
   $("build").textContent = "Building your panel…";
-  // Building takes about 40 seconds. Make that unmistakable, and say the panel on screen is not the result.
-  const wasSample = current.id === "SAMPLE", started = Date.now();
-  const tick = () => {
-    $("build-status").textContent = `Building your panel… ${Math.round((Date.now() - started) / 1000)}s. This usually takes about 40 seconds. ${wasSample ? "Your panel will appear here when it's ready." : "The panel you have now is still your previous one, not the result."}`;
-  };
-  tick(); $("build-status").hidden = false;
-  buildTimer = setInterval(tick, 1000);
+  waitStart();
   $("tool").classList.add("is-building");
-  announce("Building your panel. This can take up to a minute.");
   try {
     const moments = ["f-m1", "f-m2", "f-m3", "f-m4"].map(id => $(id).value.replace(/[<>]/g, "").replace(/\s+/g, " ").trim());
     const audience = $("f-audience").value.trim();
@@ -2499,13 +2574,19 @@ $("byos-form").addEventListener("submit", async e => {
     goStage("build");
     announce(`Panel ${panel.id} is ready for ${panel.experience.summary}. Six people are ready to add, one for each archetype.`);
   } catch (err) {
-    if (buildCancelled) return;
+    waitEnd();
+    if (buildCancelled) {
+      // Cancel while waiting: back to the form with everything as typed, ready to change or build again.
+      $("build").focus();
+      announce("Building cancelled. Your details are still in the form.");
+      return;
+    }
     byosFail(err instanceof TypeError ? "Couldn't build your panel: the panel builder couldn't be reached. Check your connection and try again."
       : `Couldn't build your panel. ${failReason(err, "Building took too long.")} Try rephrasing, or keep exploring this one.`);
+    $("build").focus();
   } finally {
     building = false; buildCtrl = null;
-    clearInterval(buildTimer);
-    $("build-status").hidden = true;
+    waitEnd();
     $("tool").classList.remove("is-building");
     $("byos-form").removeAttribute("aria-busy");
     buildLabel();
