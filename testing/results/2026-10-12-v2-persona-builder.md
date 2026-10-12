@@ -464,3 +464,12 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
 - New follow-up (8): the 12-character limit on moment labels can change meaning. "Report damage" (13 characters) became "Report harm", which suggests injury or a safety incident, and "Fix misscan" lost its hyphen. Moments are marked as suggestions and can be edited.
 - More evidence for names (5): Priya Natarajan and Marcus Bell recur with exactly the same full names as in Build 1.
 - Grounding (4): Laura's night shift is an invented persona circumstance, not asserted as a course fact.
+
+## GPT review of the planted-instruction regression
+
+- GPT agrees: **pass**. One successful live test isn't proof against every injected instruction, but the Worker follows the intended boundaries.
+- **Follow-up priority change:** moment labels (8) rank above repeated names (5). "Report harm" changes the implied task from damaged inventory to injured people, and the label carries into the Walkthrough Brief and the AI Test Prompt.
+- Preferred fix for (8): raise the short-label limit to about 20–24 characters rather than asking the model for shorter synonyms. Check that longer labels aren't truncated in the phone layout, route displays, the Journey window or the exports.
+- The release-readiness report must keep release blockers separate from post-launch improvements. None of the eight follow-ups is a blocker.
+- The four-scene loading artwork is a separate visual enhancement for after the remaining checks.
+- Still open before the release decision: cost, NVDA on the final `main`, the real phone check and the isolation regression (×2). No further generation changes.
