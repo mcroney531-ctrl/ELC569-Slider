@@ -597,5 +597,5 @@ Rone ran the live NVDA checklist (Chrome, `main` 47edf4d). Following GPT's guida
 - Live: `main`. The page was last changed at f75d423 and the Worker source at b473e61, which matches the deployed staging Worker. Later commits are log-only. Rollback point: 853de34.
 - Every pre-launch check has passed: the Worker deploy match, the long-description build, Create another, add/configure/remove/re-add/export, failure handling, the planted-instruction regression, cost, NVDA (with retest), the isolation regression ×2 and the real phone check.
 - **Release blockers: none.**
-- **Post-launch improvements, not urgent** (persona quality, ranked): moment labels (8), core-risk diversity (1), writing consistency (2), archetype boundaries (3), project-fact grounding (4), challenge behaviors that assume outcomes (7), combined key moments (6), and repeated names (5, measure first).
+- **Post-launch improvements, not urgent** (persona quality; suggested order, only 8 above 5 is agreed with GPT): moment labels (8), core-risk diversity (1), writing consistency (2), archetype boundaries (3), project-fact grounding (4), challenge behaviors that assume outcomes (7), combined key moments (6), and repeated names (5, measure first).
 - **Minor items, deferred:** the intro step-count reading order, the "clickable" region announcement, and the NVDA checklist wording.
