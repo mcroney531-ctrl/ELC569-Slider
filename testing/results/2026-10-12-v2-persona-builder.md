@@ -584,3 +584,10 @@ Rone ran the live NVDA checklist (Chrome, `main` 47edf4d). Following GPT's guida
   - The sliders didn't respond during the tour. On stop 1 only the archetype list is live; the sliders unlock on stop 2.
   - Daniel's card has a dashed edge: tier 2 (Rushed) cards are drawn dashed to show the challenge level.
 - The panel ID isn't shown on screen (the agent read it from the accessibility tree). That is the current design; noted only.
+
+## Phone check (live site, real phone): pass
+
+- Rone ran the phone-check sheet on the live site: 17 pass, 0 fail, 2 N/A. The sheet covered the landing and form, the intro, the Try it: Sample Mode tour, one full build with the loading screen, and the panel and export.
+- The two N/A items are tour stops 1 and 2. On this phone their content fit without scrolling, so the scroll check didn't apply.
+- Loading scene 3 (the follow-up from the scenes merge): Rone watched a full live build and judged it fine as is. It is not read as a completion signal. Any extra polish is optional and Rone's call; it is not tracked as a follow-up.
+- This was the last outstanding pre-launch check. Next: the release-readiness report.
