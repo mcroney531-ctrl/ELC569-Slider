@@ -553,3 +553,14 @@ Rone ran the live NVDA checklist (Chrome, `main` 47edf4d). Following GPT's guida
 - Also noted: NVDA says "clickable" on the intro region because the onboarding uses one delegated click listener on its container. Harmless; optional fix (move the listener to the document).
 - Tests: the v2 suite now checks that the heading is described by the ready cue, including in the accessibility tree, and that no separate ready announcement remains. blur-check.js checks that the description is removed when focus leaves. All suites pass.
 - GPT review of the triage: agrees. One confirmed defect (5-4), fixed pending NVDA confirmation; the other seven are navigation or expectation items needing the focused retest. **Deferred, not before launch:** the intro step-count reading order (still discoverable with Up arrow) and the "clickable" region announcement (would mean moving event listeners just before launch). Next: the focused NVDA retest (retest sheet), then the real phone check and the isolation regression. No broader accessibility redesign warranted.
+
+## NVDA retest (live, `main` f75d423): pass
+
+- Rone ran the focused retest sheet: 10 pass, 1 marked fail. Every note traces to NVDA's own mode behavior, not the app:
+  - **Cancel, Esc needed twice:** in the text field NVDA is in focus mode; the first Esc only returns NVDA to browse mode (the beep is its mode-switch sound), and the second reaches the page and closes the form. Keyboard users without a screen reader close it in one press. Focus returned to the opener. Pass.
+  - **Build ready (the fix):** NVDA read the Build heading followed by "Six people are ready for your project…", and did not repeat it on later visits. **The confirmed defect is fixed.**
+  - **Archetypes:** Tab and arrows read each name with its description. Pass.
+  - **Intro lists, marked fail:** browse-mode Down arrow reads one screen line at a time, so it pauses mid-sentence and needs another press. That is NVDA line reading, not a stop in the content. The list semantics are present (accessibility tree: list, 3 list items). NVDA+Down (say all) reads continuously, and L jumps to the list. Classified as expected behavior.
+  - **Empty workspace:** the heading, then the description line, then the button, which is the correct order. Pass.
+  - **Sample Mode heading:** Esc announced "main landmark, region, Try it: Sample Mode". H did nothing because focus had moved to the archetype radio, where NVDA uses focus mode. Pass.
+- **Accessibility verdict:** one real defect (the build-ready announcement), fixed and confirmed with NVDA. No other defects. The deferred minor items (step-count reading order, "clickable" region) are unchanged.
