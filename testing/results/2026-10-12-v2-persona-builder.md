@@ -509,3 +509,17 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
 - Tests:
   - scene-test.js (1280, and 390 with reduced motion) covers the loop timing [0,1,2,0], fixed layout, silence to screen readers, reduced motion still, and timer stop and reset.
   - wait-test was updated for scenes. All 16 page suites pass.
+
+## Loading scenes: final art in place (branch `claude/loading-scenes`, pending review)
+
+- The three scene PNGs from GPT (1672×941, transparent, no labels, scene 3 with one highlighted card and no checkmarks) are stored as masters in `design/loading/`.
+- Preparation (no changes to the art itself):
+  - Aligned the ground lines. Scene 1 was 15px lower than the others.
+  - Centred each scene horizontally.
+  - Trimmed all three to one shared frame, the union of their content plus a little padding (1240×785), so the art fills the box and the crossfade stays registered.
+  - Embedded as 640×405 WebP, about 43 KB each.
+- The art box now uses the scenes' frame (640:405), replacing 16:9. Height is about 190px on desktop and 146px on phones. The landing-illustration fallback and the placeholders are removed.
+- Checks:
+  - Cancel stays visible without scrolling from 320×568 (8px to spare) up to desktop.
+  - The scenes load, are hidden from screen readers, loop [0,1,2,0], keep the layout fixed, and stay still under reduced motion.
+  - All 17 page suites pass.
