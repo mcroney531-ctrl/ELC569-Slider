@@ -568,3 +568,19 @@ Rone ran the live NVDA checklist (Chrome, `main` 47edf4d). Following GPT's guida
   - **Intro list:** never hidden or inert. It is a 3-item list on the first visit, after Try it with the tour, and after leaving Try it with the tour still open (no `inert` or `aria-hidden` anywhere in the page). The mid-sentence pauses are NVDA browse mode reading one screen line per Down arrow. Classified as expected behavior.
   - **Double Esc:** with no screen reader, a single Esc closes the form and returns focus to the opener, whether or not text was typed. With NVDA, the first Esc is consumed by NVDA itself: focus mode was entered automatically in the text field, and Esc returns it to browse mode (the beep). Classified as NVDA behavior, not an app defect. Optional confirmation: NVDA off, one Esc closes.
   - No code changes. Checklist wording to refine for next time: expect line-by-line reading, not continuous reading after a heading.
+
+## Isolation regression (live site, run by Claude in Chrome): pass ×2
+
+- Setup: a real build (panel UX8S) with three people:
+  - Daniel Morris (Core user): Rushed, Straight through
+  - Priya Shah (Newcomer): Typical, One step back
+  - Tom Fletcher (Context outlier): defaults
+
+  Priya selected, on the Your panel stage.
+- **Run 1:** refresher → Try it: Sample Mode, interacting during the tour → Skip tour → change the archetype and both sliders → Exit sample mode. **Pass:** panel ID, all three people and their labels, the selected person and the stage are all unchanged.
+- **Run 2:** refresher → Try it → Esc → change the archetype and sliders → Back → Skip intro. **Pass:** identical to the before state.
+- The sample people (Grace Liu, Tomás Reyes, Dana Okafor, Sam Whitaker) appeared only inside Sample Mode, never in the workspace text after either run.
+- Side notes, both by design:
+  - The sliders didn't respond during the tour. On stop 1 only the archetype list is live; the sliders unlock on stop 2.
+  - Daniel's card has a dashed edge: tier 2 (Rushed) cards are drawn dashed to show the challenge level.
+- The panel ID isn't shown on screen (the agent read it from the accessibility tree). That is the current design; noted only.
