@@ -473,3 +473,25 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
 - The release-readiness report must keep release blockers separate from post-launch improvements. None of the eight follow-ups is a blocker.
 - The four-scene loading artwork is a separate visual enhancement for after the remaining checks.
 - Still open before the release decision: cost, NVDA on the final `main`, the real phone check and the isolation regression (×2). No further generation changes.
+
+## Loading scenes: scaffolding with placeholders (branch `claude/loading-scenes`, not merged)
+
+- Follows the conceptual board from Rone and GPT: three coordinated scenes that crossfade.
+  - 1 Discussing ideas
+  - 2 Organizing personas
+  - 3 Panel taking shape
+- Behavior:
+  - A crossfade every 5 seconds (700 ms fade), with no movement or zoom. The old bubble drift is removed.
+  - The scenes loop 1 → 2 → 3 → 1, so the art never implies progress.
+  - Reduced motion shows the first scene only, still.
+  - The art box is a fixed 16:9 box, so the heading, text and Cancel never move. Scenes are hidden from screen readers and nothing is announced.
+  - The timer stops on success, failure or cancel, and the next build starts on scene 1.
+- Placeholders:
+  - Scene 1 uses the landing illustration.
+  - Scenes 2 and 3 are labelled dashed boxes ("Scene 2, Organizing personas (placeholder)").
+  - The slots are in the `WAIT_SCENES` array. A null entry means the landing illustration; any other entry is an image source.
+- Asset spec for the final art: three transparent PNGs at 1600×900 (16:9), the same character style and baseline, subjects within the central safe area. They will be embedded as about 600px WebP.
+- Phone fix found while building: the stacked scenes collapsed the art box to 0px on phones; it now has an explicit width. Cancel stays visible from 320×568 (24px to spare) up to desktop.
+- Tests:
+  - scene-test.js (1280, and 390 with reduced motion) covers the loop timing [0,1,2,0], fixed layout, silence to screen readers, reduced motion still, and timer stop and reset.
+  - wait-test was updated for scenes. All 16 page suites pass.

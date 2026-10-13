@@ -771,8 +771,12 @@
   .bwait-top { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 6px; }
   .bwait-k { font-size: .8125rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #0F766E; }
   .bwait-t { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 1.125rem; color: #0F2347; }
-  .bwait-art { max-width: 300px; margin: 6px auto 12px; }
-  .bwait-art .lp-people { padding-top: 54px; }
+  /* Three scenes stacked in one fixed box (16:9), so the text and Cancel never move when a scene changes. */
+  .bwait-art { position: relative; width: 100%; max-width: 300px; aspect-ratio: 16 / 9; margin: 6px auto 12px; }
+  .bwait-scene { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; opacity: 0; }
+  .bwait-scene.is-on { opacity: 1; }
+  .bwait-scene > img { display: block; width: 100%; height: 100%; object-fit: contain; }
+  .bwait-art .lp-people { padding-top: 54px; width: 100%; }
   .bwait-art .lp-bub { min-width: 34px; }
   .bwait-h { margin: 0 0 6px; font-size: 1.5rem; font-weight: 800; color: #0F2347; }
   .bwait-h:focus:not(:focus-visible) { outline: none; }
@@ -2469,13 +2473,42 @@ $("byos").addEventListener("cancel", e => { e.preventDefault(); if (building) ca
 // no progress bar, because the endpoint reports none. Focus goes to its heading once; the clock is not announced.
 let waitAnims = [], waitLate = false;
 const mmss = s => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+// Build-wait scenes: 1 Discussing ideas, 2 Organizing personas, 3 Panel taking shape. They crossfade on a loop (never
+// a sequence that ends), so the art never suggests progress. A null slot uses the landing illustration.
+// PLACEHOLDERS: scenes 2 and 3 are labelled boxes until the final art arrives (1600x900 transparent PNG, as WebP).
+const scenePlaceholder = (n, label) => "data:image/svg+xml," + encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900"><rect x="40" y="40" width="1520" height="820" rx="60" fill="#EAF6F5" stroke="#5BB8B0" stroke-width="8" stroke-dasharray="40 26"/><text x="800" y="420" font-family="sans-serif" font-size="96" font-weight="700" fill="#0F766E" text-anchor="middle">Scene ${n}</text><text x="800" y="560" font-family="sans-serif" font-size="72" fill="#34476B" text-anchor="middle">${label} (placeholder)</text></svg>`);
+const WAIT_SCENES = [null, scenePlaceholder(2, "Organizing personas"), scenePlaceholder(3, "Panel taking shape")];
+const SCENE_MS = 5000, SCENE_FADE = 700;
+let sceneTimer = null, sceneAt = 0;
+function sceneShow(i) {
+  const scenes = [...$("bwait-art").children];
+  scenes.forEach((el, k) => el.classList.toggle("is-on", k === i));
+  sceneAt = i;
+}
+function sceneNext() {
+  const scenes = [...$("bwait-art").children], from = scenes[sceneAt], to = scenes[(sceneAt + 1) % scenes.length];
+  waitAnims.push(from.animate([{opacity: 1}, {opacity: 0}], {duration: SCENE_FADE, easing: "ease-in-out"}),
+                 to.animate([{opacity: 0}, {opacity: 1}], {duration: SCENE_FADE, easing: "ease-in-out"}));
+  sceneShow((sceneAt + 1) % scenes.length);
+  waitAnims = waitAnims.filter(a => a.playState !== "finished");
+}
 function waitStart() {
   const art = $("bwait-art");
   if (!art.firstChild) {
-    const people = document.querySelector(".lp-people").cloneNode(true);
-    people.removeAttribute("role"); people.removeAttribute("aria-label");
-    art.appendChild(people);
+    for (const src of WAIT_SCENES) {
+      const scene = document.createElement("div");
+      scene.className = "bwait-scene";
+      if (src) { const img = document.createElement("img"); img.alt = ""; img.src = src; scene.appendChild(img); }
+      else {
+        const people = document.querySelector(".lp-people").cloneNode(true);
+        people.removeAttribute("role"); people.removeAttribute("aria-label");
+        scene.appendChild(people);
+      }
+      art.appendChild(scene);
+    }
   }
+  sceneShow(0);
   const started = Date.now();
   waitLate = false;
   $("bwait-eta").textContent = "This usually takes about 40 seconds.";
@@ -2496,15 +2529,15 @@ function waitStart() {
   $("byos").scrollTop = 0;
   if (motionOK()) {
     revealIn([$("bwait")], {dy: 10, delay: 0, duration: 260});
-    // A slow, small drift on the thought bubbles: enough to show the page is alive, nothing to watch.
-    waitAnims = [...art.querySelectorAll(".lp-bub")].map((b, i) => b.animate(
-      [{transform: "translateY(0)"}, {transform: "translateY(-5px)"}],
-      {duration: 1800, delay: i * 450, direction: "alternate", iterations: Infinity, easing: "ease-in-out"}));
+    // Crossfade only: no movement or zoom. Reduced motion keeps the first scene, still.
+    if (art.children.length > 1) sceneTimer = setInterval(sceneNext, SCENE_MS);
   }
 }
 function waitEnd() {
   clearInterval(buildTimer);
+  clearInterval(sceneTimer); sceneTimer = null;
   waitAnims.forEach(a => a.cancel()); waitAnims = [];
+  if ($("bwait-art").firstChild) sceneShow(0);
   if ($("bwait").hidden) return;
   $("bwait").hidden = true;
   $("byos-form").hidden = false;
