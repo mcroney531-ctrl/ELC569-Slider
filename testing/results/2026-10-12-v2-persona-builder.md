@@ -488,6 +488,11 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
   - lp-check.js (1280 and 390) checks the tagline, the dark text, a visible keyboard focus ring, and that the button still opens the intro.
   - onboard-test was updated for the new tagline. All suites pass.
 - Shipped before the NVDA and phone checks so they cover the final landing page.
+
+## Try it wording
+
+- The step 3 heading "Try it" becomes "Try it: Sample Mode", and its "Skip to the tool" button becomes "Exit sample mode". Behavior is unchanged: the button still leaves the example and restores the workspace.
+- sample-text.js (1280 and 360) checks the new text, no sideways scroll, and that Exit still restores the workspace. The try, onboard, split, v2 and landing suites pass.
 ## Loading scenes: scaffolding with placeholders (branch `claude/loading-scenes`, not merged)
 
 - Follows the conceptual board from Rone and GPT: three coordinated scenes that crossfade.
