@@ -605,3 +605,15 @@ Rone ran the live NVDA checklist (Chrome, `main` 47edf4d). Following GPT's guida
 - GPT agrees: V2 is ready for launch. Every area passes (core generation, Create another, persona quality, instruction boundaries, panel management and exports, failure recovery, Sample Mode isolation, NVDA, real phone, loading scenes). GPT notes the verdict rests on the reported live checks and reviewed outputs, not its own end-to-end run.
 - Next priorities, agreed: moment-label limit (8) first, then the distinctness and consistency of extra people. Repeated names and loading-art polish can wait.
 - Hold the release as is: f75d423 is the tested app baseline, and 853de34 stays the rollback point. No more generation tests, illustration changes or UI tweaks before the announcement.
+
+## Research item (post-launch, not committed): build speed
+
+- A build takes about 35–40 s. That is acceptable with the loading scenes. This is a research item ranked below the eight follow-ups. It is not an optimization sprint, and there are no code changes now.
+- Control and default: the current single call that writes all six people together. An alternative replaces it only if it shows comparable or better quality and reliability, and a substantial speed gain (ideally about half the wait).
+- Investigation order (agreed with GPT):
+  1. **Measure the baseline:** input and output tokens, latency and cost across several ordinary builds. The bakeoff script already records token counts.
+  2. **Output efficiency:** look for generated text that is redundant or could be built locally, without losing anything used in previews, settings or exports.
+  3. **Faster model or lower effort:** benchmark with the bakeoff projects. Judge persona quality, archetype distinction, grounding and Challenge compatibility.
+  4. **Parallel generation (experimental):** first write a short panel plan that gives each archetype a distinct starting point, working approach and core risk, then write the six people at once. 10–15 s is a guess until measured. Compare total time, cost, rate limits, partial failure and retry.
+- Streaming partial results: low priority. Five people arriving and the sixth failing would add complexity to the current all-or-nothing build.
+- Keeping the prompt cache warm with periodic requests: skip. It costs money for almost no gain.
