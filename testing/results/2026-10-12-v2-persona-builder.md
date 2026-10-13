@@ -564,3 +564,7 @@ Rone ran the live NVDA checklist (Chrome, `main` 47edf4d). Following GPT's guida
   - **Empty workspace:** the heading, then the description line, then the button, which is the correct order. Pass.
   - **Sample Mode heading:** Esc announced "main landmark, region, Try it: Sample Mode". H did nothing because focus had moved to the archetype radio, where NVDA uses focus mode. Pass.
 - **Accessibility verdict:** one real defect (the build-ready announcement), fixed and confirmed with NVDA. No other defects. The deferred minor items (step-count reading order, "clickable" region) are unchanged.
+- **GPT follow-up on the two remaining observations**, checked without changing the page:
+  - **Intro list:** never hidden or inert. It is a 3-item list on the first visit, after Try it with the tour, and after leaving Try it with the tour still open (no `inert` or `aria-hidden` anywhere in the page). The mid-sentence pauses are NVDA browse mode reading one screen line per Down arrow. Classified as expected behavior.
+  - **Double Esc:** with no screen reader, a single Esc closes the form and returns focus to the opener, whether or not text was typed. With NVDA, the first Esc is consumed by NVDA itself: focus mode was entered automatically in the text field, and Esc returns it to browse mode (the beep). Classified as NVDA behavior, not an app defect. Optional confirmation: NVDA off, one Esc closes.
+  - No code changes. Checklist wording to refine for next time: expect line-by-line reading, not continuous reading after a heading.
