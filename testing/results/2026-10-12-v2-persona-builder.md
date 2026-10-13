@@ -599,3 +599,9 @@ Rone ran the live NVDA checklist (Chrome, `main` 47edf4d). Following GPT's guida
 - **Release blockers: none.**
 - **Post-launch improvements, not urgent** (persona quality; suggested order, only 8 above 5 is agreed with GPT): moment labels (8), core-risk diversity (1), writing consistency (2), archetype boundaries (3), project-fact grounding (4), challenge behaviors that assume outcomes (7), combined key moments (6), and repeated names (5, measure first).
 - **Minor items, deferred:** the intro step-count reading order, the "clickable" region announcement, and the NVDA checklist wording.
+
+## GPT release sign-off
+
+- GPT agrees: V2 is ready for launch. Every area passes (core generation, Create another, persona quality, instruction boundaries, panel management and exports, failure recovery, Sample Mode isolation, NVDA, real phone, loading scenes). GPT notes the verdict rests on the reported live checks and reviewed outputs, not its own end-to-end run.
+- Next priorities, agreed: moment-label limit (8) first, then the distinctness and consistency of extra people. Repeated names and loading-art polish can wait.
+- Hold the release as is: f75d423 is the tested app baseline, and 853de34 stays the rollback point. No more generation tests, illustration changes or UI tweaks before the announcement.
