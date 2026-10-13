@@ -473,3 +473,9 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
 - The release-readiness report must keep release blockers separate from post-launch improvements. None of the eight follow-ups is a blocker.
 - The four-scene loading artwork is a separate visual enhancement for after the remaining checks.
 - Still open before the release decision: cost, NVDA on the final `main`, the real phone check and the isolation regression (×2). No further generation changes.
+
+## Cost (Anthropic Console)
+
+- Oct 12 (UTC) billed total: **$0.31**, all Claude Opus 5.5 (the staging Worker's model).
+- That day covered about 5 full builds and 7 Create-another calls. Weighting a full build at about 4× an extra person gives roughly **$0.04–0.05 per six-person build** and **about $0.01 per extra person**. This is an estimate; the console reports daily totals only. The planted-instruction build may fall on Oct 13 UTC.
+- At staging's daily ceiling of 50 requests, a worst-case day costs about $2–2.50. Cost is not a release concern.
