@@ -617,3 +617,23 @@ Rone ran the live NVDA checklist (Chrome, `main` 47edf4d). Following GPT's guida
   4. **Parallel generation (experimental):** first write a short panel plan that gives each archetype a distinct starting point, working approach and core risk, then write the six people at once. 10–15 s is a guess until measured. Compare total time, cost, rate limits, partial failure and retry.
 - Streaming partial results: low priority. Five people arriving and the sixth failing would add complexity to the current all-or-nothing build.
 - Keeping the prompt cache warm with periodic requests: skip. It costs money for almost no gain.
+
+## Final intro copy polish (branch `claude/v2-persona-builder`, pending Rone's OK for `main`)
+
+- Scope: the text-only copy pass approved by GPT and Rone. Twelve string replacements in `index.html`:
+  - Step 1: the paragraph and the callout.
+  - Step 2: the intro, now two paragraphs.
+  - Step 3: the lead.
+  - Tour stops 1 and 3.
+  - Key terms: Coverage lens is renamed Archetype, and Edge case is reworded.
+  - The sample moment "Write the note".
+  - The Typical line under the Challenge setting.
+  - The Challenge and Journey help lines.
+  - Nothing else changed: markup, styling, behavior, generation and the accessible slider values are as before.
+- Preflight, comparing before and after at 320, 360, 390, 412 and 1280 px wide: no clipping and no horizontal overflow.
+  - The step 1 callout and the step 3 lead gain one line on some widths; the callout icon stays centered.
+  - Step 2 is 50–90 px taller on phones because of the new short paragraph. On desktop, steps 1 and 2 still fit in 1280×800 without scrolling.
+  - The tour card's position, height and buttons are unchanged, and the card never overlaps the highlight.
+  - The Challenge help line wraps one extra line on phones (+18 px) inside the settings box, which already scrolled on phones. No new scrolling.
+- Checks: copy-verify.js covers every changed string, the callout's bold and regular parts, the tour descriptions and focus, the accessible slider values, the Key terms order, the sample brief (no doubled "Practice", route unchanged) and horizontal overflow, all at 320, 390 and 1280 (39/39). All existing suites pass. The intro-a11y callout assertion was updated to the new wording. verify2.js is an old V1 suite that already fails on `main` in the same way, so it is not affected by this change.
+- Edge case example: kept in italics, matching the Inconsistent example. The text matches the approved wording exactly.

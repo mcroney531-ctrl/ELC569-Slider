@@ -1143,8 +1143,8 @@
         <li>What happens when someone is in a hurry?</li>
         <li>What if their situation doesn't fit the path I designed?</li>
       </ul>
-      <p>A good test persona gives you a specific point of view to adopt while testing. That can help uncover unclear instructions, missing paths, assumptions, confusing interactions, weak recovery states, and situations you may not have thought to try.</p>
-      <p class="ob-key"><span><span class="ob-key-lead">The goal isn't to predict what every real user will do.</span> <span class="ob-key-rest">The goal is to expand the range of things you deliberately test.</span></span></p>
+      <p>A good test persona gives you a specific point of view to adopt while testing. That can help uncover unclear instructions, missing paths, assumptions, confusing interactions, trouble recovering from mistakes, and situations you may not have thought to try.</p>
+      <p class="ob-key"><span><span class="ob-key-lead">You won't anticipate everything a real user might do.</span> <span class="ob-key-rest">Persona testing helps you explore the possibilities you might otherwise miss.</span></span></p>
       <div class="ob-actions">
         <button type="button" data-go="0">Back</button>
         <button type="button" class="primary" data-go="2">Next</button>
@@ -1158,7 +1158,8 @@
         <p class="ob-count">Step 2 of 3</p>
         <h2 id="ob-h2" tabindex="-1">Why AI can help</h2>
       </div>
-      <p>AI helps you test more kinds of situations and perspectives without inventing every persona yourself. Useful dimensions include:</p>
+      <p>AI can help you explore more testing perspectives without creating every persona from scratch. Describe your project, and this tool generates six personas with different starting points, habits, and potential challenges.</p>
+      <p>The panel includes differences in:</p>
       <ul class="ob-list ob-cols">
         <li>Experience with the task</li>
         <li>Familiarity with the subject</li>
@@ -1184,7 +1185,7 @@
         <p class="ob-count">Step 3 of 3</p>
         <h2 id="ob-h3" tabindex="-1">Try it: Sample Mode</h2>
       </div>
-      <p class="try-lead">Choose an archetype, change their Challenge and Journey, and watch the preview. This is a sample project, a short learning module for new managers; nothing here is sent anywhere.</p>
+      <p class="try-lead">Explore a sample project: a short learning module for new managers. Choose an archetype, adjust Challenge and Journey, and see how the preview changes. Nothing you do here affects your own project or panel.</p>
       <div class="demo-stage" id="demo-home" role="region" aria-label="Example builder"></div>
       <details class="ob-more demo-brief" id="demo-brief">
         <summary>See what this becomes</summary>
@@ -1196,11 +1197,11 @@
         <dl class="ob-terms">
           <div><dt>Persona</dt><dd>A fictional user you temporarily adopt while testing. Each persona has a stable goal, starting point, working style and perspective.</dd></div>
           <div><dt>Test panel</dt><dd>The group of personas you're currently testing with.</dd></div>
-          <div><dt>Coverage lens</dt><dd>The reason a persona is included. A newcomer tests assumptions about prior knowledge; a time-constrained user tests what happens when attention is limited.</dd></div>
+          <div><dt>Archetype</dt><dd>The reason a persona is included. A newcomer tests assumptions about prior knowledge; a time-constrained user tests what happens when attention is limited.</dd></div>
           <div><dt>Typical</dt><dd>No added challenge. The persona behaves according to their normal working style.</dd></div>
           <div><dt>Rushed</dt><dd>The same persona is under time pressure and cuts corners compared with how they normally behave.</dd></div>
           <div><dt>Inconsistent</dt><dd>The persona contradicts something they said, selected, answered or did earlier in the same test pass. <em>Example: they say they want email updates, then later select "Do not contact me."</em></dd></div>
-          <div><dt>Edge case</dt><dd>A real but less-common circumstance the experience may not have been designed around. <em>Example: a volunteer form assumes everyone has a fixed weekly schedule, but this persona's availability changes every week.</em> An edge case isn't bizarre behavior added just to break the design; it's a legitimate situation the design may not cover well.</dd></div>
+          <div><dt>Edge case</dt><dd>A realistic circumstance the experience may not have been designed to handle. <em>For example, a volunteer form assumes everyone has a fixed weekly schedule, but this persona's availability changes every week.</em> It's a legitimate situation to test, not strange behavior invented to break the design.</dd></div>
           <div><dt>Key moment</dt><dd>An important checkpoint worth testing, such as choosing a plan, submitting a form, receiving feedback or recovering from an error.</dd></div>
           <div><dt>Journey</dt><dd>The route the persona takes through those key moments.</dd></div>
         </dl>
@@ -1397,7 +1398,7 @@
       <div class="slider s-challenge">
         <svg class="motif" id="challenge-motif" viewBox="0 0 320 80" preserveAspectRatio="xMaxYMid meet" aria-hidden="true" focusable="false"><g class="wave"><path d="M0 40 C20 40 20 40 40 40 S60 28 80 40 S100 52 120 40 S140 18 160 40 S180 62 200 40 S220 12 240 40 S260 68 280 40 S300 20 320 40"/></g></svg>
         <div class="slider-head"><span class="row-icon" aria-hidden="true"><svg><use href="#r-challenge"/></svg></span><label for="challenge">Challenge level</label><span class="slider-val" id="challenge-val" aria-hidden="true"></span></div>
-        <p class="slider-help">Change how demanding the test conditions are.</p>
+        <p class="slider-help">Change how the persona behaves under different test conditions.</p>
         <div class="range-wrap" id="challenge-wrap">
           <div class="rail"><span class="fill"></span></div>
           <input type="range" id="challenge" min="1" max="4" step="1" value="1">
@@ -1409,7 +1410,7 @@
       <div class="slider s-journey">
         <svg class="motif" id="journey-motif" viewBox="0 0 320 80" preserveAspectRatio="xMaxYMid meet" aria-hidden="true" focusable="false"><path class="route-line" pathLength="1"/><g class="nodes"><circle r="4"/><circle r="4"/><circle r="4"/><circle r="4"/><circle r="4"/></g></svg>
         <div class="slider-head"><span class="row-icon" aria-hidden="true"><svg><use href="#r-journey"/></svg></span><label for="journey">Journey</label><span class="slider-val" id="journey-val" aria-hidden="true"></span></div>
-        <p class="slider-help">Change how directly the persona moves through your experience.</p>
+        <p class="slider-help">Change the route the persona takes through your key moments.</p>
         <div class="range-wrap" id="journey-wrap">
           <div class="rail"><span class="fill"></span></div>
           <input type="range" id="journey" min="1" max="5" step="1" value="1">
@@ -1524,7 +1525,7 @@ const SAMPLE_PANEL = {
     summary: "A 15-minute learning module for new managers about documenting performance issues.",
     audience: "Newly promoted people managers in retail and operations.",
     moments: [{short:"Why", full:"Why it matters"}, {short:"Model", full:"What good looks like"},
-              {short:"Practice", full:"Practice: write the note"}, {short:"Check", full:"Check & wrap-up"}]},
+              {short:"Practice", full:"Write the note"}, {short:"Check", full:"Check & wrap-up"}]},
   personas: [
     {name:"Dana Okafor", whoTheyAre:"Store supervisor, promoted to team lead three weeks ago.",
      goal:"Know exactly what to write so it's fair and not personal.",
@@ -1781,7 +1782,7 @@ function avatarHTML(i, cls) {
 // One short line per value, under each slider. Plain text, not announced.
 const STATE_HELP = {
   panel: ["A single perspective.", "Focused coverage.", "Balanced perspectives.", "Broader coverage.", "Near-full coverage.", "Full coverage."],
-  challenge: ["No added test complication.", "The same person is under time pressure.",
+  challenge: ["No added challenge.", "The same person is under time pressure.",
     "The same person may contradict earlier choices.", "A real situation the experience may not cover well."],
   journey: ["A direct route from start to finish.", "One earlier moment is revisited.", "The route includes a few alternate paths.",
     "Several earlier moments are revisited.", "The route repeatedly returns to earlier moments."]};
@@ -2699,11 +2700,11 @@ document.querySelectorAll("[data-stage-go]").forEach(b => b.addEventListener("cl
 // stays live: it can be scrolled (its box scrolls on a phone) and tried out. Esc ends the tour.
 const SPOT = [
   {target: () => $("arch"), title: "Choose a perspective", where: "Highlighted: the six archetype choices.",
-    text: "Each archetype represents a different testing perspective. Choose one to see how that person might experience your project."},
+    text: "Each archetype represents a different testing perspective. Choose one to see how that person might approach this project."},
   {target: () => ($("editor").hidden ? $("preview") : $("editor")), title: "Shape the test", where: "Highlighted: the Challenge and Journey settings for the selected person.",
     text: "Challenge changes how demanding the test conditions are. Journey changes the path the person takes. You can adjust either without changing who the person is."},
   {target: () => $("preview-card"), title: "See the preview", where: "Highlighted: the persona preview.",
-    text: "This is where the test takes shape. As you adjust the settings, the preview shows how this person would behave and move through the experience. Open \u201CSee what this becomes\u201D below to read the test it turns into."}];
+    text: "The preview brings your choices together, showing how this person might behave and move through the experience. Open \u201CSee what this becomes\u201D below to read the test it turns into."}];
 let spot = null;   // {i, inert}: the stop on screen and what it made inert; null when no tour is running
 function spotStart() {
   // Make sure the settings stop has something to show: preview an archetype that can still be added.
