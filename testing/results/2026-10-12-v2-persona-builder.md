@@ -528,3 +528,9 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
   - Cancel stays visible without scrolling from 320×568 (8px to spare) up to desktop.
   - The scenes load, are hidden from screen readers, loop [0,1,2,0], keep the layout fixed, and stay still under reduced motion.
   - All 17 page suites pass.
+
+## Loading scenes merged
+
+- GPT approved the merge: the implementation matches the approved design, and the +179 KB page weight is an acceptable trade-off, so the single-file architecture is kept. At 320×568, Cancel stays reachable by scrolling under large text or zoom, and readable text is preferred over forcing everything onto one screen.
+- Follow-up: Rone should watch at least one full live build to judge whether scene 3 reads as an intermediate step, not a completion signal.
+- The loading-screen design is locked for V2.
