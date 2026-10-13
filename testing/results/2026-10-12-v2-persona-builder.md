@@ -591,3 +591,11 @@ Rone ran the live NVDA checklist (Chrome, `main` 47edf4d). Following GPT's guida
 - The two N/A items are tour stops 1 and 2. On this phone their content fit without scrolling, so the scroll check didn't apply.
 - Loading scene 3 (the follow-up from the scenes merge): Rone watched a full live build and judged it fine as is. It is not read as a completion signal. Any extra polish is optional and Rone's call; it is not tracked as a follow-up.
 - This was the last outstanding pre-launch check. Next: the release-readiness report.
+
+## Release readiness: no blockers
+
+- Live: `main`. The page was last changed at f75d423 and the Worker source at b473e61, which matches the deployed staging Worker. Later commits are log-only. Rollback point: 853de34.
+- Every pre-launch check has passed: the Worker deploy match, the long-description build, Create another, add/configure/remove/re-add/export, failure handling, the planted-instruction regression, cost, NVDA (with retest), the isolation regression ×2 and the real phone check.
+- **Release blockers: none.**
+- **Post-launch improvements, not urgent** (persona quality, ranked): moment labels (8), core-risk diversity (1), writing consistency (2), archetype boundaries (3), project-fact grounding (4), challenge behaviors that assume outcomes (7), combined key moments (6), and repeated names (5, measure first).
+- **Minor items, deferred:** the intro step-count reading order, the "clickable" region announcement, and the NVDA checklist wording.
