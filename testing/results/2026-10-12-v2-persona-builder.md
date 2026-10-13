@@ -474,6 +474,20 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
 - The four-scene loading artwork is a separate visual enhancement for after the remaining checks.
 - Still open before the release decision: cost, NVDA on the final `main`, the real phone check and the isolation regression (×2). No further generation changes.
 
+## Cost (Anthropic Console)
+
+- Oct 12 (UTC) billed total: **$0.31**, all Claude Opus 5.5 (the staging Worker's model).
+- That day covered about 5 full builds and 7 Create-another calls. Weighting a full build at about 4× an extra person gives roughly **$0.04–0.05 per six-person build** and **about $0.01 per extra person**. This is an estimate; the console reports daily totals only. The planted-instruction build may fall on Oct 13 UTC.
+- At staging's daily ceiling of 50 requests, a worst-case day costs about $2–2.50. Cost is not a release concern.
+
+## Landing: glossy teal CTA and new tagline
+
+- "See how it works" moves from glossy blue to glossy teal (mock option B, chosen by Rone). The gradient is centred on the app's `#14B8A6` and keeps the landing's shine, with dark `#062C35` text: 5.9:1 or better across the text area. White on this teal would fail contrast. The hover and active states are retinted to match.
+- Tagline: "Different people. Different paths. A stronger experience." becomes "See your project through a different set of eyes."
+- Tests:
+  - lp-check.js (1280 and 390) checks the tagline, the dark text, a visible keyboard focus ring, and that the button still opens the intro.
+  - onboard-test was updated for the new tagline. All suites pass.
+- Shipped before the NVDA and phone checks so they cover the final landing page.
 ## Loading scenes: scaffolding with placeholders (branch `claude/loading-scenes`, not merged)
 
 - Follows the conceptual board from Rone and GPT: three coordinated scenes that crossfade.
