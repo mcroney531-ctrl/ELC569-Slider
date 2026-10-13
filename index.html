@@ -2598,8 +2598,12 @@ $("byos-form").addEventListener("submit", async e => {
     mountPanel();
     render();
     closeByos(false);
+    // Say "ready" as part of the focus move itself: a separate live announcement right after the focus change gets cut off
+    // by the heading being read. The visible cue describes the heading for this arrival only (set before focus moves).
+    const h = $("build-h");
+    h.setAttribute("aria-describedby", "next-cue");
+    h.addEventListener("blur", () => h.removeAttribute("aria-describedby"), {once: true});
     goStage("build");
-    announce(`Panel ${panel.id} is ready for ${panel.experience.summary}. Six people are ready to add, one for each archetype.`);
   } catch (err) {
     waitEnd();
     if (buildCancelled) {

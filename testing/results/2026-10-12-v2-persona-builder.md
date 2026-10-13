@@ -534,3 +534,21 @@ Branch `claude/v2-persona-builder`, started from the release candidate `4b2474a`
 - GPT approved the merge: the implementation matches the approved design, and the +179 KB page weight is an acceptable trade-off, so the single-file architecture is kept. At 320×568, Cancel stays reachable by scrolling under large text or zoom, and readable text is preferred over forcing everything onto one screen.
 - Follow-up: Rone should watch at least one full live build to judge whether scene 3 reads as an intermediate step, not a completion signal.
 - The loading-screen design is locked for V2.
+
+## NVDA pass 1: triage (17 pass, 8 fail)
+
+Rone ran the live NVDA checklist (Chrome, `main` 47edf4d). Following GPT's guidance, each failure was triaged against the DOM, Chrome's accessibility tree and keyboard-only browser checks before any fix.
+
+| Check | Classification | Evidence |
+|---|---|---|
+| 5-4 Build success announced, focus on Build heading | **Confirmed defect, fixed** | Focus moved to the heading, then about 50 ms later a polite live message posted "ready". NVDA was still speaking the heading, so the message was cut off; it also had a double full stop. Fix: the Build heading is described by the visible ready cue ("Six people are ready for your project…") for that arrival only, set before focus moves and removed on blur. The separate live message is removed. |
+| 4-3 Cancel returns focus to opener | Behaves correctly; retest | Keyboard-only from all four openers: Esc and Cancel both return focus to the exact opener. NVDA likely announced the surrounding context (main landmark, the region named by the stage heading) before the button. |
+| 6-1 Archetype names and descriptions | Behaves correctly; retest | The accessibility tree has radio buttons named "Core user Who it was designed for" and so on, in a group "Choose an archetype". Tab lands on the checked radio, and arrows move and select with name and description. The run used mouse hover, which is unreliable. |
+| 1-3 Bullets as a list | Behaves correctly; retest | The accessibility tree has a list of 3 list items. NVDA doesn't read on automatically after a heading; use Down arrow in browse mode. |
+| 2-6 Exit sample mode is a button | Behaves correctly; retest | Native `<button>`. Hover reading omits the role; Tab reports it. |
+| 2-1 Try it: Sample Mode heading | Expected behavior; retest | On entry, the tour takes focus (by design), so the heading isn't spoken automatically. It is reachable with H or browse mode. |
+| 3-1 Empty workspace stages | Behaves correctly; retest | Each stage has the "Start with your project" heading and a native button. Read with Down arrow after the stage heading. |
+| 1-2 Intro step: heading, then "Step 1 of 3" | Behaves as built (minor reading order); retest | "Step 1 of 3" sits before the heading in the DOM, so Down arrow from the focused heading moves on past it (Up arrow reaches it). Optional fix: put the count after the heading in the DOM. |
+
+- Also noted: NVDA says "clickable" on the intro region because the onboarding uses one delegated click listener on its container. Harmless; optional fix (move the listener to the document).
+- Tests: the v2 suite now checks that the heading is described by the ready cue, including in the accessibility tree, and that no separate ready announcement remains. blur-check.js checks that the description is removed when focus leaves. All suites pass.
