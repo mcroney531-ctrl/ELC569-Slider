@@ -675,3 +675,17 @@ Rone ran the live NVDA checklist (Chrome, `main` 47edf4d). Following GPT's guida
   - If the failures are multiple or structural: consider a targeted repair call.
   - Automatic retry of the whole panel: last resort. Only if measured frequency justifies roughly doubling the wait and the cost.
   - Do not raise all length limits. The 260-character persona fields stay, because longer fields hurt readability and exports.
+
+## Fix: the journey window couldn't be closed during the tour (branch `claude/v2-persona-builder`, pending Rone's OK for `main`)
+
+- **Found by Rone:** in Sample Mode with the tour on stop 3, clicking View route opened the journey window, but its X did nothing and the window couldn't be left (only Esc worked). Stop 2's "View journey" had the same problem.
+- **Cause:** while the tour runs, it switches off (`inert`) everything outside the card and the highlighted region. The journey window is a separate element on the page, so it opened switched off. Its X couldn't be clicked and focus was lost.
+- **Second, hidden problem:** closing the journey window always turned page scrolling back on, even with the tour still running, which would let the highlight drift out of line.
+- **Fix (2 lines in `index.html`):**
+  - The tour leaves the journey window switched on (`spotIsolate` keep list). A closed window isn't displayed, so this exposes nothing.
+  - Closing the window turns scrolling back on only when no tour is running.
+- **Tests:**
+  - jr-tour-test.js (new, 129 checks at 1280, 390 and 360 px, including reduced motion): on stops 2 and 3, the window opens usable with focus inside. X, Esc, backdrop and keyboard Enter each close it. The tour stays on the same stop, focus returns to the button that opened it, the page stays still, and the highlight stays aligned. The tour then ends normally, and the window still works outside the tour. Against the old code it fails on the first check, so it catches the bug.
+  - tour-regress.js (new, 28 checks): on every stop, content outside the region stays blocked and Tab never reaches it or the closed window. Back, Esc, Skip tour and Start exploring all end or move the tour cleanly.
+  - copy-verify.js passes (39), and the 27 Worker tests pass.
+- **Note:** the session moved to a new container and the earlier browser suites (try-test, v2-test and others) were lost; they lived only in temporary storage. They should be rebuilt and kept in the repo.

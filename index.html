@@ -2669,7 +2669,7 @@ $("jr-close").addEventListener("click", jrClose);
 $("jr-dialog").addEventListener("click", e => { if (e.target === $("jr-dialog")) jrClose(); });   // the backdrop
 $("jr-dialog").addEventListener("cancel", e => { e.preventDefault(); jrClose(); });                 // Esc
 $("jr-dialog").addEventListener("close", () => {
-  document.documentElement.style.overflow = "";
+  if (!spot) document.documentElement.style.overflow = "";   // the tour keeps the page still until it ends
   $("jr-dialog").getAnimations().forEach(a => a.cancel());
   (jrOpener && jrOpener.isConnected ? jrOpener : $("jr-link")).focus();
 });
@@ -2730,10 +2730,10 @@ function spotShow(first) {
   spotIsolate(st.target());
   spotPlace(first);
 }
-// Make the rest of the page inert: every sibling along the path from the region up to <body>, except the card and spotlight.
+// Make the rest of the page inert: every sibling along the path from the region up to <body>, except the card, the spotlight and the journey window (opened from the region).
 function spotIsolate(target) {
   spotFree();
-  const keep = [$("tourcard"), $("spot")];
+  const keep = [$("tourcard"), $("spot"), $("jr-dialog")];   // the journey window opens from the highlighted region
   for (let el = target; el && el !== document.body; el = el.parentElement)
     for (const sib of el.parentElement.children)
       if (sib !== el && !keep.includes(sib) && !sib.inert) { sib.inert = true; spot.inert.push(sib); }
