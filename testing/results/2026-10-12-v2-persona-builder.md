@@ -676,7 +676,7 @@ Rone ran the live NVDA checklist (Chrome, `main` 47edf4d). Following GPT's guida
   - Automatic retry of the whole panel: last resort. Only if measured frequency justifies roughly doubling the wait and the cost.
   - Do not raise all length limits. The 260-character persona fields stay, because longer fields hurt readability and exports.
 
-## Fix: the journey window couldn't be closed during the tour (branch `claude/v2-persona-builder`, pending Rone's OK for `main`)
+## Fix: the journey window couldn't be closed during the tour (merged)
 
 - **Found by Rone:** in Sample Mode with the tour on stop 3, clicking View route opened the journey window, but its X did nothing and the window couldn't be left (only Esc worked). Stop 2's "View journey" had the same problem.
 - **Cause:** while the tour runs, it switches off (`inert`) everything outside the card and the highlighted region. The journey window is a separate element on the page, so it opened switched off. Its X couldn't be clicked and focus was lost.
@@ -689,3 +689,11 @@ Rone ran the live NVDA checklist (Chrome, `main` 47edf4d). Following GPT's guida
   - tour-regress.js (new, 28 checks): on every stop, content outside the region stays blocked and Tab never reaches it or the closed window. Back, Esc, Skip tour and Start exploring all end or move the tour cleanly.
   - copy-verify.js passes (39), and the 27 Worker tests pass.
 - **Note:** the session moved to a new container and the earlier browser suites (try-test, v2-test and others) were lost; they lived only in temporary storage. They should be rebuilt and kept in the repo.
+
+- **GPT review:** approved for merge. The evidence is proportionate, and the new test fails on the old code and passes with the fix. One final check was requested and added to jr-tour-test.js:
+  - After each way of closing it (X, Esc, backdrop, keyboard), the journey window is hidden, holds no focus, and Tab can't reach it.
+  - After the tour ends, the page scrolls again and the intro buttons can be clicked.
+  - On phones the page is scrolled from the margin, because the preview and settings boxes keep the wheel by design.
+  - Now 180 checks, all pass. It still fails on the old code at the first check.
+- **Tests now live in the repo:** `testing/automated/` holds jr-tour-test.js (180), tour-regress.js (28) and copy-verify.js (39), with a README. Rule: a test used as merge evidence is committed there.
+- **Scope of this verification:** these are targeted regression checks for the tour, the journey window and the intro copy, plus the 27 Worker tests. They are not a full application regression run: the earlier suites are gone. Rebuild them in `testing/automated/` gradually, in this priority order: Try it isolation, generation lifecycle, accessibility focus, exports.
