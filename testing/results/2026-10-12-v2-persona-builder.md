@@ -638,9 +638,12 @@ Rone ran the live NVDA checklist (Chrome, `main` 47edf4d). Following GPT's guida
 - Checks: copy-verify.js covers every changed string, the callout's bold and regular parts, the tour descriptions and focus, the accessible slider values, the Key terms order, the sample brief (no doubled "Practice", route unchanged) and horizontal overflow, all at 320, 390 and 1280 (39/39). All existing suites pass. The intro-a11y callout assertion was updated to the new wording. verify2.js is an old V1 suite that already fails on `main` in the same way, so it is not affected by this change.
 - Edge case example: kept in italics, matching the Inconsistent example. The text matches the approved wording exactly.
 
-## Incident: one rejected panel build (Nov 2), and the key rotation (Nov 9)
+## Key rotation (Nov 9)
 
-- **Key rotation (Nov 9):** the Anthropic key had expired. A new key was made in the tool's dedicated workspace (the one with the spend limit) and stored on the staging Worker with `wrangler secret put` (no redeploy). The live build ran clean afterwards.
+- The Anthropic key had expired. A new key was made in the tool's dedicated workspace (the one with the spend limit) and stored on the staging Worker with `wrangler secret put` (no redeploy). The live build ran clean afterwards. Not related to the Nov 2 incident below.
+
+## Incident: one rejected panel build (Nov 2)
+
 - **What happened on Nov 2:** at 9:05 PM a panel build showed an error (Rone believes it was "came back incomplete"; the exact wording wasn't saved). A retry at 9:07 with the same description worked, and so did a Create another at 9:08.
 - **Console evidence** (from the tool's workspace):
 
@@ -652,7 +655,23 @@ Rone ran the live NVDA checklist (Chrome, `main` 47edf4d). Following GPT's guida
 
 - **What the evidence shows:** the model returned a complete answer. It wasn't cut off (3,295 is well under the 5,500 staging cap), it wasn't slow (33 s against the 80 s limit), and Anthropic reported no error. The input was valid, because it was identical to the retry and the input checks run before any model call. So the Worker rejected a complete answer in its panel check (`validatePanel`): the counts (6/4/3), no empty fields, and the length limits (each field 260 characters, summary 300, a key moment's full name 80, a name 60). The output format can't enforce counts or lengths, so one slightly long string rejects the whole panel.
 - **Likely contributing factor (inference):** the description was dense. It was drafted with another AI tool and trimmed to just under each field's limit. Longer, more detailed input makes the model write longer, especially the summary. Which rule failed wasn't recorded.
-- **Ruled out:** an expired or invalid key (the retry worked), Anthropic overload or errors (status OK), the output cap, the timeout, input over the limits, and "cold start" (Workers start in milliseconds, and the 33 s duration was normal).
+- **Ruled out:** an expired or invalid key (the retry worked; the later key expiry is a separate event), Anthropic overload or errors (status OK), the output cap, the timeout, input over the limits, and "cold start" (Workers start in milliseconds, and the 33 s duration was normal).
 - **Proposed, pending GPT review:**
   1. Log which check failed and by how much (field names and lengths only, never content), and turn on saved Worker logs.
   2. Once the logs show which rule is failing, add a targeted safety net: raise a limit that's too tight (in the Worker and the page together), shorten only the over-long fields, or retry once automatically.
+
+## GPT review of the incident: approved as a post-launch diagnostic task (not implemented)
+
+- GPT agrees with the diagnosis: Anthropic finished the request and the Worker rejected the result. Which rule failed is not established. The dense description is a hypothesis, not a finding. Not urgent: a manual retry works.
+- **Next round: rejection diagnostics.**
+  - When `validatePanel` (and the Create another check) rejects an answer, log the failure type, the field path (for example `personas[3].overlays[1].risk`), the actual value, count or length, the permitted limit, and a correlation ID. Example: `panel_validation_failed | length | experience.summary | actual=312 | max=300 | id=…`.
+  - Keep the failure types separate: missing or empty field, wrong count (people, moments, overlays), over length, and output that isn't JSON. Each leads to a different fix.
+  - Logs are allowlisted: never project descriptions, generated text, names, personal information, credentials, or whole request or response objects.
+  - Turn on retained Cloudflare Worker logs with controlled retention, access and volume.
+  - What users see, the generation rules and the prompts stay unchanged.
+  - Tests: each failure type reports the correct type, path and numbers, and the log contains none of the panel's or the input's text.
+- **Fix only after the logs show a pattern.** No deliberate paid runs to recreate it, unless a regression test needs one.
+  - If the recurring failure is a slightly long summary: first check whether 300 is a real limit for the interface or the data. If it isn't, raise it modestly (400–500) in the Worker and the page together, and check that previews and exports handle it.
+  - If the failures are multiple or structural: consider a targeted repair call.
+  - Automatic retry of the whole panel: last resort. Only if measured frequency justifies roughly doubling the wait and the cost.
+  - Do not raise all length limits. The 260-character persona fields stay, because longer fields hurt readability and exports.
