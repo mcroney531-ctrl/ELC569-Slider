@@ -637,3 +637,22 @@ Rone ran the live NVDA checklist (Chrome, `main` 47edf4d). Following GPT's guida
   - The Challenge help line wraps one extra line on phones (+18 px) inside the settings box, which already scrolled on phones. No new scrolling.
 - Checks: copy-verify.js covers every changed string, the callout's bold and regular parts, the tour descriptions and focus, the accessible slider values, the Key terms order, the sample brief (no doubled "Practice", route unchanged) and horizontal overflow, all at 320, 390 and 1280 (39/39). All existing suites pass. The intro-a11y callout assertion was updated to the new wording. verify2.js is an old V1 suite that already fails on `main` in the same way, so it is not affected by this change.
 - Edge case example: kept in italics, matching the Inconsistent example. The text matches the approved wording exactly.
+
+## Incident: one rejected panel build (Nov 2), and the key rotation (Nov 9)
+
+- **Key rotation (Nov 9):** the Anthropic key had expired. A new key was made in the tool's dedicated workspace (the one with the spend limit) and stored on the staging Worker with `wrangler secret put` (no redeploy). The live build ran clean afterwards.
+- **What happened on Nov 2:** at 9:05 PM a panel build showed an error (Rone believes it was "came back incomplete"; the exact wording wasn't saved). A retry at 9:07 with the same description worked, and so did a Create another at 9:08.
+- **Console evidence** (from the tool's workspace):
+
+  | Time | Input tokens | Output tokens | Duration | Status |
+  |---|---|---|---|---|
+  | 9:05 | 2,961 | 3,295 | 33.0 s | OK |
+  | 9:07 | 2,961 | 3,042 | 30.7 s | OK |
+  | 9:08 | 2,642 | 734 | 9.0 s | OK (Create another) |
+
+- **What the evidence shows:** the model returned a complete answer. It wasn't cut off (3,295 is well under the 5,500 staging cap), it wasn't slow (33 s against the 80 s limit), and Anthropic reported no error. The input was valid, because it was identical to the retry and the input checks run before any model call. So the Worker rejected a complete answer in its panel check (`validatePanel`): the counts (6/4/3), no empty fields, and the length limits (each field 260 characters, summary 300, a key moment's full name 80, a name 60). The output format can't enforce counts or lengths, so one slightly long string rejects the whole panel.
+- **Likely contributing factor (inference):** the description was dense. It was drafted with another AI tool and trimmed to just under each field's limit. Longer, more detailed input makes the model write longer, especially the summary. Which rule failed wasn't recorded.
+- **Ruled out:** an expired or invalid key (the retry worked), Anthropic overload or errors (status OK), the output cap, the timeout, input over the limits, and "cold start" (Workers start in milliseconds, and the 33 s duration was normal).
+- **Proposed, pending GPT review:**
+  1. Log which check failed and by how much (field names and lengths only, never content), and turn on saved Worker logs.
+  2. Once the logs show which rule is failing, add a targeted safety net: raise a limit that's too tight (in the Worker and the page together), shorten only the over-long fields, or retry once automatically.
