@@ -697,3 +697,4 @@ Rone ran the live NVDA checklist (Chrome, `main` 47edf4d). Following GPT's guida
   - Now 180 checks, all pass. It still fails on the old code at the first check.
 - **Tests now live in the repo:** `testing/automated/` holds jr-tour-test.js (180), tour-regress.js (28) and copy-verify.js (39), with a README. Rule: a test used as merge evidence is committed there.
 - **Scope of this verification:** these are targeted regression checks for the tour, the journey window and the intro copy, plus the 27 Worker tests. They are not a full application regression run: the earlier suites are gone. Rebuild them in `testing/automated/` gradually, in this priority order: Try it isolation, generation lifecycle, accessibility focus, exports.
+- **Live check (Rone):** on the live site, View route during the tour now closes with the X. Confirmed fixed.
